@@ -1,0 +1,67 @@
+############################################
+# OS & IDE Files
+############################################
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+############################################
+# Secrets & Environment Variables
+############################################
+.env
+.env.*
+*.pem
+*.key
+
+############################################
+# Node.js Dependencies (Frontend + Backend tooling)
+############################################
+**/node_modules/
+
+# npm/yarn logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+############################################
+# Angular (Frontend build artifacts)
+############################################
+frontend/dist/
+frontend/.angular/
+
+# cache (optional but good for CI consistency)
+frontend/.cache/
+
+############################################
+# Terraform
+############################################
+**/.terraform/
+*.tfstate
+*.tfstate.*
+
+# Terraform crash logs
+crash.log
+
+# Local variable files (can contain secrets)
+*.tfvars
+*.tfvars.json
+
+############################################
+# AWS / Serverless artifacts (relevant for Lambda)
+############################################
+.aws-sam/
+
+# packaged lambda artifacts
+*.zip
+
+############################################
+# Backend
+############################################
+backend/**/__pycache__/
+backend/**/*.pyc
+
+############################################
+# Logs
+############################################
+*.log

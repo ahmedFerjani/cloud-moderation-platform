@@ -62,6 +62,14 @@ backend/**/__pycache__/
 backend/**/*.pyc
 
 ############################################
+# Python Virtual Environment
+# Local development environment (DO NOT COMMIT)
+############################################
+.venv/
+venv/
+ENV/
+
+############################################
 # Logs
 ############################################
 *.log

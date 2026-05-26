@@ -6,10 +6,10 @@ from common.logger import log
 from common.responses import api_response
 from common.exceptions import APPError
 
+LambdaHandler = Callable[..., Any]
 
-def api_exception_handler(
-    func: Callable[..., Dict[str, Any]],
-) -> Callable[..., Dict[str, Any]]:
+
+def api_exception_handler(func: LambdaHandler) -> LambdaHandler:
 
     @wraps(func)
     def wrapper(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -100,9 +100,7 @@ def api_exception_handler(
     return wrapper
 
 
-def worker_exception_handler(
-    func: Callable[..., Dict[str, Any]],
-) -> Callable[..., Dict[str, Any]]:
+def worker_exception_handler(func: LambdaHandler) -> LambdaHandler:
 
     @wraps(func)
     def wrapper(event: Dict[str, Any], context: Any) -> Dict[str, Any]:

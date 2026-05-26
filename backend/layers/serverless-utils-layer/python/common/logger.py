@@ -1,9 +1,9 @@
 import json
 
 
-def log(level: str, message: str, extra: dict[str, str] | None = None):
+def log(level: str, message: str, extra: dict[str, str | int] | None = None):
 
-    log_data = {
+    log_data: dict[str, str | int] = {
         "level": level,
         "message": message,
     }

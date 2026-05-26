@@ -15,7 +15,7 @@ Thumbs.db
 *.key
 
 ############################################
-# Node.js Dependencies (Frontend + Backend tooling)
+# Node.js Dependencies (Frontend + tooling)
 ############################################
 **/node_modules/
 
@@ -48,26 +48,40 @@ crash.log
 *.tfvars.json
 
 ############################################
-# AWS / Serverless artifacts (relevant for Lambda)
+# AWS / Serverless artifacts
 ############################################
 .aws-sam/
+.serverless/
 
-# packaged lambda artifacts
+# packaged deployment artifacts
 *.zip
 
 ############################################
-# Backend
-############################################
-backend/**/__pycache__/
-backend/**/*.pyc
-
-############################################
-# Python Virtual Environment
-# Local development environment (DO NOT COMMIT)
+# Python - Virtual Environment
 ############################################
 .venv/
 venv/
 ENV/
+
+############################################
+# Python - Cache & bytecode
+############################################
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+############################################
+# Lambda Layers (IMPORTANT ADDITION)
+# Ignore installed dependencies inside layers
+############################################
+
+# Ignore built python dependencies in layers
+backend/layers/**/python/
+
+# Ignore layer build outputs (if you use scripts)
+backend/layers/**/build/
+backend/layers/**/dist/
 
 ############################################
 # Logs

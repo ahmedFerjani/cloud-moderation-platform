@@ -4,7 +4,13 @@ import uuid
 from common.responses import api_response
 from common.logger import log
 from common.exceptions import APPError
-from constants import ALLOWED_CONTENT_TYPES, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
+from constants import (
+    ALLOWED_CONTENT_TYPES,
+    DEFAULT_PAGE_SIZE,
+    MAX_PAGE_SIZE,
+    MAX_UPLOAD_SIZE_BYTES,
+    UPLOAD_URL_EXPIRES_IN_SECONDS,
+)
 
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 TABLE_NAME = os.environ["TABLE_NAME"]
@@ -29,25 +35,34 @@ def generate_upload_url(body: dict) -> dict:
     image_id = str(uuid.uuid4())
     object_key = f"uploads/{image_id}.{extension}"
 
-    upload_url = s3.generate_presigned_url(
-        ClientMethod="put_object",
-        Params={"Bucket": BUCKET_NAME, "Key": object_key, "ContentType": content_type},
-        ExpiresIn=300,
+    presigned_post = s3.generate_presigned_post(
+        Bucket=BUCKET_NAME,
+        Key=object_key,
+        Fields={"Content-Type": content_type},
+        Conditions=[
+            ["starts-with", "$key", "uploads/"],
+            {"Content-Type": content_type},
+            ["content-length-range", 1, MAX_UPLOAD_SIZE_BYTES],
+        ],
+        ExpiresIn=UPLOAD_URL_EXPIRES_IN_SECONDS,
     )
 
     log(
         "INFO",
-        "Presigned upload URL generated",
+        "Presigned upload POST generated",
         {"image_id": image_id, "object_key": object_key, "content_type": content_type},
     )
 
     return api_response(
         200,
         {
-            "upload_url": upload_url,
+            "upload_url": presigned_post["url"],
+            "upload_method": "POST",
+            "upload_form_fields": presigned_post["fields"],
             "image_id": image_id,
             "object_key": object_key,
-            "expires_in": 300,
+            "expires_in": UPLOAD_URL_EXPIRES_IN_SECONDS,
+            "max_upload_size_bytes": MAX_UPLOAD_SIZE_BYTES,
         },
     )
 

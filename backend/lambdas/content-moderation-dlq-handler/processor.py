@@ -1,16 +1,7 @@
 import json
-import boto3
-import os
 
 from common.logger import log
 from services import send_notification, store_failure
-
-TABLE_NAME = os.environ["TABLE_NAME"]
-SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN")
-
-dynamodb = boto3.resource("dynamodb")
-sns = boto3.client("sns")
-table = dynamodb.Table(TABLE_NAME)  # type: ignore
 
 
 def extract_dlq_messages(event):

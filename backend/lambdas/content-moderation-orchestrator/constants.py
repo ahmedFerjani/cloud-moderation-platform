@@ -1,6 +1,4 @@
 MIN_CONFIDENCE = 80
+MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024  # 5 MB
 
-ALLOWED_IMAGE_TYPES = [
-    "jpeg",
-    "png",
-]
+ALLOWED_IMAGE_TYPES = ["jpeg", "png"]

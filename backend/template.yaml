@@ -103,6 +103,7 @@ Resources:
               Effect: Allow
               Action:
                 - s3:GetObject
+                - s3:DeleteObject
               Resource: !Sub arn:aws:s3:::${BucketName}/uploads/*
             - Sid: DetectModerationLabels
               Effect: Allow

@@ -10,7 +10,7 @@ from decimal import Decimal
 from boto3.dynamodb.conditions import Key
 
 from common.exceptions import APPError
-from constants import ALLOWED_IMAGE_TYPES, MIN_CONFIDENCE
+from constants import ALLOWED_IMAGE_TYPES, MIN_CONFIDENCE, MAX_UPLOAD_SIZE_BYTES
 
 TABLE_NAME = os.environ["TABLE_NAME"]
 SNS_SUCCESS_TOPIC_ARN = os.environ.get("SNS_SUCCESS_TOPIC_ARN")
@@ -100,6 +100,24 @@ def download_image(bucket_name: str, object_key: str) -> bytes:
     s3_response = s3.get_object(Bucket=bucket_name, Key=object_key)
 
     return s3_response["Body"].read()
+
+
+def validate_upload_size(object_size: int):
+
+    if object_size <= 0:
+        raise APPError("INVALID_OBJECT_SIZE", "Uploaded object is empty", 400)
+
+    if object_size > MAX_UPLOAD_SIZE_BYTES:
+        raise APPError(
+            "UPLOAD_TOO_LARGE",
+            f"Uploaded object exceeds max size of {MAX_UPLOAD_SIZE_BYTES} bytes",
+            400,
+        )
+
+
+def delete_invalid_upload(bucket_name: str, object_key: str):
+
+    s3.delete_object(Bucket=bucket_name, Key=object_key)
 
 
 def validate_image(image_data: bytes) -> str:

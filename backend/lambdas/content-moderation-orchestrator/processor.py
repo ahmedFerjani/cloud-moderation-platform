@@ -1,27 +1,19 @@
 import json
-import boto3
-import os
 
 from common.logger import log
+from common.exceptions import APPError
 from services import (
+    delete_invalid_upload,
     detect_moderation_labels,
     download_image,
     extract_image_id_from_s3_key,
     send_success_notification,
     store_moderation_result,
     validate_image,
+    validate_upload_size,
     generate_image_hash,
     find_existing_image,
 )
-
-TABLE_NAME = os.environ["TABLE_NAME"]
-SNS_SUCCESS_TOPIC_ARN = os.environ.get("SNS_SUCCESS_TOPIC_ARN")
-
-rekognition = boto3.client("rekognition")
-s3 = boto3.client("s3")
-dynamodb = boto3.resource("dynamodb")
-sns = boto3.client("sns")
-table = dynamodb.Table(TABLE_NAME)  # type: ignore
 
 
 def extract_s3_records(event):
@@ -40,6 +32,8 @@ def process_moderation_event(event):
 
     total_records = len(s3_records)
     success_records = 0
+    duplicate_records = 0
+    rejected_records = 0
 
     log("INFO", "Moderation batch started", {"total_records": total_records})
 
@@ -56,54 +50,79 @@ def process_moderation_event(event):
 
         log("INFO", "Processing image START", ctx)
 
-        image_data = download_image(bucket_name, object_key)
+        try:
 
-        log("INFO", "Image downloaded", ctx)
+            object_size = int(s3_record["s3"]["object"].get("size") or 0)
+            validate_upload_size(object_size)
 
-        image_hash = generate_image_hash(image_data)
+            image_data = download_image(bucket_name, object_key)
 
-        log("INFO", "Image hash generated", {**ctx, "image_hash": image_hash})
+            log("INFO", "Image downloaded", {**ctx, "object_size": object_size})
 
-        existing_item = find_existing_image(image_hash)
+            image_hash = generate_image_hash(image_data)
 
-        if existing_item and existing_item["status"] != "failed":
+            log("INFO", "Image hash generated", {**ctx, "image_hash": image_hash})
+
+            existing_item = find_existing_image(image_hash)
+
+            if existing_item and existing_item["status"] != "failed":
+
+                log(
+                    "INFO",
+                    "Duplicate image detected",
+                    {**ctx, "existing_image_id": existing_item["image_id"]},
+                )
+
+                duplicate_records += 1
+
+                continue
+
+            image_type = validate_image(image_data)
+
+            log("INFO", "Image validated", {**ctx, "image_type": image_type})
+
+            moderation_labels = detect_moderation_labels(bucket_name, object_key)
 
             log(
                 "INFO",
-                "Duplicate image detected",
-                {**ctx, "existing_image_id": existing_item["image_id"]},
+                "Rekognition completed",
+                {**ctx, "labels_count": len(moderation_labels)},
             )
+
+            store_moderation_result(moderation_labels, object_key, image_hash)
+
+            log("INFO", "DynamoDB stored", ctx)
+
+            send_success_notification(object_key, moderation_labels)
+
+            log("INFO", "SNS sent", ctx)
 
             success_records += 1
 
-            continue
+            log("INFO", "Processing image END", ctx)
 
-        image_type = validate_image(image_data)
+        except APPError as e:
 
-        log("INFO", "Image validated", {**ctx, "image_type": image_type})
+            delete_invalid_upload(bucket_name, object_key)
 
-        moderation_labels = detect_moderation_labels(bucket_name, object_key)
+            rejected_records += 1
 
-        log(
-            "INFO",
-            "Rekognition completed",
-            {**ctx, "labels_count": len(moderation_labels)},
-        )
-
-        store_moderation_result(moderation_labels, object_key, image_hash)
-
-        log("INFO", "DynamoDB stored", ctx)
-
-        send_success_notification(object_key, moderation_labels)
-
-        log("INFO", "SNS sent", ctx)
-
-        success_records += 1
-
-        log("INFO", "Processing image END", ctx)
+            log(
+                "WARN",
+                f"Upload rejected and deleted: {e.message}",
+                {
+                    **ctx,
+                    "code": e.code,
+                },
+            )
 
     log(
         "INFO",
         "Moderation batch END",
-        {"total_records": total_records, "success_records": success_records},
+        {
+            "total_records": total_records,
+            "success_records": success_records,
+            "duplicate_records": duplicate_records,
+            "rejected_records": rejected_records,
+        },
     )

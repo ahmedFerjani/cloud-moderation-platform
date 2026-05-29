@@ -1,7 +1,7 @@
-ALLOWED_CONTENT_TYPES = [
-    "image/jpeg",
-    "image/png",
-]
+ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png"]
+
+UPLOAD_URL_EXPIRES_IN_SECONDS = 300
+MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024  # 5 MB
 
 DEFAULT_PAGE_SIZE = 20
 MAX_PAGE_SIZE = 100

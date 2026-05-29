@@ -6,6 +6,7 @@ from common.logger import log
 from services import (
     detect_moderation_labels,
     download_image,
+    extract_image_id_from_s3_key,
     send_success_notification,
     store_moderation_result,
     validate_image,
@@ -50,7 +51,7 @@ def process_moderation_event(event):
         ctx = {
             "bucket_name": bucket_name,
             "object_key": object_key,
-            "image_id": object_key.split("/")[-1],
+            "image_id": extract_image_id_from_s3_key(object_key),
         }
 
         log("INFO", "Processing image START", ctx)

@@ -22,6 +22,14 @@ sns = boto3.client("sns")
 table = dynamodb.Table(TABLE_NAME)  # type: ignore
 
 
+def extract_image_id_from_s3_key(object_key: str) -> str:
+
+    filename = object_key.rsplit("/", 1)[-1]
+    image_id, _ = os.path.splitext(filename)
+
+    return image_id
+
+
 def detect_moderation_labels(bucket_name: str, object_key: str) -> list:
 
     image = {"S3Object": {"Bucket": bucket_name, "Name": object_key}}
@@ -44,7 +52,7 @@ def detect_moderation_labels(bucket_name: str, object_key: str) -> list:
 
 def store_moderation_result(moderation_labels: list, object_key: str, image_hash: str):
 
-    image_id = object_key.split("/")[-1]
+    image_id = extract_image_id_from_s3_key(object_key)
 
     unsafe_detected = len(moderation_labels) > 0
     status = "unsafe" if unsafe_detected else "safe"
@@ -67,7 +75,7 @@ def send_success_notification(object_key: str, moderation_labels: list):
     if not SNS_SUCCESS_TOPIC_ARN:
         return
 
-    image_id = object_key.split("/")[-1]
+    image_id = extract_image_id_from_s3_key(object_key)
     unsafe_detected = len(moderation_labels) > 0
 
     sns.publish(

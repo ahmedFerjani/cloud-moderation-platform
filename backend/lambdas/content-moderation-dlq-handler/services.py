@@ -19,7 +19,10 @@ def extract_image_id(message: dict) -> str:
     if not object_key:
         return "unknown"
 
-    return object_key.split("/")[-1]
+    filename = object_key.rsplit("/", 1)[-1]
+    image_id = filename.rsplit(".", 1)[0]
+
+    return image_id
 
 
 def store_failure(message: dict):
@@ -30,6 +33,7 @@ def store_failure(message: dict):
         Item={
             "image_id": image_id,
             "s3_key": message.get("s3_key"),
+            "image_hash": message.get("image_hash"),
             "status": "failed",
             "failure_reason": message.get("error", "moved_to_dlq"),
             "timestamp": datetime.now().isoformat(),

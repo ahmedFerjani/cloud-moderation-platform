@@ -26,22 +26,29 @@ def generate_upload_url(body: dict) -> dict:
 
     extension = "jpg" if content_type == "image/jpeg" else "png"
 
-    image_id = f"uploads/{uuid.uuid4()}.{extension}"
+    image_id = str(uuid.uuid4())
+    object_key = f"uploads/{image_id}.{extension}"
 
     upload_url = s3.generate_presigned_url(
         ClientMethod="put_object",
-        Params={"Bucket": BUCKET_NAME, "Key": image_id, "ContentType": content_type},
+        Params={"Bucket": BUCKET_NAME, "Key": object_key, "ContentType": content_type},
         ExpiresIn=300,
     )
 
     log(
         "INFO",
         "Presigned upload URL generated",
-        {"image_id": image_id, "content_type": content_type},
+        {"image_id": image_id, "object_key": object_key, "content_type": content_type},
     )
 
     return api_response(
-        200, {"upload_url": upload_url, "image_id": image_id, "expires_in": 300}
+        200,
+        {
+            "upload_url": upload_url,
+            "image_id": image_id,
+            "object_key": object_key,
+            "expires_in": 300,
+        },
     )
 
 

@@ -9,6 +9,9 @@ Globals:
     MemorySize: 256
     Architectures:
       - arm64
+    Environment:
+      Variables:
+        CAPTURE_SAMPLE_EVENTS: "false"
 
 Parameters:
   TableName:

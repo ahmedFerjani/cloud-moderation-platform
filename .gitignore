@@ -77,8 +77,11 @@ ENV/
 # Ignore installed dependencies inside layers
 ############################################
 
-# Ignore built python dependencies in layers
-backend/layers/**/python/
+# Ignore built python dependencies in layers by default,
+# but keep checked-in shared layer source under common/
+backend/layers/**/python/*
+!backend/layers/**/python/common/
+!backend/layers/**/python/common/**
 
 # Ignore layer build outputs (if you use scripts)
 backend/layers/**/build/

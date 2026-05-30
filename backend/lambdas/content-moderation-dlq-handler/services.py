@@ -28,17 +28,21 @@ def extract_image_id(message: dict) -> str:
 def store_failure(message: dict):
 
     image_id = extract_image_id(message)
+    image_hash = message.get("image_hash")
 
-    table.put_item(
-        Item={
-            "image_id": image_id,
-            "s3_key": message.get("s3_key"),
-            "image_hash": message.get("image_hash"),
-            "status": "failed",
-            "failure_reason": message.get("error", "moved_to_dlq"),
-            "timestamp": datetime.now().isoformat(),
-        }
-    )
+    item = {
+        "image_id": image_id,
+        "s3_key": message.get("s3_key"),
+        "status": "failed",
+        "failure_reason": message.get("error", "moved_to_dlq"),
+        "timestamp": datetime.now().isoformat(),
+    }
+
+    # Only include image_hash when it is a valid string; NULL breaks the GSI key type.
+    if isinstance(image_hash, str) and image_hash.strip():
+        item["image_hash"] = image_hash
+
+    table.put_item(Item=item)
 
 
 def send_notification(message: dict):

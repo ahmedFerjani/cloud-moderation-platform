@@ -1,0 +1,58 @@
+{
+  "Records": [
+    {
+      "messageId": "<redacted>",
+      "receiptHandle": "<redacted>",
+      "body": {
+        "Records": [
+          {
+            "eventVersion": "2.1",
+            "eventSource": "aws:s3",
+            "awsRegion": "us-east-1",
+            "eventTime": "<redacted>",
+            "eventName": "ObjectCreated:Post",
+            "userIdentity": {
+              "principalId": "<redacted>"
+            },
+            "requestParameters": {
+              "sourceIPAddress": "<redacted>"
+            },
+            "responseElements": {
+              "x-amz-request-id": "<redacted>",
+              "x-amz-id-2": "<redacted>"
+            },
+            "s3": {
+              "s3SchemaVersion": "1.0",
+              "configurationId": "<normalized>",
+              "bucket": {
+                "name": "<normalized-bucket>",
+                "ownerIdentity": {
+                  "principalId": "<redacted>"
+                },
+                "arn": "arn:aws:s3:::<normalized-bucket>"
+              },
+              "object": {
+                "key": "uploads/sample-image.jpg",
+                "size": 365459,
+                "eTag": "<normalized>",
+                "versionId": "<normalized>",
+                "sequencer": "<normalized>"
+              }
+            }
+          }
+        ]
+      },
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "<redacted>",
+        "SenderId": "<redacted>",
+        "ApproximateFirstReceiveTimestamp": "<redacted>"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "<normalized>",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:<redacted>:<normalized-resource>",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

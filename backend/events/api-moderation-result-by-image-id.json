@@ -1,0 +1,40 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /moderation-results/{imageId}",
+  "rawPath": "/moderation-results/00000000-0000-0000-0000-000000000000",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br",
+    "content-length": "0",
+    "host": "<redacted>",
+    "postman-token": "<redacted>",
+    "user-agent": "<redacted>",
+    "x-amzn-trace-id": "<redacted>",
+    "x-forwarded-for": "<redacted>",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+    "accountId": "<redacted>",
+    "apiId": "<redacted>",
+    "domainName": "<redacted>",
+    "domainPrefix": "<redacted>",
+    "http": {
+      "method": "GET",
+      "path": "/moderation-results/00000000-0000-0000-0000-000000000000",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "<redacted>",
+      "userAgent": "<redacted>"
+    },
+    "requestId": "<redacted>",
+    "routeKey": "GET /moderation-results/{imageId}",
+    "stage": "$default",
+    "time": "<redacted>",
+    "timeEpoch": "<redacted>"
+  },
+  "pathParameters": {
+    "imageId": "00000000-0000-0000-0000-000000000000"
+  },
+  "isBase64Encoded": false
+}

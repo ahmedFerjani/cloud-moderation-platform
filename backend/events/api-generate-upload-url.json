@@ -1,0 +1,41 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /generate-upload-url",
+  "rawPath": "/generate-upload-url",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br",
+    "content-length": "36",
+    "content-type": "application/json",
+    "host": "<redacted>",
+    "postman-token": "<redacted>",
+    "user-agent": "<redacted>",
+    "x-amzn-trace-id": "<redacted>",
+    "x-forwarded-for": "<redacted>",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+    "accountId": "<redacted>",
+    "apiId": "<redacted>",
+    "domainName": "<redacted>",
+    "domainPrefix": "<redacted>",
+    "http": {
+      "method": "POST",
+      "path": "/generate-upload-url",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "<redacted>",
+      "userAgent": "<redacted>"
+    },
+    "requestId": "<redacted>",
+    "routeKey": "POST /generate-upload-url",
+    "stage": "$default",
+    "time": "<redacted>",
+    "timeEpoch": "<redacted>"
+  },
+  "body": {
+    "content_type": "image/jpeg"
+  },
+  "isBase64Encoded": false
+}

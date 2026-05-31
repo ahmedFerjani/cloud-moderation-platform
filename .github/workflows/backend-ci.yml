@@ -1,4 +1,4 @@
-name: Backend Unit Tests
+name: Backend Quality and Tests
 
 on:
   push:
@@ -12,8 +12,63 @@ on:
   workflow_dispatch:
 
 jobs:
-  backend-unit-tests:
+  backend-quality:
+    name: Backend Quality Checks
     runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements-test.txt
+
+      - name: Run ruff lint checks
+        run: ruff check backend/lambdas backend/tests backend/scripts backend/layers/serverless-utils-layer/python/common
+
+      - name: Run flake8 lint checks
+        env:
+          FLAKE8_MAX_LINE_LENGTH: "100"
+        run: |
+          flake8 \
+            --max-line-length="${FLAKE8_MAX_LINE_LENGTH}" \
+            backend/lambdas backend/tests backend/scripts \
+            backend/layers/serverless-utils-layer/python/common
+
+      - name: Run black formatting checks
+        env:
+          BLACK_LINE_LENGTH: "100"
+        run: |
+          black \
+            --check \
+            --line-length="${BLACK_LINE_LENGTH}" \
+            backend/lambdas backend/tests backend/scripts \
+            backend/layers/serverless-utils-layer/python/common
+
+      - name: Run pyright type checks
+        run: pyright --project pyrightconfig.json
+
+      - name: Run dependency vulnerability scan
+        run: pip-audit -r backend/requirements-test.txt
+
+      - name: Run static security scan
+        run: |
+          bandit -q -r \
+            backend/lambdas \
+            backend/scripts \
+            backend/layers/serverless-utils-layer/python/common
+
+  backend-unit-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-24.04-arm
+    needs: [backend-quality]
 
     steps:
       - name: Checkout repository
@@ -31,4 +86,3 @@ jobs:
 
       - name: Run backend unit tests
         run: python -m unittest discover -s backend/tests -p "test_*.py" -b
-

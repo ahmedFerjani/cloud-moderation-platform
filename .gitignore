@@ -97,3 +97,4 @@ backend/layers/**/dist/
 # Local CI tooling
 ############################################
 .actrc
+.flake8

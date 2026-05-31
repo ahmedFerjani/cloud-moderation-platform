@@ -1,0 +1,47 @@
+{
+  "include": [
+    "backend/lambdas",
+    "backend/tests",
+    "backend/scripts",
+    "backend/layers/serverless-utils-layer/python/common"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv",
+    "**/venv",
+    "backend/layers/image-processing-layer/python",
+    "**/node_modules",
+    "**/.*",
+    "test_env"
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "executionEnvironments": [
+    {
+      "root": "backend/lambdas/content-moderation-api",
+      "extraPaths": ["backend/layers/serverless-utils-layer/python"]
+    },
+    {
+      "root": "backend/lambdas/content-moderation-orchestrator",
+      "extraPaths": ["backend/layers/serverless-utils-layer/python"]
+    },
+    {
+      "root": "backend/lambdas/content-moderation-dlq-handler",
+      "extraPaths": ["backend/layers/serverless-utils-layer/python"]
+    },
+    {
+      "root": "backend/tests",
+      "extraPaths": [
+        "backend/tests",
+        "backend/lambdas/content-moderation-api",
+        "backend/lambdas/content-moderation-orchestrator",
+        "backend/lambdas/content-moderation-dlq-handler",
+        "backend/layers/serverless-utils-layer/python"
+      ]
+    },
+    {
+      "root": "backend/scripts",
+      "extraPaths": ["backend/layers/serverless-utils-layer/python"]
+    }
+  ]
+}

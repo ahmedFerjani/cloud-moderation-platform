@@ -1,3 +1,5 @@
+"""HTTP response helpers shared by API Lambda handlers."""
+
 import json
 import os
 from typing import Any

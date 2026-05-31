@@ -1,3 +1,5 @@
+"""Lightweight structured JSON logger for Lambda functions."""
+
 import json
 from typing import Any
 

@@ -1,3 +1,5 @@
+"""JSON encoders shared by Lambda responses and logs."""
+
 import json
 from decimal import Decimal
 

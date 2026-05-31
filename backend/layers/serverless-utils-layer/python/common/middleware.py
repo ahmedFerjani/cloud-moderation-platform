@@ -1,3 +1,5 @@
+"""Exception-handling decorators for API and worker Lambda handlers."""
+
 import json
 from typing import Callable, Any, Dict
 from functools import wraps

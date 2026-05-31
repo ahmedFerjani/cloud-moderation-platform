@@ -1,3 +1,11 @@
+"""Ingress event capture utilities for Lambda handlers.
+
+When CAPTURE_SAMPLE_EVENTS is enabled, incoming events are sanitized to redact
+sensitive and volatile metadata. In AWS, sanitized payloads are logged to
+CloudWatch. In local SAM runs, sanitized payloads are written to fixture files
+under events/captured for replay and tests.
+"""
+
 import json
 import os
 import re
@@ -41,6 +49,7 @@ VOLATILE_METADATA_KEYWORDS = {
     "senttimestamp",
     "sourceip",
     "user-agent",
+    "useragent",
     "time",
     "timeepoch",
     "x-amzn-trace-id",

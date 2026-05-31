@@ -1,0 +1,41 @@
+import json
+import os
+import sys
+from pathlib import Path
+
+from helpers import ensure_sys_path, find_backend_root, load_event, load_module
+
+BACKEND_ROOT = find_backend_root(Path(__file__))
+COMMON_PATH = BACKEND_ROOT / "layers" / "serverless-utils-layer" / "python"
+ORCHESTRATOR_PATH = BACKEND_ROOT / "lambdas" / "content-moderation-orchestrator"
+EVENTS_PATH = BACKEND_ROOT / "events"
+
+ensure_sys_path((COMMON_PATH, ORCHESTRATOR_PATH))
+
+os.environ.setdefault("AWS_EC2_METADATA_DISABLED", "true")
+os.environ.setdefault("TABLE_NAME", "test-table")
+
+
+def orchestrator_runtime_event() -> dict:
+    event = load_event(EVENTS_PATH, "orchestrator-sqs-event.json")
+    for record in event["Records"]:
+        # Lambda receives SQS body as a string; stored fixture keeps parsed JSON.
+        if isinstance(record.get("body"), dict):
+            record["body"] = json.dumps(record["body"])
+    return event
+
+
+orchestrator_services = load_module(
+    "orchestrator_services",
+    ORCHESTRATOR_PATH / "services.py",
+    # Prevent cross-test collision with other lambda constants modules.
+    clear_modules=("constants",),
+)
+sys.modules["services"] = orchestrator_services
+orchestrator_processor = load_module(
+    "orchestrator_processor", ORCHESTRATOR_PATH / "processor.py"
+)
+sys.modules["processor"] = orchestrator_processor
+orchestrator_handler = load_module(
+    "orchestrator_handler", ORCHESTRATOR_PATH / "handler.py"
+)

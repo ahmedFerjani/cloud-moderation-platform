@@ -13,7 +13,7 @@ on:
 
 jobs:
   backend-quality:
-    name: Backend Quality Checks
+    name: Quality Checks
     runs-on: ubuntu-24.04-arm
 
     steps:
@@ -24,23 +24,16 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: backend/requirements-ci.txt
 
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r backend/requirements-test.txt
+          pip install -r backend/requirements-ci.txt
 
       - name: Run ruff lint checks
         run: ruff check backend/lambdas backend/tests backend/scripts backend/layers/serverless-utils-layer/python/common
-
-      - name: Run flake8 lint checks
-        env:
-          FLAKE8_MAX_LINE_LENGTH: "100"
-        run: |
-          flake8 \
-            --max-line-length="${FLAKE8_MAX_LINE_LENGTH}" \
-            backend/lambdas backend/tests backend/scripts \
-            backend/layers/serverless-utils-layer/python/common
 
       - name: Run black formatting checks
         env:
@@ -52,23 +45,21 @@ jobs:
             backend/lambdas backend/tests backend/scripts \
             backend/layers/serverless-utils-layer/python/common
 
+      - name: Run flake8 lint checks
+        env:
+          FLAKE8_MAX_LINE_LENGTH: "100"
+        run: |
+          flake8 \
+            --max-line-length="${FLAKE8_MAX_LINE_LENGTH}" \
+            backend/lambdas backend/tests backend/scripts \
+            backend/layers/serverless-utils-layer/python/common
+
       - name: Run pyright type checks
         run: pyright --project pyrightconfig.json
 
-      - name: Run dependency vulnerability scan
-        run: pip-audit -r backend/requirements-test.txt
-
-      - name: Run static security scan
-        run: |
-          bandit -q -r \
-            backend/lambdas \
-            backend/scripts \
-            backend/layers/serverless-utils-layer/python/common
-
-  backend-unit-tests:
-    name: Backend Unit Tests
+  backend-security:
+    name: Security Checks
     runs-on: ubuntu-24.04-arm
-    needs: [backend-quality]
 
     steps:
       - name: Checkout repository
@@ -78,11 +69,44 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: backend/requirements-ci.txt
 
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r backend/requirements-test.txt
+          pip install -r backend/requirements-ci.txt
+
+      - name: Run dependency vulnerability scan
+        run: pip-audit -r backend/requirements-ci.txt
+
+      - name: Run static security scan
+        run: |
+          bandit -q -r \
+            backend/lambdas \
+            backend/scripts \
+            backend/layers/serverless-utils-layer/python/common
+
+  backend-unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-24.04-arm
+    needs: [backend-quality, backend-security]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: backend/requirements-ci.txt
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements-ci.txt
 
       - name: Run backend unit tests
         run: python -m unittest discover -s backend/tests -p "test_*.py" -b

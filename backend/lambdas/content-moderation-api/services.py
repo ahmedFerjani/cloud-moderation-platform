@@ -105,4 +105,7 @@ def parse_limit(params: dict) -> int:
 
         raise APPError("INVALID_LIMIT", "Limit must be a valid integer", 400)
 
+    if limit <= 0:
+        raise APPError("INVALID_LIMIT", "Limit must be greater than 0", 400)
+
     return min(limit, MAX_PAGE_SIZE)

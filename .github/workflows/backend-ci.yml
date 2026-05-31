@@ -1,4 +1,4 @@
-name: Backend Quality and Tests
+name: Backend CI
 
 on:
   push:

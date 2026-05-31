@@ -1,5 +1,6 @@
 """Application-specific exception types used across Lambda handlers."""
 
+
 class APPError(Exception):
 
     def __init__(

@@ -34,12 +34,8 @@ class EventFixturesSafetyTests(unittest.TestCase):
             all_strings = list(_iter_strings(payload))
 
             joined = "\n".join(all_strings)
-            self.assertIsNone(
-                ACCOUNT_ID_RE.search(joined), f"Raw account ID found in {path.name}"
-            )
-            self.assertIsNone(
-                IPV4_RE.search(joined), f"Raw IP address found in {path.name}"
-            )
+            self.assertIsNone(ACCOUNT_ID_RE.search(joined), f"Raw account ID found in {path.name}")
+            self.assertIsNone(IPV4_RE.search(joined), f"Raw IP address found in {path.name}")
             self.assertNotIn("image-labeling-queue", joined)
             self.assertNotIn("image-labeling-dlq", joined)
             self.assertNotIn("image-labels-", joined)

@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+import importlib
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -12,7 +13,7 @@ COMMON_LAYER_PATH = (
 if str(COMMON_LAYER_PATH) not in sys.path:
     sys.path.insert(0, str(COMMON_LAYER_PATH))
 
-from common import event_capture
+event_capture = importlib.import_module("common.event_capture")
 
 
 class EventCaptureSanitizationTests(unittest.TestCase):
@@ -41,12 +42,8 @@ class EventCaptureSanitizationTests(unittest.TestCase):
         sanitized = event_capture._sanitize(raw_event)
 
         self.assertEqual(sanitized["headers"]["host"], event_capture.REDACTED_VALUE)
-        self.assertEqual(
-            sanitized["headers"]["user-agent"], event_capture.REDACTED_VALUE
-        )
-        self.assertEqual(
-            sanitized["headers"]["x-forwarded-for"], event_capture.REDACTED_VALUE
-        )
+        self.assertEqual(sanitized["headers"]["user-agent"], event_capture.REDACTED_VALUE)
+        self.assertEqual(sanitized["headers"]["x-forwarded-for"], event_capture.REDACTED_VALUE)
         self.assertEqual(
             sanitized["requestContext"]["http"]["sourceIp"],
             event_capture.REDACTED_VALUE,
@@ -55,12 +52,8 @@ class EventCaptureSanitizationTests(unittest.TestCase):
             sanitized["requestContext"]["http"]["userAgent"],
             event_capture.REDACTED_VALUE,
         )
-        self.assertEqual(
-            sanitized["requestContext"]["requestId"], event_capture.REDACTED_VALUE
-        )
-        self.assertEqual(
-            sanitized["requestContext"]["time"], event_capture.REDACTED_VALUE
-        )
+        self.assertEqual(sanitized["requestContext"]["requestId"], event_capture.REDACTED_VALUE)
+        self.assertEqual(sanitized["requestContext"]["time"], event_capture.REDACTED_VALUE)
         self.assertEqual(sanitized["requestContext"]["http"]["method"], "POST")
 
         # Body JSON should be parsed and string account IDs should be masked.
@@ -74,9 +67,7 @@ class EventCaptureSanitizationTests(unittest.TestCase):
                 {
                     "receiptHandle": "AQEB123",
                     "body": {
-                        "Records": [
-                            {"requestParameters": {"sourceIPAddress": "196.178.216.60"}}
-                        ]
+                        "Records": [{"requestParameters": {"sourceIPAddress": "196.178.216.60"}}]
                     },
                     "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:image-queue",
                 }
@@ -106,9 +97,7 @@ class EventCaptureSanitizationTests(unittest.TestCase):
             clear=False,
         ):
             with patch("common.event_capture.log") as mock_log:
-                event_capture.capture_sample_event(
-                    "content-moderation-api", event, context
-                )
+                event_capture.capture_sample_event("content-moderation-api", event, context)
 
         mock_log.assert_called_once()
         _, _, extra = mock_log.call_args.args
@@ -131,13 +120,9 @@ class EventCaptureSanitizationTests(unittest.TestCase):
                 return_value="events/captured/sample.json",
             ) as mock_save:
                 with patch("common.event_capture.log") as mock_log:
-                    event_capture.capture_sample_event(
-                        "content-moderation-api", event, context
-                    )
+                    event_capture.capture_sample_event("content-moderation-api", event, context)
 
-        mock_save.assert_called_once_with(
-            "content-moderation-api", event, "req-local"
-        )
+        mock_save.assert_called_once_with("content-moderation-api", event, "req-local")
         mock_log.assert_called_once()
         _, _, extra = mock_log.call_args.args
         self.assertEqual(extra["lambda_name"], "content-moderation-api")
@@ -154,9 +139,7 @@ class EventCaptureSanitizationTests(unittest.TestCase):
             clear=False,
         ):
             with patch("common.event_capture.log") as mock_log:
-                event_capture.capture_sample_event(
-                    "content-moderation-api", event, context
-                )
+                event_capture.capture_sample_event("content-moderation-api", event, context)
 
         _, _, extra = mock_log.call_args.args
         self.assertEqual(extra["event_truncated"], 1)

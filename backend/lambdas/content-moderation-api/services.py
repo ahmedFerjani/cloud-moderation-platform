@@ -75,9 +75,7 @@ def get_moderation_result(image_id: str) -> dict:
 
     if not item:
 
-        raise APPError(
-            "MODERATION_RESULT_NOT_FOUND", "Moderation result not found", 404
-        )
+        raise APPError("MODERATION_RESULT_NOT_FOUND", "Moderation result not found", 404)
 
     return api_response(200, item)
 

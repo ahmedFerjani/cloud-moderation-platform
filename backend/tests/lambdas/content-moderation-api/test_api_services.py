@@ -40,9 +40,7 @@ class ApiServicesTests(unittest.TestCase):
                     "url": "https://example.com/upload",
                     "fields": {"Content-Type": "image/jpeg"},
                 }
-                response = api_services.generate_upload_url(
-                    {"content_type": "image/jpeg"}
-                )
+                response = api_services.generate_upload_url({"content_type": "image/jpeg"})
 
         body = json.loads(response["body"])
         self.assertEqual(response["statusCode"], 200)

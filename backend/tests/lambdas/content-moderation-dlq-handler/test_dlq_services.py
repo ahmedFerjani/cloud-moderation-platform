@@ -13,18 +13,14 @@ class DlqServicesTests(unittest.TestCase):
 
     def test_store_failure_omits_invalid_image_hash(self) -> None:
         with patch.object(dlq_services.table, "put_item") as mock_put:
-            dlq_services.store_failure(
-                {"s3_key": "uploads/img-1.jpg", "image_hash": None}
-            )
+            dlq_services.store_failure({"s3_key": "uploads/img-1.jpg", "image_hash": None})
             item = mock_put.call_args.kwargs["Item"]
 
         self.assertNotIn("image_hash", item)
 
     def test_store_failure_omits_whitespace_image_hash(self) -> None:
         with patch.object(dlq_services.table, "put_item") as mock_put:
-            dlq_services.store_failure(
-                {"s3_key": "uploads/img-1.jpg", "image_hash": "   "}
-            )
+            dlq_services.store_failure({"s3_key": "uploads/img-1.jpg", "image_hash": "   "})
             item = mock_put.call_args.kwargs["Item"]
 
         self.assertNotIn("image_hash", item)
@@ -58,9 +54,7 @@ class DlqServicesTests(unittest.TestCase):
         mock_publish.assert_not_called()
 
     def test_send_notification_publishes_when_topic_configured(self) -> None:
-        with patch.object(
-            dlq_services, "SNS_TOPIC_ARN", "arn:aws:sns:region:acct:topic"
-        ):
+        with patch.object(dlq_services, "SNS_TOPIC_ARN", "arn:aws:sns:region:acct:topic"):
             with patch.object(dlq_services.sns, "publish") as mock_publish:
                 dlq_services.send_notification(
                     {"s3_key": "uploads/img-1.jpg", "error": "moved_to_dlq"}

@@ -34,10 +34,6 @@ orchestrator_services = load_module(
     clear_modules=("constants",),
 )
 sys.modules["services"] = orchestrator_services
-orchestrator_processor = load_module(
-    "orchestrator_processor", ORCHESTRATOR_PATH / "processor.py"
-)
+orchestrator_processor = load_module("orchestrator_processor", ORCHESTRATOR_PATH / "processor.py")
 sys.modules["processor"] = orchestrator_processor
-orchestrator_handler = load_module(
-    "orchestrator_handler", ORCHESTRATOR_PATH / "handler.py"
-)
+orchestrator_handler = load_module("orchestrator_handler", ORCHESTRATOR_PATH / "handler.py")

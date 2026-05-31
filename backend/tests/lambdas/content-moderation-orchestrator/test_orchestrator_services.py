@@ -10,9 +10,7 @@ from _orchestrator_test_setup import orchestrator_services
 
 class OrchestratorServicesTests(unittest.TestCase):
     def test_extract_image_id_from_s3_key(self) -> None:
-        result = orchestrator_services.extract_image_id_from_s3_key(
-            "uploads/sample-image.jpg"
-        )
+        result = orchestrator_services.extract_image_id_from_s3_key("uploads/sample-image.jpg")
 
         self.assertEqual(result, "sample-image")
 
@@ -56,9 +54,7 @@ class OrchestratorServicesTests(unittest.TestCase):
                 ]
             }
 
-            labels = orchestrator_services.detect_moderation_labels(
-                "bucket", "uploads/a.jpg"
-            )
+            labels = orchestrator_services.detect_moderation_labels("bucket", "uploads/a.jpg")
 
         self.assertEqual(labels[0]["Name"], "Violence")
         self.assertEqual(labels[0]["Confidence"], Decimal("98.7"))

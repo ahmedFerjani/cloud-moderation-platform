@@ -14,9 +14,7 @@ class DlqHandlerTests(unittest.TestCase):
             with patch.object(dlq_handler, "process_dlq_event") as mock_process:
                 dlq_handler.lambda_handler(event, context)
 
-        mock_capture.assert_called_once_with(
-            "content-moderation-dlq-handler", event, context
-        )
+        mock_capture.assert_called_once_with("content-moderation-dlq-handler", event, context)
         mock_process.assert_called_once_with(event)
 
     def test_handler_reraises_app_error_from_processor(self) -> None:

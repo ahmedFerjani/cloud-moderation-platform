@@ -15,20 +15,14 @@ class OrchestratorProcessorTests(unittest.TestCase):
     def test_duplicate_image_skips_processing(self) -> None:
         event = orchestrator_runtime_event()
 
-        with patch.object(
-            orchestrator_processor, "download_image", return_value=b"img"
-        ):
-            with patch.object(
-                orchestrator_processor, "generate_image_hash", return_value="hash-1"
-            ):
+        with patch.object(orchestrator_processor, "download_image", return_value=b"img"):
+            with patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"):
                 with patch.object(
                     orchestrator_processor,
                     "find_existing_image",
                     return_value={"status": "safe", "image_id": "img-existing"},
                 ):
-                    with patch.object(
-                        orchestrator_processor, "validate_image"
-                    ) as mock_validate:
+                    with patch.object(orchestrator_processor, "validate_image") as mock_validate:
                         with patch.object(
                             orchestrator_processor, "detect_moderation_labels"
                         ) as mock_labels:
@@ -38,9 +32,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
                                 with patch.object(
                                     orchestrator_processor, "send_success_notification"
                                 ) as mock_notify:
-                                    orchestrator_processor.process_moderation_event(
-                                        event
-                                    )
+                                    orchestrator_processor.process_moderation_event(event)
 
         mock_validate.assert_not_called()
         mock_labels.assert_not_called()
@@ -55,9 +47,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
             "validate_upload_size",
             side_effect=orchestrator_processor.APPError("INVALID", "bad", 400),
         ):
-            with patch.object(
-                orchestrator_processor, "delete_invalid_upload"
-            ) as mock_delete:
+            with patch.object(orchestrator_processor, "delete_invalid_upload") as mock_delete:
                 orchestrator_processor.process_moderation_event(event)
 
         mock_delete.assert_called_once()
@@ -66,9 +56,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
         event = orchestrator_runtime_event()
 
         with patch.object(orchestrator_processor, "validate_upload_size"):
-            with patch.object(
-                orchestrator_processor, "download_image", return_value=b"img"
-            ):
+            with patch.object(orchestrator_processor, "download_image", return_value=b"img"):
                 with patch.object(
                     orchestrator_processor,
                     "generate_image_hash",
@@ -101,9 +89,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
                                             orchestrator_processor,
                                             "delete_invalid_upload",
                                         ) as mock_delete:
-                                            orchestrator_processor.process_moderation_event(
-                                                event
-                                            )
+                                            orchestrator_processor.process_moderation_event(event)
 
         mock_store.assert_called_once_with([], "uploads/sample-image.jpg", "hash-1")
         mock_notify.assert_called_once_with("uploads/sample-image.jpg", [])
@@ -113,9 +99,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
         event = orchestrator_runtime_event()
 
         with patch.object(orchestrator_processor, "validate_upload_size"):
-            with patch.object(
-                orchestrator_processor, "download_image", return_value=b"img"
-            ):
+            with patch.object(orchestrator_processor, "download_image", return_value=b"img"):
                 with patch.object(
                     orchestrator_processor,
                     "generate_image_hash",
@@ -147,9 +131,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
                                         orchestrator_processor,
                                         "send_success_notification",
                                     ) as mock_notify:
-                                        orchestrator_processor.process_moderation_event(
-                                            event
-                                        )
+                                        orchestrator_processor.process_moderation_event(event)
 
         mock_store.assert_called_once()
         mock_notify.assert_called_once()

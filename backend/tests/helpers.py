@@ -20,10 +20,12 @@ def load_module(name: str, path: Path, clear_modules: Iterable[str] | None = Non
     sys.modules.pop(name, None)
 
     spec = spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load module spec for {name} from {path}")
+
     module = module_from_spec(spec)
     sys.modules[name] = module
 
-    assert spec and spec.loader
     spec.loader.exec_module(module)
     return module
 

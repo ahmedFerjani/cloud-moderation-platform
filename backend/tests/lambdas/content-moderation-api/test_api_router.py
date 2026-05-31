@@ -9,9 +9,7 @@ class ApiRouterTests(unittest.TestCase):
     def test_post_generate_upload_route_uses_body(self) -> None:
         event = api_runtime_event("api-generate-upload-url.json")
 
-        with patch.object(
-            api_router, "generate_upload_url", return_value={"ok": True}
-        ) as mock_fn:
+        with patch.object(api_router, "generate_upload_url", return_value={"ok": True}) as mock_fn:
             result = api_router.route_request(event)
 
         self.assertEqual(result, {"ok": True})

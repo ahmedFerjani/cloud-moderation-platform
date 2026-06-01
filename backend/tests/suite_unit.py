@@ -9,7 +9,6 @@ if str(TESTS_ROOT) not in sys.path:
 
 TEST_DIRS = (
     TESTS_ROOT / "events",
-    TESTS_ROOT / "integration",
     TESTS_ROOT / "lambdas" / "content-moderation-api",
     TESTS_ROOT / "lambdas" / "content-moderation-orchestrator",
     TESTS_ROOT / "lambdas" / "content-moderation-dlq-handler",
@@ -30,4 +29,4 @@ def load_tests(loader, _standard_tests, _pattern):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(buffer=True)

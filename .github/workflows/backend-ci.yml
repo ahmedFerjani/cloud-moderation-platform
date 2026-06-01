@@ -99,13 +99,11 @@ jobs:
       - name: Install dependencies
         run: uv pip install --system -r backend/requirements-ci-security.txt
 
-      - name: Install osv-scanner
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/google/osv-scanner/main/install.sh | \
-            sh -s -- -b /usr/local/bin
-
       - name: Run dependency vulnerability scan
-        run: osv-scanner --lockfile backend/requirements-ci-tests.txt
+        uses: google/osv-scanner-action/osv-scanner-action@v2.3.8
+        with:
+          scan-args: |-
+            --lockfile=backend/requirements-ci-tests.txt
 
       - name: Run static security scan
         run: |

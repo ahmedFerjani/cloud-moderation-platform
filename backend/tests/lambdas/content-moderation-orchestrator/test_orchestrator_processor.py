@@ -5,6 +5,7 @@ from _orchestrator_test_setup import orchestrator_processor, orchestrator_runtim
 
 
 class OrchestratorProcessorTests(unittest.TestCase):
+    # Verifies S3 records are extracted correctly from SQS wrapper payloads.
     def test_extract_s3_records_from_sqs_payload(self) -> None:
         event = orchestrator_runtime_event()
         records = list(orchestrator_processor.extract_s3_records(event))
@@ -12,6 +13,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0]["eventSource"], "aws:s3")
 
+    # Verifies duplicate detections short-circuit downstream moderation work.
     def test_duplicate_image_skips_processing(self) -> None:
         event = orchestrator_runtime_event()
 
@@ -39,6 +41,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
         mock_store.assert_not_called()
         mock_notify.assert_not_called()
 
+    # Verifies business validation errors trigger cleanup by deleting the uploaded object.
     def test_app_error_path_deletes_invalid_upload(self) -> None:
         event = orchestrator_runtime_event()
 
@@ -52,6 +55,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
 
         mock_delete.assert_called_once()
 
+    # Verifies successful moderation stores results, emits notifications, and avoids deletion.
     def test_success_path_stores_and_notifies(self) -> None:
         event = orchestrator_runtime_event()
 
@@ -95,6 +99,7 @@ class OrchestratorProcessorTests(unittest.TestCase):
         mock_notify.assert_called_once_with("uploads/sample-image.jpg", [])
         mock_delete.assert_not_called()
 
+    # Verifies previously failed duplicates are retried instead of being skipped.
     def test_existing_failed_item_does_not_skip_processing(self) -> None:
         event = orchestrator_runtime_event()
 

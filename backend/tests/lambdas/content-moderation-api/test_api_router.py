@@ -6,6 +6,7 @@ from _api_test_setup import api_router, api_runtime_event
 
 
 class ApiRouterTests(unittest.TestCase):
+    # Verifies POST upload route parses body JSON and forwards payload to upload generation service.
     def test_post_generate_upload_route_uses_body(self) -> None:
         event = api_runtime_event("api-generate-upload-url.json")
 
@@ -15,6 +16,7 @@ class ApiRouterTests(unittest.TestCase):
         self.assertEqual(result, {"ok": True})
         mock_fn.assert_called_once_with({"content_type": "image/jpeg"})
 
+    # Verifies list route parses limit and forwards the normalized value to service layer.
     def test_get_results_route_calls_service_with_parsed_limit(self) -> None:
         event = api_runtime_event("api-moderation-results.json")
         event["queryStringParameters"] = {"limit": "5"}
@@ -27,6 +29,7 @@ class ApiRouterTests(unittest.TestCase):
         self.assertEqual(result, {"ok": True})
         mock_results.assert_called_once_with(5)
 
+    # Verifies by-ID route extracts image identifier and delegates to detail service.
     def test_get_by_id_route_calls_service(self) -> None:
         event = api_runtime_event("api-moderation-result-by-image-id.json")
 
@@ -38,6 +41,7 @@ class ApiRouterTests(unittest.TestCase):
         self.assertEqual(result, {"ok": True})
         mock_result.assert_called_once_with("00000000-0000-0000-0000-000000000000")
 
+    # Verifies upload route rejects requests with missing bodies.
     def test_missing_body_raises(self) -> None:
         event = api_runtime_event("api-generate-upload-url.json")
         event.pop("body", None)
@@ -47,6 +51,7 @@ class ApiRouterTests(unittest.TestCase):
 
         self.assertEqual(ctx.exception.code, "MISSING_REQUEST_BODY")
 
+    # Verifies malformed JSON bodies surface as decode errors for middleware translation.
     def test_invalid_json_body_raises_decode_error(self) -> None:
         event = api_runtime_event("api-generate-upload-url.json")
         event["body"] = "{bad-json"
@@ -54,6 +59,7 @@ class ApiRouterTests(unittest.TestCase):
         with self.assertRaises(json.JSONDecodeError):
             api_router.route_request(event)
 
+    # Verifies unknown method/path combinations are rejected with route-not-found errors.
     def test_unknown_route_raises_not_found(self) -> None:
         event = api_runtime_event("api-moderation-results.json")
         event["requestContext"]["http"]["method"] = "DELETE"

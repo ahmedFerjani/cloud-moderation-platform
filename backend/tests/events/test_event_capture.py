@@ -17,6 +17,7 @@ event_capture = importlib.import_module("common.event_capture")
 
 
 class EventCaptureSanitizationTests(unittest.TestCase):
+    # Verifies API Gateway event fields and JSON body values are sanitized before capture.
     def test_sanitize_api_gateway_fields_and_json_body(self) -> None:
         raw_event = {
             "headers": {
@@ -61,6 +62,7 @@ class EventCaptureSanitizationTests(unittest.TestCase):
         self.assertEqual(sanitized["body"]["content_type"], "image/jpeg")
         self.assertEqual(sanitized["body"]["account"], event_capture.REDACTED_VALUE)
 
+    # Verifies nested SQS payloads have sensitive handles, source IPs, and ARNs redacted.
     def test_sanitize_sqs_nested_source_ip_and_arns(self) -> None:
         raw_event = {
             "Records": [
@@ -87,6 +89,7 @@ class EventCaptureSanitizationTests(unittest.TestCase):
             "arn:aws:sqs:us-east-1:<redacted>:image-queue",
         )
 
+    # Verifies AWS mode captures the sanitized payload via structured logging.
     def test_capture_logs_json_payload_in_aws_mode(self) -> None:
         event = {"hello": "world"}
         context = SimpleNamespace(aws_request_id="req-123")
@@ -106,6 +109,7 @@ class EventCaptureSanitizationTests(unittest.TestCase):
         self.assertEqual(extra["event_payload"], event)
         self.assertEqual(extra["event_truncated"], 0)
 
+    # Verifies SAM local mode writes captured events to fixture files instead of logging payloads.
     def test_capture_saves_event_to_file_in_sam_local_mode(self) -> None:
         event = {"hello": "world"}
         context = SimpleNamespace(aws_request_id="req-local")
@@ -129,6 +133,7 @@ class EventCaptureSanitizationTests(unittest.TestCase):
         self.assertEqual(extra["aws_request_id"], "req-local")
         self.assertEqual(extra["event_file_path"], "events/captured/sample.json")
 
+    # Verifies oversized events are truncated to prevent noisy or oversized telemetry payloads.
     def test_capture_truncates_oversized_payload_in_aws_mode(self) -> None:
         event = {"items": ["x" * 100] * 300}
         context = SimpleNamespace(aws_request_id="req-large")

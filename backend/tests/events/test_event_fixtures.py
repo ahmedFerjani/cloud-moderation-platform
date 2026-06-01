@@ -28,6 +28,7 @@ def _load_fixture(name: str) -> dict[str, Any]:
 
 
 class EventFixturesSafetyTests(unittest.TestCase):
+    # Verifies all fixture files are scrubbed of raw account IDs, IPs, and legacy resource names.
     def test_all_fixtures_have_no_raw_account_ids_or_ips(self) -> None:
         for path in sorted(EVENTS_DIR.glob("*.json")):
             payload = json.loads(path.read_text(encoding="utf-8"))
@@ -40,6 +41,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
             self.assertNotIn("image-labeling-dlq", joined)
             self.assertNotIn("image-labels-", joined)
 
+    # Verifies API upload fixture includes expected redactions in request metadata.
     def test_api_generate_upload_fixture_redactions(self) -> None:
         payload = _load_fixture("api-generate-upload-url.json")
 
@@ -49,6 +51,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
         self.assertEqual(payload["requestContext"]["http"]["sourceIp"], "<redacted>")
         self.assertEqual(payload["requestContext"]["http"]["userAgent"], "<redacted>")
 
+    # Verifies image ID fixture values are normalized consistently across route and context fields.
     def test_api_moderation_by_image_id_fixture_is_normalized(self) -> None:
         payload = _load_fixture("api-moderation-result-by-image-id.json")
         expected_id = "00000000-0000-0000-0000-000000000000"
@@ -60,6 +63,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
         self.assertIn(expected_id, payload["rawPath"])
         self.assertIn(expected_id, payload["requestContext"]["http"]["path"])
 
+    # Verifies orchestrator fixture uses normalized identifiers while preserving expected payload shape.
     def test_orchestrator_fixture_resource_names_normalized(self) -> None:
         payload = _load_fixture("orchestrator-sqs-event.json")
         record = payload["Records"][0]
@@ -87,6 +91,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
             "arn:aws:sqs:us-east-1:<redacted>:<normalized-resource>",
         )
 
+    # Verifies DLQ fixture uses normalized queue resource identifiers.
     def test_dlq_fixture_resource_names_normalized(self) -> None:
         payload = _load_fixture("dlq-sqs-event.json")
         record = payload["Records"][0]
@@ -100,6 +105,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
             "arn:aws:sqs:us-east-1:<redacted>:<normalized-resource>",
         )
 
+    # Verifies upload fixture aligns with API router POST contract expectations.
     def test_api_post_fixture_matches_router_contract(self) -> None:
         payload = _load_fixture("api-generate-upload-url.json")
 
@@ -108,6 +114,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
         self.assertIn("body", payload)
         self.assertEqual(payload["body"]["content_type"], "image/jpeg")
 
+    # Verifies list fixture aligns with API router GET collection contract.
     def test_api_list_fixture_matches_router_contract(self) -> None:
         payload = _load_fixture("api-moderation-results.json")
 
@@ -115,6 +122,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
         self.assertEqual(payload["rawPath"], "/moderation-results")
         self.assertNotIn("pathParameters", payload)
 
+    # Verifies by-ID fixture aligns with API router path-parameter contract.
     def test_api_by_id_fixture_matches_router_contract(self) -> None:
         payload = _load_fixture("api-moderation-result-by-image-id.json")
 
@@ -123,6 +131,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
         self.assertIn("pathParameters", payload)
         self.assertIn("imageId", payload["pathParameters"])
 
+    # Verifies orchestrator fixture matches the processor's expected nested SQS-to-S3 structure.
     def test_orchestrator_fixture_matches_processor_contract(self) -> None:
         payload = _load_fixture("orchestrator-sqs-event.json")
         outer_record = payload["Records"][0]
@@ -135,6 +144,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
         self.assertIn("bucket", inner_record["s3"])
         self.assertIn("object", inner_record["s3"])
 
+    # Verifies DLQ fixture matches the processor contract for body and SQS attributes.
     def test_dlq_fixture_matches_processor_contract(self) -> None:
         payload = _load_fixture("dlq-sqs-event.json")
         outer_record = payload["Records"][0]

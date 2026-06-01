@@ -6,6 +6,7 @@ from _api_test_setup import api_handler, api_runtime_event
 
 
 class ApiHandlerTests(unittest.TestCase):
+    # Verifies the API handler captures sample events and delegates request routing.
     def test_handler_calls_capture_and_router(self) -> None:
         event = api_runtime_event("api-moderation-results.json")
         context = type("Ctx", (), {"aws_request_id": "req-1"})()
@@ -20,6 +21,7 @@ class ApiHandlerTests(unittest.TestCase):
         mock_capture.assert_called_once_with("content-moderation-api", event, context)
         mock_route.assert_called_once_with(event)
 
+    # Verifies JSON decode errors from routing are translated into the public 400 contract.
     def test_handler_returns_invalid_json_error_response(self) -> None:
         event = api_runtime_event("api-generate-upload-url.json")
         context = type("Ctx", (), {"aws_request_id": "req-1"})()

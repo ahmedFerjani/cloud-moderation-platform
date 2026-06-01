@@ -43,7 +43,10 @@ jobs:
             backend/requirements-ci-tests.txt
 
       - name: Install dependencies
-        run: uv pip install --system -r backend/requirements-ci-quality.txt
+        run: |
+          uv pip install --system \
+            -r backend/requirements-ci-quality.txt \
+            -r backend/requirements-ci-tests.txt
 
       - name: Run ruff lint checks
         run: ruff check backend/lambdas backend/tests backend/scripts backend/layers/serverless-utils-layer/python/common

@@ -1,0 +1,4 @@
+# Dependencies needed to run backend unit and integration tests in CI
+boto3==1.43.18
+# Keep this Pillow version in sync with backend/layers/image-processing-layer/requirements.txt
+Pillow==12.2.0

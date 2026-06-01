@@ -29,13 +29,16 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
-          cache: "pip"
-          cache-dependency-path: backend/requirements-ci.txt
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          uv-version: "0.8.22"
+          enable-cache: true
+          cache-dependency-glob: backend/requirements-ci-quality.txt
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements-ci.txt
+        run: uv pip install --system -r backend/requirements-ci-quality.txt
 
       - name: Run ruff lint checks
         run: ruff check backend/lambdas backend/tests backend/scripts backend/layers/serverless-utils-layer/python/common
@@ -75,16 +78,21 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
-          cache: "pip"
-          cache-dependency-path: backend/requirements-ci.txt
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          uv-version: "0.8.22"
+          enable-cache: true
+          cache-dependency-glob: |
+            backend/requirements-ci-security.txt
+            backend/requirements-ci-tests.txt
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements-ci.txt
+        run: uv pip install --system -r backend/requirements-ci-security.txt
 
       - name: Run dependency vulnerability scan
-        run: pip-audit -r backend/requirements-ci.txt
+        run: pip-audit -r backend/requirements-ci-tests.txt
 
       - name: Run static security scan
         run: |
@@ -106,13 +114,16 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
-          cache: "pip"
-          cache-dependency-path: backend/requirements-ci.txt
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          uv-version: "0.8.22"
+          enable-cache: true
+          cache-dependency-glob: backend/requirements-ci-tests.txt
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements-ci.txt
+        run: uv pip install --system -r backend/requirements-ci-tests.txt
 
       - name: Run backend unit tests
         run: python backend/tests/suite_unit.py
@@ -131,13 +142,16 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
-          cache: "pip"
-          cache-dependency-path: backend/requirements-ci.txt
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          uv-version: "0.8.22"
+          enable-cache: true
+          cache-dependency-glob: backend/requirements-ci-tests.txt
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements-ci.txt
+        run: uv pip install --system -r backend/requirements-ci-tests.txt
 
       - name: Run backend integration tests
         run: python backend/tests/suite_integration.py

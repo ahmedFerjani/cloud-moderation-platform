@@ -68,6 +68,8 @@ ENV/
 # Python - Cache & bytecode
 ############################################
 .pytest_cache/
+.coverage
+.coverage.*
 **/__pycache__/
 **/*.pyc
 **/*.pyo

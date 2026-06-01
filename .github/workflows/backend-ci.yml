@@ -144,6 +144,11 @@ jobs:
         run: |
           pytest \
             --override-ini="addopts=-ra --strict-config" \
+            --cov=backend/lambdas \
+            --cov=backend/layers/serverless-utils-layer/python/common \
+            --cov-report=term-missing \
+            --cov-report=xml:backend/test-reports/unit/coverage.xml \
+            --cov-fail-under=80 \
             backend/tests/events \
             backend/tests/lambdas/content-moderation-api \
             backend/tests/lambdas/content-moderation-orchestrator \
@@ -155,7 +160,7 @@ jobs:
         uses: dorny/test-reporter@v3
         with:
           name: Backend Unit Tests
-          path: backend/test-reports/unit/*.xml
+          path: backend/test-reports/unit/junit.xml
           reporter: java-junit
           fail-on-error: false
 

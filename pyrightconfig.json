@@ -14,8 +14,6 @@
     "**/.*",
     "test_env"
   ],
-  "venvPath": ".",
-  "venv": ".venv",
   "executionEnvironments": [
     {
       "root": "backend/lambdas/content-moderation-api",

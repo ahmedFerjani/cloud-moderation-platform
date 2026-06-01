@@ -27,7 +27,11 @@ def api_runtime_event(name: str) -> dict:
     return event
 
 
-api_services = load_module("api_services", API_PATH / "services.py")
+api_services = load_module(
+    "api_services",
+    API_PATH / "services.py",
+    clear_modules=("constants",),
+)
 sys.modules["services"] = api_services
 api_router = load_module("api_router", API_PATH / "router.py")
 sys.modules["router"] = api_router

@@ -31,7 +31,11 @@ def dlq_runtime_event() -> dict:
     return event
 
 
-dlq_services = load_module("dlq_services", DLQ_PATH / "services.py")
+dlq_services = load_module(
+    "dlq_services",
+    DLQ_PATH / "services.py",
+    clear_modules=("constants",),
+)
 sys.modules["services"] = dlq_services
 dlq_processor = load_module("dlq_processor", DLQ_PATH / "processor.py")
 sys.modules["processor"] = dlq_processor

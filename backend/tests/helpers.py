@@ -9,8 +9,9 @@ from typing import Iterable
 def ensure_sys_path(paths: Iterable[Path]) -> None:
     for path in paths:
         text = str(path)
-        if text not in sys.path:
-            sys.path.insert(0, text)
+        while text in sys.path:
+            sys.path.remove(text)
+        sys.path.insert(0, text)
 
 
 # Loads modules from explicit file paths with optional dependency cache clearing.

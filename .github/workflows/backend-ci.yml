@@ -131,7 +131,32 @@ jobs:
         run: uv pip install --system -r backend/requirements-ci-tests.txt
 
       - name: Run backend unit tests
-        run: python backend/tests/suite_unit.py
+        run: |
+          pytest \
+            --override-ini="addopts=-ra --strict-config" \
+            backend/tests/events \
+            backend/tests/lambdas/content-moderation-api \
+            backend/tests/lambdas/content-moderation-orchestrator \
+            backend/tests/lambdas/content-moderation-dlq-handler \
+            --junitxml=backend/test-reports/unit/junit.xml
+
+      - name: Publish unit test report
+        if: always()
+        uses: dorny/test-reporter@v3
+        with:
+          name: Backend Unit Tests
+          path: backend/test-reports/unit/*.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Upload unit test XML on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-unit-test-report-failed-${{ github.run_attempt }}
+          path: backend/test-reports/unit/*.xml
+          if-no-files-found: warn
+          retention-days: 7
 
   backend-integration-tests:
     name: Integration Tests
@@ -159,4 +184,22 @@ jobs:
         run: uv pip install --system -r backend/requirements-ci-tests.txt
 
       - name: Run backend integration tests
-        run: python backend/tests/suite_integration.py
+        run: pytest --override-ini="addopts=-ra --strict-config" backend/tests/integration --junitxml=backend/test-reports/integration/junit.xml
+
+      - name: Publish integration test report
+        if: always()
+        uses: dorny/test-reporter@v3
+        with:
+          name: Backend Integration Tests
+          path: backend/test-reports/integration/*.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Upload integration test XML on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-integration-test-report-failed-${{ github.run_attempt }}
+          path: backend/test-reports/integration/*.xml
+          if-no-files-found: warn
+          retention-days: 7

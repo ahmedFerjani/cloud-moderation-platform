@@ -1,5 +1,8 @@
 name: Backend CI
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   push:
     paths:
@@ -31,11 +34,13 @@ jobs:
           python-version: "3.14"
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          uv-version: "0.8.22"
+          version: "0.8.22"
           enable-cache: true
-          cache-dependency-glob: backend/requirements-ci-quality.txt
+          cache-dependency-glob: |
+            backend/requirements-ci-quality.txt
+            backend/requirements-ci-tests.txt
 
       - name: Install dependencies
         run: uv pip install --system -r backend/requirements-ci-quality.txt
@@ -80,9 +85,9 @@ jobs:
           python-version: "3.14"
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          uv-version: "0.8.22"
+          version: "0.8.22"
           enable-cache: true
           cache-dependency-glob: |
             backend/requirements-ci-security.txt
@@ -116,9 +121,9 @@ jobs:
           python-version: "3.14"
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          uv-version: "0.8.22"
+          version: "0.8.22"
           enable-cache: true
           cache-dependency-glob: backend/requirements-ci-tests.txt
 
@@ -144,9 +149,9 @@ jobs:
           python-version: "3.14"
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          uv-version: "0.8.22"
+          version: "0.8.22"
           enable-cache: true
           cache-dependency-glob: backend/requirements-ci-tests.txt
 

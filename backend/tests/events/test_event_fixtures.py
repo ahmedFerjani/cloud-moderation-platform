@@ -63,7 +63,7 @@ class EventFixturesSafetyTests(unittest.TestCase):
         self.assertIn(expected_id, payload["rawPath"])
         self.assertIn(expected_id, payload["requestContext"]["http"]["path"])
 
-    # Verifies orchestrator fixture uses normalized identifiers while preserving expected payload shape.
+    # Checks orchestrator fixture normalizeation.
     def test_orchestrator_fixture_resource_names_normalized(self) -> None:
         payload = _load_fixture("orchestrator-sqs-event.json")
         record = payload["Records"][0]

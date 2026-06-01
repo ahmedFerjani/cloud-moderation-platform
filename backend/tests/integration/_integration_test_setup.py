@@ -4,11 +4,12 @@ import os
 import sys
 from pathlib import Path
 
+from helpers import ensure_sys_path, find_backend_root, load_event, load_module
+
 TESTS_ROOT = Path(__file__).resolve().parents[1]
 if str(TESTS_ROOT) not in sys.path:
     sys.path.insert(0, str(TESTS_ROOT))
 
-from helpers import ensure_sys_path, find_backend_root, load_event, load_module
 
 BACKEND_ROOT = find_backend_root(Path(__file__))
 COMMON_PATH = BACKEND_ROOT / "layers" / "serverless-utils-layer" / "python"

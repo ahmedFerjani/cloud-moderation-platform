@@ -97,7 +97,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
         self.assertTrue(notification["unsafe_detected"])
         self.assertEqual(notification["labels_count"], 1)
 
-    # Verifies duplicate uploads are short-circuited without rewriting state or sending notifications.
+    # Checks duplicate uploads are skipped.
     def test_orchestrator_handler_skips_duplicate_image_end_to_end(self) -> None:
         services, _processor, handler = load_orchestrator_stack()
         service_module = cast(Any, services)

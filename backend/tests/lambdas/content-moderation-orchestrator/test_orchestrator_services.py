@@ -9,11 +9,13 @@ from _orchestrator_test_setup import orchestrator_services
 
 
 class OrchestratorServicesTests(unittest.TestCase):
+    # Verifies image IDs are derived from S3 object keys consistently.
     def test_extract_image_id_from_s3_key(self) -> None:
         result = orchestrator_services.extract_image_id_from_s3_key("uploads/sample-image.jpg")
 
         self.assertEqual(result, "sample-image")
 
+    # Verifies upload size validation rejects empty/oversized files and accepts valid boundaries.
     def test_validate_upload_size_boundaries(self) -> None:
         with self.assertRaises(orchestrator_services.APPError):
             orchestrator_services.validate_upload_size(0)
@@ -23,6 +25,7 @@ class OrchestratorServicesTests(unittest.TestCase):
 
         orchestrator_services.validate_upload_size(1)
 
+    # Verifies stored moderation status toggles between safe and unsafe based on labels.
     def test_store_moderation_result_status_safe_or_unsafe(self) -> None:
         with patch.object(orchestrator_services.table, "put_item") as mock_put:
             orchestrator_services.store_moderation_result([], "uploads/a.jpg", "hash-1")
@@ -40,6 +43,7 @@ class OrchestratorServicesTests(unittest.TestCase):
         self.assertEqual(second_item["status"], "unsafe")
         self.assertTrue(second_item["unsafe_detected"])
 
+    # Verifies Rekognition confidence values are normalized to Decimal for DynamoDB compatibility.
     def test_detect_moderation_labels_maps_confidence_to_decimal(self) -> None:
         with patch.object(
             orchestrator_services.rekognition, "detect_moderation_labels"
@@ -64,6 +68,7 @@ class OrchestratorServicesTests(unittest.TestCase):
             MinConfidence=orchestrator_services.MIN_CONFIDENCE,
         )
 
+    # Verifies success notifications are skipped when topic configuration is absent.
     def test_send_success_notification_skips_without_topic(self) -> None:
         with patch.object(orchestrator_services, "SNS_SUCCESS_TOPIC_ARN", None):
             with patch.object(orchestrator_services.sns, "publish") as mock_publish:
@@ -71,6 +76,7 @@ class OrchestratorServicesTests(unittest.TestCase):
 
         mock_publish.assert_not_called()
 
+    # Verifies success notifications include the expected envelope and moderation summary payload.
     def test_send_success_notification_publishes_payload(self) -> None:
         with patch.object(
             orchestrator_services,
@@ -97,6 +103,7 @@ class OrchestratorServicesTests(unittest.TestCase):
         self.assertTrue(payload["unsafe_detected"])
         self.assertEqual(payload["labels_count"], 1)
 
+    # Verifies image download reads bytes from the S3 object body stream.
     def test_download_image_reads_s3_body(self) -> None:
         body = SimpleNamespace(read=lambda: b"img-bytes")
         with patch.object(
@@ -107,12 +114,14 @@ class OrchestratorServicesTests(unittest.TestCase):
         self.assertEqual(result, b"img-bytes")
         mock_get.assert_called_once_with(Bucket="bucket", Key="uploads/a.jpg")
 
+    # Verifies invalid uploads are deleted from S3 with the expected bucket and key.
     def test_delete_invalid_upload_calls_s3_delete(self) -> None:
         with patch.object(orchestrator_services.s3, "delete_object") as mock_delete:
             orchestrator_services.delete_invalid_upload("bucket", "uploads/a.jpg")
 
         mock_delete.assert_called_once_with(Bucket="bucket", Key="uploads/a.jpg")
 
+    # Verifies non-image payloads raise the invalid-image business error.
     def test_validate_image_invalid_file_raises(self) -> None:
         with patch.object(orchestrator_services.Image, "open", side_effect=Exception):
             with self.assertRaises(orchestrator_services.APPError) as ctx:
@@ -120,6 +129,7 @@ class OrchestratorServicesTests(unittest.TestCase):
 
         self.assertEqual(ctx.exception.code, "INVALID_IMAGE_FILE")
 
+    # Verifies unsupported formats raise the unsupported-image-type business error.
     def test_validate_image_unsupported_type_raises(self) -> None:
         fake_image = SimpleNamespace(format="GIF")
         with patch.object(orchestrator_services.Image, "open", return_value=fake_image):
@@ -128,6 +138,7 @@ class OrchestratorServicesTests(unittest.TestCase):
 
         self.assertEqual(ctx.exception.code, "UNSUPPORTED_IMAGE_TYPE")
 
+    # Verifies supported image formats are normalized to lowercase canonical values.
     def test_validate_image_supported_type_returns_lowercase(self) -> None:
         fake_image = SimpleNamespace(format="JPEG")
         with patch.object(orchestrator_services.Image, "open", return_value=fake_image):
@@ -135,12 +146,14 @@ class OrchestratorServicesTests(unittest.TestCase):
 
         self.assertEqual(result, "jpeg")
 
+    # Verifies hash generation is deterministic for a given byte payload.
     def test_generate_image_hash_is_deterministic(self) -> None:
         data = b"abc"
         expected = hashlib.sha256(data).hexdigest()
 
         self.assertEqual(orchestrator_services.generate_image_hash(data), expected)
 
+    # Verifies duplicate lookup returns None when no hash match exists.
     def test_find_existing_image_returns_none_when_missing(self) -> None:
         with patch.object(
             orchestrator_services.table, "query", return_value={"Items": []}
@@ -151,6 +164,7 @@ class OrchestratorServicesTests(unittest.TestCase):
         self.assertEqual(mock_query.call_args.kwargs["IndexName"], "image_hash")
         self.assertEqual(mock_query.call_args.kwargs["Limit"], 1)
 
+    # Verifies duplicate lookup returns only the first match from the image-hash index query.
     def test_find_existing_image_returns_first_item(self) -> None:
         expected = {"image_id": "img-1", "status": "safe"}
         with patch.object(

@@ -11,10 +11,15 @@ on:
       - ".github/workflows/backend-ci.yml"
   workflow_dispatch:
 
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend-quality:
     name: Quality Checks
     runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository
@@ -60,6 +65,7 @@ jobs:
   backend-security:
     name: Security Checks
     runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository
@@ -90,6 +96,7 @@ jobs:
   backend-unit-tests:
     name: Unit Tests
     runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository
@@ -114,6 +121,7 @@ jobs:
     name: Integration Tests
     runs-on: ubuntu-24.04-arm
     needs: [backend-quality, backend-security, backend-unit-tests]
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository

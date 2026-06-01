@@ -27,7 +27,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: backend/requirements-ci.txt
 
-      - name: Install test dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements-ci.txt
@@ -72,7 +72,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: backend/requirements-ci.txt
 
-      - name: Install test dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements-ci.txt
@@ -90,7 +90,6 @@ jobs:
   backend-unit-tests:
     name: Unit Tests
     runs-on: ubuntu-24.04-arm
-    needs: [backend-quality, backend-security]
 
     steps:
       - name: Checkout repository
@@ -103,10 +102,34 @@ jobs:
           cache: "pip"
           cache-dependency-path: backend/requirements-ci.txt
 
-      - name: Install test dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements-ci.txt
 
       - name: Run backend unit tests
-        run: python -m unittest discover -s backend/tests -p "test_*.py" -b
+        run: python backend/tests/suite_unit.py
+
+  backend-integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-24.04-arm
+    needs: [backend-quality, backend-security, backend-unit-tests]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: backend/requirements-ci.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements-ci.txt
+
+      - name: Run backend integration tests
+        run: python backend/tests/suite_integration.py

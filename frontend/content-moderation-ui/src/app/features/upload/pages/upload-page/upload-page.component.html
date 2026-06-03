@@ -1,1 +1,65 @@
-<p>upload-page works!</p>
+<section class="upload-page">
+  <header class="upload-page__header">
+    <h2>Image Intake</h2>
+    <p>Submit one image for automated moderation checks.</p>
+  </header>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Submit for Moderation</mat-card-title>
+      <mat-card-subtitle id="upload-accepted-format">
+        Accepted formats: JPG, PNG, WEBP (max 10 MB)
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="upload-card__content">
+      <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+
+      <button
+        class="upload-picker"
+        [class.upload-picker--active]="isDragActive()"
+        mat-stroked-button
+        type="button"
+        aria-describedby="upload-accepted-format"
+        (click)="fileInput.click()"
+        (dragover)="onPickerDragOver($event)"
+        (dragleave)="onPickerDragLeave($event)"
+        (drop)="onPickerDrop($event)"
+      >
+        <mat-icon aria-hidden="true">add_photo_alternate</mat-icon>
+        <span class="upload-picker__copy">
+          <span>Drag and drop image here</span>
+          <span>or click to browse files</span>
+        </span>
+      </button>
+
+      @if (selectedFileName(); as fileName) {
+        <div class="file-preview" aria-live="polite">
+          <div class="file-preview__meta">
+            @if (selectedFilePreviewUrl(); as previewUrl) {
+              <img class="file-preview__image" [src]="previewUrl" alt="Selected file preview" />
+            }
+            <div>
+              <p class="file-preview__name">{{ fileName }}</p>
+              @if (selectedFileSizeLabel(); as sizeLabel) {
+                <p class="file-preview__size">{{ sizeLabel }}</p>
+              }
+            </div>
+          </div>
+
+          <button mat-button type="button" (click)="clearSelectedFile(fileInput)">
+            Remove
+          </button>
+        </div>
+      } @else {
+        <p class="upload-hint" aria-live="polite">No image selected yet.</p>
+      }
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-flat-button type="button" [disabled]="!selectedFileName()" (click)="onUpload()">
+        Upload for Review
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</section>

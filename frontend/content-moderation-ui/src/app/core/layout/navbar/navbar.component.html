@@ -1,0 +1,20 @@
+<mat-toolbar>
+  <a mat-button routerLink="/" aria-label="Go to home">
+    <mat-icon aria-hidden="true">shield</mat-icon>
+    <span>Content Moderation Platform</span>
+  </a>
+
+  <span class="spacer"></span>
+
+  <nav aria-label="Primary navigation">
+    <a
+      mat-stroked-button
+      routerLink="/upload"
+      routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <mat-icon aria-hidden="true">cloud_upload</mat-icon>
+      <span>Upload</span>
+    </a>
+  </nav>
+</mat-toolbar>

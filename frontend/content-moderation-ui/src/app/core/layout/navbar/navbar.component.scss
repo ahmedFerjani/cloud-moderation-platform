@@ -1,0 +1,22 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+mat-toolbar {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+mat-toolbar a[mat-button] {
+  color: inherit;
+}
+
+mat-toolbar a[mat-stroked-button] {
+  border-color: color-mix(in srgb, var(--mat-sys-on-primary) 35%, transparent);
+  color: inherit;
+}
+
+.active-link {
+  border-color: var(--mat-sys-on-primary);
+  background-color: color-mix(in srgb, var(--mat-sys-on-primary) 16%, transparent);
+}

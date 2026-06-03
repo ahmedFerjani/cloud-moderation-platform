@@ -13,7 +13,7 @@ export const routes: Routes = [
       },
       {
         path: 'upload',
-        loadChildren: () => import('./features/upload/routes').then((m) => m.routes),
+        loadChildren: () => import('./features/upload/upload.routes').then((m) => m.routes),
       },
     ],
   },

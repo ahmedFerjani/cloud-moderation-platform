@@ -8,12 +8,12 @@
     <mat-card-header>
       <mat-card-title>Submit for Moderation</mat-card-title>
       <mat-card-subtitle id="upload-accepted-format">
-        Accepted formats: JPG, PNG, WEBP (max 10 MB)
+        Accepted formats: JPG, PNG (max 10 MB)
       </mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content class="upload-card__content">
-      <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+      <input #fileInput type="file" accept="image/jpeg,image/png" hidden (change)="onFileSelected($event)" />
 
       <button
         class="upload-picker"
@@ -21,6 +21,7 @@
         mat-stroked-button
         type="button"
         aria-describedby="upload-accepted-format"
+        [disabled]="isUploading()"
         (click)="fileInput.click()"
         (dragover)="onPickerDragOver($event)"
         (dragleave)="onPickerDragLeave($event)"
@@ -47,17 +48,34 @@
             </div>
           </div>
 
-          <button mat-button type="button" (click)="clearSelectedFile(fileInput)">
-            Remove
-          </button>
+          <button mat-button type="button" (click)="clearSelectedFile(fileInput)">Remove</button>
         </div>
       } @else {
         <p class="upload-hint" aria-live="polite">No image selected yet.</p>
       }
+
+      @if (uploadStatusMessage(); as statusMessage) {
+        <p class="upload-status" aria-live="polite">{{ statusMessage }}</p>
+      }
+
+      @if (isUploading()) {
+        <div class="upload-progress" aria-live="polite" aria-label="Upload progress">
+          @if (uploadProgressPercent() !== null) {
+            <mat-progress-bar mode="determinate" [value]="uploadProgressPercent() ?? 0"></mat-progress-bar>
+            <p class="upload-progress__label">{{ uploadProgressPercent() ?? 0 }}%</p>
+          } @else {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+        </div>
+      }
+
+      @if (uploadErrorMessage(); as errorMessage) {
+        <p class="upload-error" aria-live="assertive">{{ errorMessage }}</p>
+      }
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-flat-button type="button" [disabled]="!selectedFileName()" (click)="onUpload()">
+      <button mat-flat-button type="button" [disabled]="!selectedFileName() || isUploading()" (click)="onUpload()">
         Upload for Review
       </button>
     </mat-card-actions>

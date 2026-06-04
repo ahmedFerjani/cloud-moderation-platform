@@ -95,6 +95,32 @@ mat-card-subtitle {
   color: var(--mat-sys-on-surface-variant);
 }
 
+.upload-status,
+.upload-error {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.upload-status {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.upload-progress {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.upload-progress__label {
+  margin: 0;
+  justify-self: end;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.8125rem;
+}
+
+.upload-error {
+  color: var(--mat-sys-error);
+}
+
 mat-card-actions {
   justify-content: center;
   padding: 0 1rem 1rem;

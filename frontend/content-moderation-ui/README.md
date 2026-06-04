@@ -54,6 +54,21 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## API Proxy Configuration (Development)
+
+The app uses `/api` as the frontend base path for backend calls.
+
+- `proxy.conf.json` is a committed template with placeholder target values.
+- `proxy.conf.local.json` is your machine-local file with the real backend target.
+- `proxy.conf.local.json` is gitignored and must not be committed.
+- `angular.json` uses `proxy.conf.local.json` during `ng serve`.
+
+Local setup:
+
+1. Open `proxy.conf.local.json`.
+2. Set `target` to your AWS API base URL (including stage if required).
+3. Restart `ng serve` after updating proxy settings.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

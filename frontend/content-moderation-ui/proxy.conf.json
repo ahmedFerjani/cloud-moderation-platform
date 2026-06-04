@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://REPLACE_WITH_YOUR_AWS_API_BASE_URL",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    },
+    "logLevel": "debug"
+  }
+}

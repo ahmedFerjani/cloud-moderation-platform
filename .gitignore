@@ -97,6 +97,11 @@ backend/layers/**/dist/
 *.log
 
 ############################################
+# Frontend local proxy config
+############################################
+frontend/content-moderation-ui/proxy.conf.local.json
+
+############################################
 # Local CI tooling
 ############################################
 .actrc

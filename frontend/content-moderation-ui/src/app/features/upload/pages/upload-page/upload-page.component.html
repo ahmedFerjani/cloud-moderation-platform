@@ -13,7 +13,13 @@
     </mat-card-header>
 
     <mat-card-content class="upload-card__content">
-      <input #fileInput type="file" accept="image/jpeg,image/png" hidden (change)="onFileSelected($event)" />
+      <input
+        #fileInput
+        type="file"
+        accept="image/jpeg,image/png"
+        hidden
+        (change)="onFileSelected($event)"
+      />
 
       <button
         class="upload-picker"
@@ -61,7 +67,10 @@
       @if (isUploading()) {
         <div class="upload-progress" aria-live="polite" aria-label="Upload progress">
           @if (uploadProgressPercent() !== null) {
-            <mat-progress-bar mode="determinate" [value]="uploadProgressPercent() ?? 0"></mat-progress-bar>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="uploadProgressPercent() ?? 0"
+            ></mat-progress-bar>
             <p class="upload-progress__label">{{ uploadProgressPercent() ?? 0 }}%</p>
           } @else {
             <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -75,7 +84,12 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-flat-button type="button" [disabled]="!selectedFileName() || isUploading()" (click)="onUpload()">
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="!selectedFileName() || isUploading()"
+        (click)="onUpload()"
+      >
         Upload for Review
       </button>
     </mat-card-actions>

@@ -81,7 +81,9 @@ export class UploadPageComponent {
     this.isUploading.set(true);
 
     try {
-      const presignedPost = await firstValueFrom(this.uploadApiService.generateUploadUrl(file.type));
+      const presignedPost = await firstValueFrom(
+        this.uploadApiService.generateUploadUrl(file.type),
+      );
 
       this.uploadStatusMessage.set('Uploading image to secure storage...');
       this.uploadProgressPercent.set(0);

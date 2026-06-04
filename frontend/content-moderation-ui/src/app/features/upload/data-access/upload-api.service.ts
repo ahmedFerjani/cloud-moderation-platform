@@ -31,7 +31,7 @@ export class UploadApiService {
 
     return this.http.post<GenerateUploadUrlResponse>(
       `${this.apiBaseUrl}/generate-upload-url`,
-      payload
+      payload,
     );
   }
 

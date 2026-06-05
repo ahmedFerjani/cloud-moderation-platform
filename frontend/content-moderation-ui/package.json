@@ -10,7 +10,17 @@
     "prettier:check": "prettier . --check",
     "prettier:write": "prettier . --write",
     "lint": "ng lint",
-    "lint:fix": "ng lint --fix"
+    "lint:fix": "ng lint --fix",
+    "lint:ci": "ng lint --max-warnings=0",
+    "prepare": "cd ../.. && husky frontend/content-moderation-ui/.husky"
+  },
+  "lint-staged": {
+    "*.{ts,html,scss,css,json,md}": [
+      "prettier --write"
+    ],
+    "*.{ts,html}": [
+      "eslint --fix --max-warnings=0"
+    ]
   },
   "private": true,
   "packageManager": "npm@11.13.0",
@@ -33,7 +43,9 @@
     "@eslint/js": "^10.0.1",
     "angular-eslint": "21.4.0",
     "eslint": "^10.3.0",
+    "husky": "^9.1.7",
     "jsdom": "^28.0.0",
+    "lint-staged": "^17.0.7",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
     "typescript-eslint": "8.59.2",

@@ -7,7 +7,7 @@
 />
 
 <button
-  class="upload-picker"
+  class="upload-picker grid min-h-44 w-full justify-items-center gap-1.5 p-4 text-center"
   [class.upload-picker--active]="isDragActive()"
   mat-stroked-button
   type="button"
@@ -18,8 +18,8 @@
   (dragleave)="onPickerDragLeave($event)"
   (drop)="onPickerDrop($event)"
 >
-  <mat-icon aria-hidden="true">add_photo_alternate</mat-icon>
-  <span class="upload-picker__copy">
+  <mat-icon aria-hidden="true" class="h-8 w-8 text-[2rem]">add_photo_alternate</mat-icon>
+  <span class="grid justify-items-center gap-1">
     <span>Drag and drop image here</span>
     <span>or click to browse files</span>
   </span>

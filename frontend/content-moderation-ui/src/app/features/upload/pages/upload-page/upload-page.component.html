@@ -1,19 +1,22 @@
-<section class="upload-page">
-  <header class="upload-page__header">
-    <h2>Image Intake</h2>
-    <p>Submit one image for automated moderation checks.</p>
+<section class="mx-auto grid max-w-3xl gap-5">
+  <header class="grid gap-1.5">
+    <h2 class="m-0 text-2xl font-semibold tracking-tight">Image Intake</h2>
+    <p class="m-0 text-sm text-[var(--mat-sys-on-surface-variant)]">
+      Submit one image for automated moderation checks.
+    </p>
   </header>
 
   <mat-card appearance="outlined">
     <mat-card-header>
-      <mat-card-title>Submit for Moderation</mat-card-title>
-      <mat-card-subtitle id="upload-accepted-format">
+      <mat-card-title class="m-0">Submit for Moderation</mat-card-title>
+      <mat-card-subtitle id="upload-accepted-format" class="m-0">
         Accepted formats: JPG, PNG (max 10 MB)
       </mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content class="upload-card__content">
+    <mat-card-content class="grid gap-4 pt-2">
       <app-upload-picker
+        class="block"
         describedBy="upload-accepted-format"
         [disabled]="isUploading()"
         (fileSelected)="setSelectedFile($event)"
@@ -27,13 +30,15 @@
           (removeRequested)="setSelectedFile(null)"
         ></app-selected-file-preview>
       } @else {
-        <p class="upload-hint" aria-live="polite">No image selected yet.</p>
+        <p class="m-0 text-sm text-[var(--mat-sys-on-surface-variant)]" aria-live="polite">
+          No image selected yet.
+        </p>
       }
 
       <app-upload-feedback [uploadState]="uploadState()"></app-upload-feedback>
     </mat-card-content>
 
-    <mat-card-actions>
+    <mat-card-actions class="justify-center px-4 pb-4">
       <button
         mat-flat-button
         type="button"

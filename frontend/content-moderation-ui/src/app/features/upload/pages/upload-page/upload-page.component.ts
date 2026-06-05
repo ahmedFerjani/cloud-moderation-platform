@@ -9,6 +9,9 @@ import { UploadState, initialUploadState } from '../../models/upload-state.model
 
 @Component({
   selector: 'app-upload-page',
+  host: {
+    class: 'block',
+  },
   imports: [
     MatCardModule,
     MatButtonModule,
@@ -17,7 +20,6 @@ import { UploadState, initialUploadState } from '../../models/upload-state.model
     UploadFeedbackComponent,
   ],
   templateUrl: './upload-page.component.html',
-  styleUrl: './upload-page.component.scss',
 })
 export class UploadPageComponent {
   private readonly uploadFacadeService = inject(UploadFacadeService);

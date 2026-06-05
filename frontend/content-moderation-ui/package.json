@@ -7,11 +7,13 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:ci": "ng test --watch=false",
     "prettier:check": "prettier . --check",
     "prettier:write": "prettier . --write",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "lint:ci": "ng lint --max-warnings=0",
+    "typecheck": "tsc -b --noEmit",
     "prepare": "cd ../.. && husky frontend/content-moderation-ui/.husky"
   },
   "lint-staged": {

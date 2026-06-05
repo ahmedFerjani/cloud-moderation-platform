@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { SelectedFilePreviewComponent } from '../../components/selected-file-preview/selected-file-preview.component';
@@ -25,16 +25,9 @@ export class UploadPageComponent {
   private readonly uploadFacadeService = inject(UploadFacadeService);
 
   protected readonly selectedFile = signal<File | null>(null);
+  protected readonly selectedFilePreviewUrl = signal<string | null>(null);
   protected readonly selectedFileName = computed(() => this.selectedFile()?.name ?? null);
   protected readonly selectedFileSizeBytes = computed(() => this.selectedFile()?.size ?? null);
-  protected readonly selectedFilePreviewUrl = computed(() => {
-    const file = this.selectedFile();
-    if (!file) {
-      return null;
-    }
-
-    return URL.createObjectURL(file);
-  });
   protected readonly uploadState = signal<UploadState>(initialUploadState);
   protected readonly isUploading = computed(() => {
     const phase = this.uploadState().phase;
@@ -57,6 +50,23 @@ export class UploadPageComponent {
     return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   });
 
+  constructor() {
+    effect((onCleanup) => {
+      const file = this.selectedFile();
+      if (!file) {
+        this.selectedFilePreviewUrl.set(null);
+        return;
+      }
+
+      const previewUrl = URL.createObjectURL(file);
+      this.selectedFilePreviewUrl.set(previewUrl);
+
+      onCleanup(() => {
+        URL.revokeObjectURL(previewUrl);
+      });
+    });
+  }
+
   protected async onUpload(): Promise<void> {
     const file = this.selectedFile();
     if (!file || this.isUploading()) {
@@ -69,11 +79,6 @@ export class UploadPageComponent {
   }
 
   protected setSelectedFile(file: File | null): void {
-    const currentPreviewUrl = this.selectedFilePreviewUrl();
-    if (currentPreviewUrl) {
-      URL.revokeObjectURL(currentPreviewUrl);
-    }
-
     this.selectedFile.set(file);
     this.uploadState.set(initialUploadState);
   }

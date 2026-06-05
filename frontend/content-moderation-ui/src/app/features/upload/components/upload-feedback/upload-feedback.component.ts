@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { UploadState } from '../../models/upload-state.model';
+import type { UploadState } from '../../models/upload-state.model';
 
 @Component({
   selector: 'app-upload-feedback',

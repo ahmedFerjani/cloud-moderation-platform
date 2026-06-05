@@ -5,7 +5,8 @@ import { SelectedFilePreviewComponent } from '../../components/selected-file-pre
 import { UploadFeedbackComponent } from '../../components/upload-feedback/upload-feedback.component';
 import { UploadPickerComponent } from '../../components/upload-picker/upload-picker.component';
 import { UploadFacadeService } from '../../facades/upload-facade.service';
-import { UploadState, initialUploadState } from '../../models/upload-state.model';
+import { initialUploadState } from '../../models/upload-state.model';
+import type { UploadState } from '../../models/upload-state.model';
 
 @Component({
   selector: 'app-upload-page',

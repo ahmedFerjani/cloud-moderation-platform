@@ -36,7 +36,7 @@ export class UploadPickerComponent {
   protected onPickerDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragActive.set(false);
-    const file = event.dataTransfer?.files?.[0] ?? null;
+    const file = event.dataTransfer?.files[0] ?? null;
     this.fileSelected.emit(file);
   }
 }

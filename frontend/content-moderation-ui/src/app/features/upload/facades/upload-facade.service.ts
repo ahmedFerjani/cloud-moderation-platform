@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { UploadApiService } from '../data-access/upload-api.service';
-import { UploadState } from '../models/upload-state.model';
+import type { UploadState } from '../models/upload-state.model';
 
 @Injectable({
   providedIn: 'root',

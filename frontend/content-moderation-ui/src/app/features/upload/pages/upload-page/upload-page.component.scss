@@ -27,98 +27,9 @@ mat-card-subtitle {
   padding-top: 0.5rem;
 }
 
-.upload-picker {
-  width: 100%;
-  display: grid;
-  justify-items: center;
-  gap: 0.35rem;
-  min-height: 11rem;
-  padding: 1rem;
-  text-align: center;
-  border-style: dashed;
-  border-width: 2px;
-  border-radius: 0.75rem;
-  background-color: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
-}
-
-.upload-picker--active {
-  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
-  border-color: var(--mat-sys-primary);
-}
-
-.upload-picker mat-icon {
-  font-size: 2rem;
-  width: 2rem;
-  height: 2rem;
-}
-
-.upload-picker__copy {
-  display: grid;
-  gap: 0.25rem;
-  justify-items: center;
-  white-space: normal;
-  line-height: 1.35;
-}
-
-.file-preview {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0;
-}
-
-.file-preview__meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-.file-preview__image {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.5rem;
-  object-fit: cover;
-}
-
-.file-preview__name {
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.file-preview__size,
 .upload-hint {
   margin: 0;
   color: var(--mat-sys-on-surface-variant);
-}
-
-.upload-status,
-.upload-error {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-.upload-status {
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.upload-progress {
-  display: grid;
-  gap: 0.35rem;
-}
-
-.upload-progress__label {
-  margin: 0;
-  justify-self: end;
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 0.8125rem;
-}
-
-.upload-error {
-  color: var(--mat-sys-error);
 }
 
 mat-card-actions {

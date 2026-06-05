@@ -13,74 +13,24 @@
     </mat-card-header>
 
     <mat-card-content class="upload-card__content">
-      <input
-        #fileInput
-        type="file"
-        accept="image/jpeg,image/png"
-        hidden
-        (change)="onFileSelected($event)"
-      />
-
-      <button
-        class="upload-picker"
-        [class.upload-picker--active]="isDragActive()"
-        mat-stroked-button
-        type="button"
-        aria-describedby="upload-accepted-format"
+      <app-upload-picker
+        describedBy="upload-accepted-format"
         [disabled]="isUploading()"
-        (click)="fileInput.click()"
-        (dragover)="onPickerDragOver($event)"
-        (dragleave)="onPickerDragLeave($event)"
-        (drop)="onPickerDrop($event)"
-      >
-        <mat-icon aria-hidden="true">add_photo_alternate</mat-icon>
-        <span class="upload-picker__copy">
-          <span>Drag and drop image here</span>
-          <span>or click to browse files</span>
-        </span>
-      </button>
+        (fileSelected)="setSelectedFile($event)"
+      ></app-upload-picker>
 
       @if (selectedFileName(); as fileName) {
-        <div class="file-preview" aria-live="polite">
-          <div class="file-preview__meta">
-            @if (selectedFilePreviewUrl(); as previewUrl) {
-              <img class="file-preview__image" [src]="previewUrl" alt="Selected file preview" />
-            }
-            <div>
-              <p class="file-preview__name">{{ fileName }}</p>
-              @if (selectedFileSizeLabel(); as sizeLabel) {
-                <p class="file-preview__size">{{ sizeLabel }}</p>
-              }
-            </div>
-          </div>
-
-          <button mat-button type="button" (click)="clearSelectedFile(fileInput)">Remove</button>
-        </div>
+        <app-selected-file-preview
+          [fileName]="fileName"
+          [sizeLabel]="selectedFileSizeLabel()"
+          [previewUrl]="selectedFilePreviewUrl()"
+          (removeRequested)="setSelectedFile(null)"
+        ></app-selected-file-preview>
       } @else {
         <p class="upload-hint" aria-live="polite">No image selected yet.</p>
       }
 
-      @if (uploadStatusMessage(); as statusMessage) {
-        <p class="upload-status" aria-live="polite">{{ statusMessage }}</p>
-      }
-
-      @if (isUploading()) {
-        <div class="upload-progress" aria-live="polite" aria-label="Upload progress">
-          @if (uploadProgressPercent() !== null) {
-            <mat-progress-bar
-              mode="determinate"
-              [value]="uploadProgressPercent() ?? 0"
-            ></mat-progress-bar>
-            <p class="upload-progress__label">{{ uploadProgressPercent() ?? 0 }}%</p>
-          } @else {
-            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-          }
-        </div>
-      }
-
-      @if (uploadErrorMessage(); as errorMessage) {
-        <p class="upload-error" aria-live="assertive">{{ errorMessage }}</p>
-      }
+      <app-upload-feedback [uploadState]="uploadState()"></app-upload-feedback>
     </mat-card-content>
 
     <mat-card-actions>

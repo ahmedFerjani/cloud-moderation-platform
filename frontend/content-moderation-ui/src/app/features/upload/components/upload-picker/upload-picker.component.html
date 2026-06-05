@@ -1,0 +1,26 @@
+<input
+  #fileInput
+  type="file"
+  [accept]="acceptedFormats()"
+  hidden
+  (change)="onFileInputChange($event)"
+/>
+
+<button
+  class="upload-picker"
+  [class.upload-picker--active]="isDragActive()"
+  mat-stroked-button
+  type="button"
+  [attr.aria-describedby]="describedBy()"
+  [disabled]="disabled()"
+  (click)="fileInput.click()"
+  (dragover)="onPickerDragOver($event)"
+  (dragleave)="onPickerDragLeave($event)"
+  (drop)="onPickerDrop($event)"
+>
+  <mat-icon aria-hidden="true">add_photo_alternate</mat-icon>
+  <span class="upload-picker__copy">
+    <span>Drag and drop image here</span>
+    <span>or click to browse files</span>
+  </span>
+</button>

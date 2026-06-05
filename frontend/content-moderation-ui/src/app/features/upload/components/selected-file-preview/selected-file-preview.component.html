@@ -1,0 +1,15 @@
+<div class="file-preview" aria-live="polite">
+  <div class="file-preview__meta">
+    @if (previewUrl(); as resolvedPreviewUrl) {
+      <img class="file-preview__image" [src]="resolvedPreviewUrl" alt="Selected file preview" />
+    }
+    <div>
+      <p class="file-preview__name">{{ fileName() }}</p>
+      @if (sizeLabel(); as resolvedSizeLabel) {
+        <p class="file-preview__size">{{ resolvedSizeLabel }}</p>
+      }
+    </div>
+  </div>
+
+  <button mat-button type="button" (click)="onRemoveRequested()">Remove</button>
+</div>

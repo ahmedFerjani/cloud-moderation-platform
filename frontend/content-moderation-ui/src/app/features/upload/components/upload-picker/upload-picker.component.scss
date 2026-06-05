@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+.upload-picker {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  min-height: 11rem;
+  padding: 1rem;
+  text-align: center;
+  border-style: dashed;
+  border-width: 2px;
+  border-radius: 0.75rem;
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+}
+
+.upload-picker--active {
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  border-color: var(--mat-sys-primary);
+}
+
+.upload-picker mat-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+.upload-picker__copy {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: center;
+  white-space: normal;
+  line-height: 1.35;
+}

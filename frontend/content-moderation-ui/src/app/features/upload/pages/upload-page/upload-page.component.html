@@ -1,9 +1,7 @@
 <section class="mx-auto grid max-w-3xl gap-5">
   <header class="grid gap-1.5">
     <h2 class="m-0 text-2xl font-semibold tracking-tight">Image Intake</h2>
-    <p class="m-0 text-sm text-[var(--mat-sys-on-surface-variant)]">
-      Submit one image for automated moderation checks.
-    </p>
+    <p class="m-0 text-sm text-muted">Submit one image for automated moderation checks.</p>
   </header>
 
   <mat-card appearance="outlined">
@@ -30,9 +28,7 @@
           (removeRequested)="setSelectedFile(null)"
         ></app-selected-file-preview>
       } @else {
-        <p class="m-0 text-sm text-[var(--mat-sys-on-surface-variant)]" aria-live="polite">
-          No image selected yet.
-        </p>
+        <p class="m-0 text-sm text-muted" aria-live="polite">No image selected yet.</p>
       }
 
       <app-upload-feedback [uploadState]="uploadState()"></app-upload-feedback>

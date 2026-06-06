@@ -1,2 +1,16 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
+
+@layer utilities {
+  .text-muted {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .text-error {
+    color: var(--mat-sys-error);
+  }
+
+  .border-muted {
+    border-color: var(--mat-sys-outline-variant);
+  }
+}

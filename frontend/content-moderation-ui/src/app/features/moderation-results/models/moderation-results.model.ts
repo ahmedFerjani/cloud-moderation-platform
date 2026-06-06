@@ -22,5 +22,5 @@ export interface ModerationResultItem {
 export interface ModerationResultsResponse {
   items: ModerationResultItem[];
   count: number;
-  last_evaluated_key: string | null;
+  last_evaluated_key: Record<string, string> | null;
 }

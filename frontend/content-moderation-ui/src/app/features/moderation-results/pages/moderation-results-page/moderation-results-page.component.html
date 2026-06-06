@@ -5,14 +5,29 @@
       <p class="m-0 text-sm text-muted">Recent decisions from automated image moderation.</p>
     </div>
 
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="loadModerationResults()"
-      [disabled]="isLoading()"
-    >
-      Refresh
-    </button>
+    <div class="flex items-center gap-3">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-32">
+        <mat-label>Per page</mat-label>
+        <mat-select
+          [ngModel]="limit()"
+          (ngModelChange)="onLimitChange($event)"
+          [disabled]="isLoading()"
+        >
+          @for (option of limitOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        matIconButton
+        aria-label="Refresh moderation results"
+        (click)="loadModerationResults()"
+        [disabled]="isLoading()"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
   </header>
 
   @if (isLoading()) {
@@ -85,6 +100,28 @@
           }
         </div>
       </mat-card-content>
+
+      @if (hasMore()) {
+        <mat-card-actions class="justify-center px-4 pb-4">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="loadMore()"
+            [disabled]="isLoadingMore()"
+          >
+            @if (isLoadingMore()) {
+              <mat-spinner diameter="18" class="inline-block"></mat-spinner>
+            } @else {
+              Load more
+            }
+          </button>
+        </mat-card-actions>
+      } @else {
+        <mat-card-actions class="justify-center gap-2 px-4 pb-4 text-muted">
+          <mat-icon aria-hidden="true" class="text-base">check_circle</mat-icon>
+          <span class="text-sm">No more results to show.</span>
+        </mat-card-actions>
+      }
     </mat-card>
   }
 </section>

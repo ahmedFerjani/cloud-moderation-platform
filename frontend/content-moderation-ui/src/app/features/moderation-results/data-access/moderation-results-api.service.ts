@@ -11,7 +11,15 @@ export class ModerationResultsApiService {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/$/, '');
 
-  getModerationResults(): Observable<ModerationResultsResponse> {
-    return this.http.get<ModerationResultsResponse>(`${this.apiBaseUrl}/moderation-results`);
+  getModerationResults(
+    limit?: number,
+    lastEvaluatedKey?: Record<string, string> | null,
+  ): Observable<ModerationResultsResponse> {
+    const queryParams: Record<string, string | number> = {};
+    if (limit) queryParams['limit'] = limit;
+    if (lastEvaluatedKey) queryParams['last_evaluated_key'] = JSON.stringify(lastEvaluatedKey);
+    return this.http.get<ModerationResultsResponse>(`${this.apiBaseUrl}/moderation-results`, {
+      params: queryParams,
+    });
   }
 }

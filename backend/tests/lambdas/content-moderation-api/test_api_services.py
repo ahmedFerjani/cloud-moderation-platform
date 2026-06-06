@@ -23,6 +23,28 @@ def test_parse_limit_invalid_raises(limit: str) -> None:
     assert ctx.value.status_code == 400
 
 
+# Verifies pagination cursor parsing accepts missing and valid JSON object values.
+def test_parse_last_evaluated_key_valid() -> None:
+    assert api_services.parse_last_evaluated_key({}) is None
+    assert api_services.parse_last_evaluated_key({"last_evaluated_key": ""}) is None
+    assert api_services.parse_last_evaluated_key(
+        {"last_evaluated_key": '{"image_id": "img-1"}'}
+    ) == {"image_id": "img-1"}
+
+
+# Verifies invalid pagination cursor shapes and payloads are rejected.
+@pytest.mark.parametrize(
+    "cursor",
+    ["not-json", "[]", '{"image_id": 1}', '{"image_id": "img-1", "page": 2}'],
+)
+def test_parse_last_evaluated_key_invalid_raises(cursor: str) -> None:
+    with pytest.raises(api_services.APPError) as ctx:
+        api_services.parse_last_evaluated_key({"last_evaluated_key": cursor})
+
+    assert ctx.value.code == "INVALID_LAST_EVALUATED_KEY"
+    assert ctx.value.status_code == 400
+
+
 # Verifies upload URL generation returns stable response shape and object naming conventions.
 @patch.object(api_services, "log")
 def test_generate_upload_url_success(_mock_log: MagicMock) -> None:
@@ -95,3 +117,24 @@ def test_get_moderation_results_success() -> None:
     assert body["items"][0]["image_id"] == "img-1"
     assert body["last_evaluated_key"] == {"image_id": "img-1"}
     mock_scan.assert_called_once_with(Limit=5)
+
+
+# Verifies list lookup forwards optional last_evaluated_key cursor to DynamoDB scan.
+def test_get_moderation_results_success_with_last_evaluated_key() -> None:
+    with patch.object(
+        api_services.table,
+        "scan",
+        return_value={
+            "Items": [{"image_id": "img-2"}],
+            "Count": 1,
+            "LastEvaluatedKey": None,
+        },
+    ) as mock_scan:
+        response = api_services.get_moderation_results(5, {"image_id": "img-1"})
+
+    body = json.loads(response["body"])
+    assert response["statusCode"] == 200
+    assert body["count"] == 1
+    assert body["items"][0]["image_id"] == "img-2"
+    assert body["last_evaluated_key"] is None
+    mock_scan.assert_called_once_with(Limit=5, ExclusiveStartKey={"image_id": "img-1"})

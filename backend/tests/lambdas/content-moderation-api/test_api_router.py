@@ -28,7 +28,24 @@ def test_get_results_route_calls_service_with_parsed_limit(api_event_factory) ->
         result = api_router.route_request(event)
 
     assert result == {"ok": True}
-    mock_results.assert_called_once_with(5)
+    mock_results.assert_called_once_with(5, None)
+
+
+# Verifies list route forwards optional pagination cursor when provided.
+def test_get_results_route_calls_service_with_last_evaluated_key(api_event_factory) -> None:
+    event = api_event_factory("api-moderation-results.json")
+    event["queryStringParameters"] = {
+        "limit": "5",
+        "last_evaluated_key": json.dumps({"image_id": "img-1"}),
+    }
+
+    with patch.object(
+        api_router, "get_moderation_results", return_value={"ok": True}
+    ) as mock_results:
+        result = api_router.route_request(event)
+
+    assert result == {"ok": True}
+    mock_results.assert_called_once_with(5, {"image_id": "img-1"})
 
 
 # Verifies by-ID route extracts image identifier and delegates to detail service.

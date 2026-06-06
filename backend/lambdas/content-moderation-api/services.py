@@ -1,4 +1,5 @@
 import boto3
+import json
 import os
 import uuid
 from common.responses import api_response
@@ -80,9 +81,15 @@ def get_moderation_result(image_id: str) -> dict:
     return api_response(200, item)
 
 
-def get_moderation_results(limit: int) -> dict:
+def get_moderation_results(limit: int, last_evaluated_key: dict[str, str] | None = None) -> dict:
+    scan_params: dict[str, int | dict[str, str]] = {
+        "Limit": limit,
+    }
 
-    dynamodb_response = table.scan(Limit=limit)
+    if last_evaluated_key:
+        scan_params["ExclusiveStartKey"] = last_evaluated_key
+
+    dynamodb_response = table.scan(**scan_params)
 
     return api_response(
         200,
@@ -107,3 +114,35 @@ def parse_limit(params: dict) -> int:
         raise APPError("INVALID_LIMIT", "Limit must be greater than 0", 400)
 
     return min(limit, MAX_PAGE_SIZE)
+
+
+def parse_last_evaluated_key(params: dict) -> dict[str, str] | None:
+    raw_value = params.get("last_evaluated_key")
+
+    if not raw_value:
+        return None
+
+    try:
+        parsed = json.loads(raw_value)
+    except (TypeError, json.JSONDecodeError):
+        raise APPError(
+            "INVALID_LAST_EVALUATED_KEY",
+            "last_evaluated_key must be a valid JSON object",
+            400,
+        )
+
+    if not isinstance(parsed, dict):
+        raise APPError(
+            "INVALID_LAST_EVALUATED_KEY",
+            "last_evaluated_key must be a valid JSON object",
+            400,
+        )
+
+    if not all(isinstance(key, str) and isinstance(value, str) for key, value in parsed.items()):
+        raise APPError(
+            "INVALID_LAST_EVALUATED_KEY",
+            "last_evaluated_key must contain only string keys and values",
+            400,
+        )
+
+    return parsed

@@ -4,6 +4,7 @@ from services import (
     generate_upload_url,
     get_moderation_result,
     get_moderation_results,
+    parse_last_evaluated_key,
     parse_limit,
 )
 
@@ -35,7 +36,8 @@ def route_request(event):
 
         params = event.get("queryStringParameters") or {}
         limit = parse_limit(params)
+        last_evaluated_key = parse_last_evaluated_key(params)
 
-        return get_moderation_results(limit)
+        return get_moderation_results(limit, last_evaluated_key)
 
     raise APPError("ROUTE_NOT_FOUND", "Route not found", 404)

@@ -1,7 +1,3 @@
-:host {
-  display: block;
-}
-
 .file-preview {
   display: flex;
   align-items: center;
@@ -33,5 +29,4 @@
 
 .file-preview__size {
   margin: 0;
-  color: var(--mat-sys-on-surface-variant);
 }

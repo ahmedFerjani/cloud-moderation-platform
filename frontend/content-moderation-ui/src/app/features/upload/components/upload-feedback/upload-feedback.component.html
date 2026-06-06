@@ -1,12 +1,12 @@
 @if (uploadState().message; as statusMessage) {
-  <p class="upload-status" aria-live="polite">{{ statusMessage }}</p>
+  <p class="upload-status text-muted" aria-live="polite">{{ statusMessage }}</p>
 }
 
 @if (isUploading()) {
   <div class="upload-progress" aria-live="polite" aria-label="Upload progress">
     @if (uploadState().progress !== null) {
       <mat-progress-bar mode="determinate" [value]="uploadState().progress ?? 0"></mat-progress-bar>
-      <p class="upload-progress__label">{{ uploadState().progress ?? 0 }}%</p>
+      <p class="upload-progress__label text-muted">{{ uploadState().progress ?? 0 }}%</p>
     } @else {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     }
@@ -14,5 +14,5 @@
 }
 
 @if (uploadState().error; as errorMessage) {
-  <p class="upload-error" aria-live="assertive">{{ errorMessage }}</p>
+  <p class="upload-error text-error" aria-live="assertive">{{ errorMessage }}</p>
 }

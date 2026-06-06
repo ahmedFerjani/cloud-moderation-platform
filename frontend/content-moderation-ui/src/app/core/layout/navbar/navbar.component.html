@@ -6,7 +6,16 @@
 
   <span class="spacer"></span>
 
-  <nav aria-label="Primary navigation">
+  <nav class="flex gap-2" aria-label="Primary navigation">
+    <a
+      mat-stroked-button
+      routerLink="/moderation-results"
+      routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <mat-icon aria-hidden="true">fact_check</mat-icon>
+      <span>Moderation Results</span>
+    </a>
     <a
       mat-stroked-button
       routerLink="/upload"

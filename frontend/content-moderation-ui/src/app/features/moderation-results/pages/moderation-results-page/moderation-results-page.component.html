@@ -60,51 +60,79 @@
       <mat-card-header>
         <mat-card-title>{{ count() }} results</mat-card-title>
       </mat-card-header>
+      <mat-card-content class="pb-0 pt-2">
+        <mat-button-toggle-group
+          aria-label="Filter moderation results by status"
+          name="status-filter"
+          multiple
+          [hideMultipleSelectionIndicator]="true"
+          [disabled]="isLoading()"
+        >
+          <mat-button-toggle
+            value="safe"
+            [checked]="selectedStatuses().includes('safe')"
+            (change)="toggleStatus('safe')"
+          >
+            Safe
+          </mat-button-toggle>
+          <mat-button-toggle
+            value="unsafe"
+            [checked]="selectedStatuses().includes('unsafe')"
+            (change)="toggleStatus('unsafe')"
+          >
+            Unsafe
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </mat-card-content>
       <mat-card-content class="my-1">
-        <mat-accordion multi>
-          @for (item of items(); track item.image_id) {
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title class="min-w-0 flex-1">
-                  <div class="flex min-w-0 items-center gap-3 whitespace-nowrap">
-                    <span class="font-medium" [attr.title]="item.image_id">{{
-                      item.image_id
-                    }}</span>
-                    <span
-                      class="shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
-                      [class.status-chip--unsafe]="item.unsafe_detected"
-                      [class.status-chip--safe]="!item.unsafe_detected"
-                    >
-                      {{ item.status }}
-                    </span>
-                  </div>
-                </mat-panel-title>
-                <mat-panel-description
-                  class="ml-auto shrink-0 justify-end text-right text-xs text-muted"
-                >
-                  {{ item.timestamp | date: 'medium' }}
-                </mat-panel-description>
-              </mat-expansion-panel-header>
+        @if (hasFilteredItems()) {
+          <mat-accordion multi>
+            @for (item of filteredItems(); track item.image_id) {
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title class="min-w-0 flex-1">
+                    <div class="flex min-w-0 items-center gap-3 whitespace-nowrap">
+                      <span class="font-medium" [attr.title]="item.image_id">{{
+                        item.image_id
+                      }}</span>
+                      <span
+                        class="shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
+                        [class.status-chip--unsafe]="item.unsafe_detected"
+                        [class.status-chip--safe]="!item.unsafe_detected"
+                      >
+                        {{ item.status }}
+                      </span>
+                    </div>
+                  </mat-panel-title>
+                  <mat-panel-description
+                    class="ml-auto shrink-0 justify-end text-right text-xs text-muted"
+                  >
+                    {{ item.timestamp | date: 'medium' }}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
 
-              <div class="grid gap-2">
-                @if (item.moderation_labels.length) {
-                  <mat-chip-set aria-label="moderation labels" class="flex flex-wrap gap-2">
-                    @for (label of item.moderation_labels; track label.Name) {
-                      <mat-chip>
-                        {{ label.Name }}
-                      </mat-chip>
-                    }
-                  </mat-chip-set>
-                }
-              </div>
+                <div class="grid gap-2">
+                  @if (item.moderation_labels.length) {
+                    <mat-chip-set aria-label="moderation labels" class="flex flex-wrap gap-2">
+                      @for (label of item.moderation_labels; track label.Name) {
+                        <mat-chip>
+                          {{ label.Name }}
+                        </mat-chip>
+                      }
+                    </mat-chip-set>
+                  }
+                </div>
 
-              <p class="m-0 mt-1 flex items-center gap-1.5 text-xs text-muted">
-                <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>
-                <span>{{ item.s3_key }}</span>
-              </p>
-            </mat-expansion-panel>
-          }
-        </mat-accordion>
+                <p class="m-0 mt-1 flex items-center gap-1.5 text-xs text-muted">
+                  <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>
+                  <span>{{ item.s3_key }}</span>
+                </p>
+              </mat-expansion-panel>
+            }
+          </mat-accordion>
+        } @else {
+          <p class="m-0 text-sm text-muted">No results match the selected status.</p>
+        }
       </mat-card-content>
 
       @if (hasMore()) {

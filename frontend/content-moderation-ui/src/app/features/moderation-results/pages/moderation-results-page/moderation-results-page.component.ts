@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -23,6 +24,7 @@ import type { OnInit } from '@angular/core';
     DatePipe,
     FormsModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatChipsModule,
     MatExpansionModule,
@@ -37,6 +39,7 @@ import type { OnInit } from '@angular/core';
 export class ModerationResultsPageComponent implements OnInit {
   private readonly moderationResultsApiService = inject(ModerationResultsApiService);
 
+  protected readonly selectedStatuses = signal<('safe' | 'unsafe')[]>(['safe', 'unsafe']);
   protected readonly limit = signal(1);
   protected readonly limitOptions = [1, 2] as const;
   protected readonly isLoading = signal(true);
@@ -46,6 +49,18 @@ export class ModerationResultsPageComponent implements OnInit {
   protected readonly count = signal(0);
   protected readonly lastEvaluatedKey = signal<Record<string, string> | null>(null);
   protected readonly hasItems = computed(() => this.items().length > 0);
+  protected readonly filteredItems = computed(() => {
+    const selectedStatuses = this.selectedStatuses();
+    if (selectedStatuses.length === 0 || selectedStatuses.length === 2) {
+      return this.items();
+    }
+
+    const includeSafe = selectedStatuses.includes('safe');
+    const includeUnsafe = selectedStatuses.includes('unsafe');
+
+    return this.items().filter((item) => (item.unsafe_detected ? includeUnsafe : includeSafe));
+  });
+  protected readonly hasFilteredItems = computed(() => this.filteredItems().length > 0);
   protected readonly hasMore = computed(() => this.lastEvaluatedKey() !== null);
 
   ngOnInit(): void {
@@ -63,6 +78,16 @@ export class ModerationResultsPageComponent implements OnInit {
 
   protected async loadMore(): Promise<void> {
     await this.fetchResults('append');
+  }
+
+  protected toggleStatus(status: 'safe' | 'unsafe'): void {
+    const current = this.selectedStatuses();
+    if (current.includes(status)) {
+      this.selectedStatuses.set(current.filter((itemStatus) => itemStatus !== status));
+      return;
+    }
+
+    this.selectedStatuses.set([...current, status]);
   }
 
   private async fetchResults(mode: 'replace' | 'append'): Promise<void> {

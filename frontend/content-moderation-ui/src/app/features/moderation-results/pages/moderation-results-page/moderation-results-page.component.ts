@@ -1,6 +1,9 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { firstValueFrom } from 'rxjs';
 import { ModerationResultsApiService } from '../../data-access/moderation-results-api.service';
@@ -10,14 +13,16 @@ import type {
 } from '../../models/moderation-results.model';
 import type { OnInit } from '@angular/core';
 
-type ModerationResultViewModel = ModerationResultItem & {
-  timestampLabel: string;
-  topLabels: string;
-};
-
 @Component({
   selector: 'app-moderation-results-page',
-  imports: [MatCardModule, MatButtonModule, MatProgressSpinnerModule],
+  imports: [
+    DatePipe,
+    MatCardModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './moderation-results-page.component.html',
   styleUrl: './moderation-results-page.component.scss',
 })
@@ -26,7 +31,7 @@ export class ModerationResultsPageComponent implements OnInit {
 
   protected readonly isLoading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly items = signal<ModerationResultViewModel[]>([]);
+  protected readonly items = signal<ModerationResultItem[]>([]);
   protected readonly count = signal(0);
   protected readonly hasItems = computed(() => this.items().length > 0);
 
@@ -46,11 +51,7 @@ export class ModerationResultsPageComponent implements OnInit {
       this.items.set(
         response.items.map((item: ModerationResultItem) => ({
           ...item,
-          timestampLabel: this.formatTimestamp(item.timestamp),
-          topLabels: item.moderation_labels
-            .slice(0, 3)
-            .map((label) => label.Name)
-            .join(', '),
+          moderation_labels: item.moderation_labels.slice(0, 5),
         })),
       );
     } catch {
@@ -60,17 +61,5 @@ export class ModerationResultsPageComponent implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
-  }
-
-  private formatTimestamp(value: string): string {
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) {
-      return value;
-    }
-
-    return new Intl.DateTimeFormat('en', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(parsed);
   }
 }

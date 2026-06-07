@@ -11,16 +11,17 @@ import { MatIconModule } from '@angular/material/icon';
 export class UploadPickerComponent {
   readonly acceptedFormats = input('image/jpeg,image/png');
   readonly disabled = input(false);
+  readonly maxFiles = input(10);
   readonly describedBy = input<string | null>(null);
 
-  readonly fileSelected = output<File | null>();
+  readonly filesSelected = output<File[]>();
 
   protected readonly isDragActive = signal(false);
 
   protected onFileInputChange(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
-    const file = inputElement.files?.[0] ?? null;
-    this.fileSelected.emit(file);
+    const files = this.pickFiles(inputElement.files);
+    this.filesSelected.emit(files);
   }
 
   protected onPickerDragOver(event: DragEvent): void {
@@ -36,7 +37,15 @@ export class UploadPickerComponent {
   protected onPickerDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragActive.set(false);
-    const file = event.dataTransfer?.files[0] ?? null;
-    this.fileSelected.emit(file);
+    const files = this.pickFiles(event.dataTransfer?.files);
+    this.filesSelected.emit(files);
+  }
+
+  private pickFiles(fileList: FileList | null | undefined): File[] {
+    if (!fileList) {
+      return [];
+    }
+
+    return Array.from(fileList).slice(0, this.maxFiles());
   }
 }

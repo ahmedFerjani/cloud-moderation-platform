@@ -1,14 +1,14 @@
 <section class="mx-auto grid max-w-3xl gap-5">
   <header class="grid gap-1.5">
     <h2 class="m-0 text-2xl font-semibold tracking-tight">Image Intake</h2>
-    <p class="m-0 text-sm text-muted">Submit one image for automated moderation checks.</p>
+    <p class="m-0 text-sm text-muted">Submit up to 10 images for automated moderation checks.</p>
   </header>
 
   <mat-card appearance="outlined">
     <mat-card-header>
       <mat-card-title class="m-0">Submit for Moderation</mat-card-title>
       <mat-card-subtitle id="upload-accepted-format" class="m-0">
-        Accepted formats: JPG, PNG (max 10 MB)
+        Accepted formats: JPG, PNG (max 5 MB each, up to 10 files)
       </mat-card-subtitle>
     </mat-card-header>
 
@@ -17,18 +17,32 @@
         class="block"
         describedBy="upload-accepted-format"
         [disabled]="isUploading()"
-        (fileSelected)="setSelectedFile($event)"
+        [maxFiles]="10"
+        (filesSelected)="setSelectedFiles($event)"
       ></app-upload-picker>
 
-      @if (selectedFileName(); as fileName) {
-        <app-selected-file-preview
-          [fileName]="fileName"
-          [sizeLabel]="selectedFileSizeLabel()"
-          [previewUrl]="selectedFilePreviewUrl()"
-          (removeRequested)="setSelectedFile(null)"
-        ></app-selected-file-preview>
+      @if (selectedFilesCount() > 0) {
+        <div class="grid gap-1.5">
+          <p class="m-0 text-sm text-muted" aria-live="polite">
+            {{ selectedFilesCount() }} file{{ selectedFilesCount() === 1 ? '' : 's' }} selected
+            @if (selectedFilesTotalSizeLabel(); as totalSizeLabel) {
+              ({{ totalSizeLabel }} total)
+            }
+          </p>
+
+          <div class="grid gap-1">
+            @for (file of selectedFiles(); track file.name + file.size + $index) {
+              <app-selected-file-preview
+                [fileName]="file.name"
+                [sizeLabel]="formatFileSize(file.size)"
+                [previewUrl]="filePreviewUrl($index)"
+                (removeRequested)="removeSelectedFile($index)"
+              ></app-selected-file-preview>
+            }
+          </div>
+        </div>
       } @else {
-        <p class="m-0 text-sm text-muted" aria-live="polite">No image selected yet.</p>
+        <p class="m-0 text-sm text-muted" aria-live="polite">No images selected yet.</p>
       }
 
       <app-upload-feedback [uploadState]="uploadState()"></app-upload-feedback>
@@ -38,7 +52,7 @@
       <button
         mat-flat-button
         type="button"
-        [disabled]="!selectedFileName() || isUploading()"
+        [disabled]="selectedFilesCount() === 0 || isUploading()"
         (click)="onUpload()"
       >
         Upload for Review

@@ -2,6 +2,7 @@
   #fileInput
   type="file"
   [accept]="acceptedFormats()"
+  [multiple]="true"
   hidden
   (change)="onFileInputChange($event)"
 />
@@ -20,7 +21,7 @@
 >
   <mat-icon aria-hidden="true" class="h-8 w-8 text-[2rem]">add_photo_alternate</mat-icon>
   <span class="grid justify-items-center gap-1">
-    <span>Drag and drop image here</span>
-    <span>or click to browse files</span>
+    <span>Drag and drop images here</span>
+    <span>or click to browse up to {{ maxFiles() }} files</span>
   </span>
 </button>

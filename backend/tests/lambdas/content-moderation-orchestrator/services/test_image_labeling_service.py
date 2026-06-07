@@ -1,7 +1,6 @@
 from decimal import Decimal
 from unittest.mock import patch
 
-from constants import MIN_CONFIDENCE
 import services.image_labeling_service as image_labeling_service
 
 
@@ -27,7 +26,7 @@ def test_detect_moderation_labels_maps_confidence_to_decimal() -> None:
     assert labels[0]["ParentName"] == "Graphic Violence"
     mock_detect.assert_called_once_with(
         Image={"S3Object": {"Bucket": "bucket", "Name": "uploads/a.jpg"}},
-        MinConfidence=MIN_CONFIDENCE,
+        MinConfidence=image_labeling_service.MIN_CONFIDENCE,
     )
 
 

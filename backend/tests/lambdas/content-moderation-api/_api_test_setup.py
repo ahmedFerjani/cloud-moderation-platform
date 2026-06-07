@@ -27,6 +27,8 @@ def api_runtime_event(name: str) -> dict:
     return event
 
 
+api_validation = load_module("api_validation", API_PATH / "validation.py")
+sys.modules["validation"] = api_validation
 api_services = load_module(
     "api_services",
     API_PATH / "services.py",

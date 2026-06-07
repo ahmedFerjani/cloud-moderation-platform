@@ -4,9 +4,8 @@ from services import (
     generate_upload_url,
     get_moderation_result,
     get_moderation_results,
-    parse_last_evaluated_key,
-    parse_limit,
 )
+from validation import parse_last_evaluated_key, parse_limit
 
 
 def route_request(event):

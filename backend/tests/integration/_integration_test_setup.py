@@ -160,6 +160,15 @@ class FakeRekognitionClient:
         return {"ModerationLabels": self.labels}
 
 
+# In-memory Textract fake that returns configurable block payloads.
+class FakeTextractClient:
+    def __init__(self, blocks: list[dict] | None = None) -> None:
+        self.blocks = blocks or []
+
+    def detect_document_text(self, **_kwargs):
+        return {"Blocks": self.blocks}
+
+
 # In-memory SNS fake that records published notification payloads.
 class FakeSNSClient:
     def __init__(self) -> None:

@@ -5,6 +5,7 @@ from common.exceptions import APPError
 from services import (
     delete_invalid_upload,
     detect_moderation_labels,
+    extract_text_from_image,
     download_image,
     extract_image_id_from_s3_key,
     send_success_notification,
@@ -89,7 +90,14 @@ def process_moderation_event(event):
                 {**ctx, "labels_count": len(moderation_labels)},
             )
 
-            store_moderation_result(moderation_labels, object_key, image_hash)
+            extracted_text = extract_text_from_image(bucket_name, object_key)
+
+            if extracted_text:
+                log("INFO", "Textract completed", {**ctx, "text_length": len(extracted_text)})
+            else:
+                log("INFO", "Textract completed", {**ctx, "text_length": 0})
+
+            store_moderation_result(moderation_labels, object_key, image_hash, extracted_text)
 
             log("INFO", "DynamoDB stored", ctx)
 

@@ -28,15 +28,19 @@ def test_duplicate_image_skips_processing() -> None:
                         orchestrator_processor, "detect_moderation_labels"
                     ) as mock_labels:
                         with patch.object(
-                            orchestrator_processor, "store_moderation_result"
-                        ) as mock_store:
+                            orchestrator_processor, "extract_text_from_image"
+                        ) as mock_textract:
                             with patch.object(
-                                orchestrator_processor, "send_success_notification"
-                            ) as mock_notify:
-                                orchestrator_processor.process_moderation_event(event)
+                                orchestrator_processor, "store_moderation_result"
+                            ) as mock_store:
+                                with patch.object(
+                                    orchestrator_processor, "send_success_notification"
+                                ) as mock_notify:
+                                    orchestrator_processor.process_moderation_event(event)
 
     mock_validate.assert_not_called()
     mock_labels.assert_not_called()
+    mock_textract.assert_not_called()
     mock_store.assert_not_called()
     mock_notify.assert_not_called()
 
@@ -84,19 +88,29 @@ def test_success_path_stores_and_notifies() -> None:
                         ):
                             with patch.object(
                                 orchestrator_processor,
-                                "store_moderation_result",
-                            ) as mock_store:
+                                "extract_text_from_image",
+                                return_value="Sample extracted text",
+                            ):
                                 with patch.object(
                                     orchestrator_processor,
-                                    "send_success_notification",
-                                ) as mock_notify:
+                                    "store_moderation_result",
+                                ) as mock_store:
                                     with patch.object(
                                         orchestrator_processor,
-                                        "delete_invalid_upload",
-                                    ) as mock_delete:
-                                        orchestrator_processor.process_moderation_event(event)
+                                        "send_success_notification",
+                                    ) as mock_notify:
+                                        with patch.object(
+                                            orchestrator_processor,
+                                            "delete_invalid_upload",
+                                        ) as mock_delete:
+                                            orchestrator_processor.process_moderation_event(event)
 
-    mock_store.assert_called_once_with([], "uploads/sample-image.jpg", "hash-1")
+    mock_store.assert_called_once_with(
+        [],
+        "uploads/sample-image.jpg",
+        "hash-1",
+        "Sample extracted text",
+    )
     mock_notify.assert_called_once_with("uploads/sample-image.jpg", [])
     mock_delete.assert_not_called()
 
@@ -132,13 +146,18 @@ def test_existing_failed_item_does_not_skip_processing() -> None:
                         ):
                             with patch.object(
                                 orchestrator_processor,
-                                "store_moderation_result",
-                            ) as mock_store:
+                                "extract_text_from_image",
+                                return_value=None,
+                            ):
                                 with patch.object(
                                     orchestrator_processor,
-                                    "send_success_notification",
-                                ) as mock_notify:
-                                    orchestrator_processor.process_moderation_event(event)
+                                    "store_moderation_result",
+                                ) as mock_store:
+                                    with patch.object(
+                                        orchestrator_processor,
+                                        "send_success_notification",
+                                    ) as mock_notify:
+                                        orchestrator_processor.process_moderation_event(event)
 
     mock_store.assert_called_once()
     mock_notify.assert_called_once()

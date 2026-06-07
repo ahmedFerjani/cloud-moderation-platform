@@ -6,6 +6,7 @@ from _integration_test_setup import (
     FakeS3Client,
     FakeSNSClient,
     FakeTable,
+    FakeTextractClient,
     load_orchestrator_stack,
     orchestrator_runtime_event,
     runtime_context,
@@ -18,6 +19,7 @@ def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
     service_module = cast(Any, services)
     service_module.s3 = FakeS3Client()
     service_module.rekognition = FakeRekognitionClient(labels=[])
+    service_module.textract = FakeTextractClient(blocks=[])
     service_module.sns = FakeSNSClient()
     service_module.SNS_SUCCESS_TOPIC_ARN = "arn:aws:sns:us-east-1:123456789012:test-topic"
     fake_table = FakeTable()
@@ -33,6 +35,7 @@ def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
     stored_item = fake_table.put_items[0]
     assert stored_item["status"] == "safe"
     assert stored_item["s3_key"] == "uploads/sample-image.jpg"
+    assert "extracted_text" not in stored_item
     assert len(service_module.sns.published_messages) == 1
     notification = service_module.sns.last_message_body()
     assert notification["event_type"] == "SUCCESS"
@@ -47,6 +50,7 @@ def test_orchestrator_handler_deletes_invalid_upload_end_to_end() -> None:
     fake_s3 = FakeS3Client(image_bytes=b"not-an-image")
     service_module.s3 = fake_s3
     service_module.rekognition = FakeRekognitionClient(labels=[])
+    service_module.textract = FakeTextractClient(blocks=[])
     service_module.sns = FakeSNSClient()
     service_module.table = FakeTable()
 
@@ -75,6 +79,9 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
             }
         ]
     )
+    service_module.textract = FakeTextractClient(
+        blocks=[{"BlockType": "LINE", "Text": "Extracted warning text"}]
+    )
     service_module.sns = FakeSNSClient()
     service_module.SNS_SUCCESS_TOPIC_ARN = "arn:aws:sns:us-east-1:123456789012:test-topic"
     fake_table = FakeTable()
@@ -87,6 +94,7 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
     stored_item = fake_table.put_items[0]
     assert stored_item["status"] == "unsafe"
     assert stored_item["unsafe_detected"]
+    assert stored_item["extracted_text"] == "Extracted warning text"
     assert len(stored_item["moderation_labels"]) == 1
     assert stored_item["moderation_labels"][0]["Name"] == "Explicit Nudity"
     assert len(service_module.sns.published_messages) == 1
@@ -102,6 +110,7 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
     service_module = cast(Any, services)
     service_module.s3 = FakeS3Client()
     service_module.rekognition = FakeRekognitionClient(labels=[])
+    service_module.textract = FakeTextractClient(blocks=[])
     service_module.sns = FakeSNSClient()
     service_module.table = FakeTable(
         existing_item={

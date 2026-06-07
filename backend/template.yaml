@@ -119,6 +119,11 @@ Resources:
               Action:
                 - rekognition:DetectModerationLabels
               Resource: "*"
+            - Sid: ExtractTextFromImages
+              Effect: Allow
+              Action:
+                - textract:DetectDocumentText
+              Resource: "*"
             - Sid: StoreAndLookupModerationResults
               Effect: Allow
               Action:

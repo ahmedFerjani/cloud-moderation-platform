@@ -16,6 +16,7 @@ TABLE_NAME = os.environ["TABLE_NAME"]
 SNS_SUCCESS_TOPIC_ARN = os.environ.get("SNS_SUCCESS_TOPIC_ARN")
 
 rekognition = boto3.client("rekognition")
+textract = boto3.client("textract")
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
 sns = boto3.client("sns")
@@ -50,24 +51,50 @@ def detect_moderation_labels(bucket_name: str, object_key: str) -> list:
     return moderation_labels
 
 
-def store_moderation_result(moderation_labels: list, object_key: str, image_hash: str):
+def extract_text_from_image(bucket_name: str, object_key: str) -> str | None:
+
+    textract_response = textract.detect_document_text(
+        Document={"S3Object": {"Bucket": bucket_name, "Name": object_key}}
+    )
+
+    extracted_lines = [
+        block["Text"].strip()
+        for block in textract_response.get("Blocks", [])
+        if block.get("BlockType") == "LINE" and block.get("Text", "").strip()
+    ]
+
+    if not extracted_lines:
+        return None
+
+    return "\n".join(extracted_lines)
+
+
+def store_moderation_result(
+    moderation_labels: list,
+    object_key: str,
+    image_hash: str,
+    extracted_text: str | None = None,
+):
 
     image_id = extract_image_id_from_s3_key(object_key)
 
     unsafe_detected = len(moderation_labels) > 0
     status = "unsafe" if unsafe_detected else "safe"
 
-    table.put_item(
-        Item={
-            "image_id": image_id,
-            "s3_key": object_key,
-            "image_hash": image_hash,
-            "timestamp": datetime.now().isoformat(),
-            "status": status,
-            "unsafe_detected": unsafe_detected,
-            "moderation_labels": moderation_labels,
-        }
-    )
+    item = {
+        "image_id": image_id,
+        "s3_key": object_key,
+        "image_hash": image_hash,
+        "timestamp": datetime.now().isoformat(),
+        "status": status,
+        "unsafe_detected": unsafe_detected,
+        "moderation_labels": moderation_labels,
+    }
+
+    if extracted_text:
+        item["extracted_text"] = extracted_text
+
+    table.put_item(Item=item)
 
 
 def send_success_notification(object_key: str, moderation_labels: list):

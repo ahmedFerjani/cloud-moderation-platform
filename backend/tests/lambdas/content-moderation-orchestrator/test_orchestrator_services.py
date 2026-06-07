@@ -40,10 +40,21 @@ def test_store_moderation_result_status_safe_or_unsafe() -> None:
         )
         second_item = mock_put.call_args.kwargs["Item"]
 
+        orchestrator_services.store_moderation_result(
+            [],
+            "uploads/c.jpg",
+            "hash-3",
+            extracted_text="Detected text",
+        )
+        third_item = mock_put.call_args.kwargs["Item"]
+
     assert first_item["status"] == "safe"
     assert not first_item["unsafe_detected"]
     assert second_item["status"] == "unsafe"
     assert second_item["unsafe_detected"]
+    assert "extracted_text" not in first_item
+    assert "extracted_text" in third_item
+    assert third_item["extracted_text"] == "Detected text"
 
 
 # Verifies Rekognition confidence values are normalized to Decimal for DynamoDB compatibility.
@@ -68,6 +79,40 @@ def test_detect_moderation_labels_maps_confidence_to_decimal() -> None:
         Image={"S3Object": {"Bucket": "bucket", "Name": "uploads/a.jpg"}},
         MinConfidence=orchestrator_services.MIN_CONFIDENCE,
     )
+
+
+# Verifies Textract line blocks are aggregated into a newline-separated string.
+def test_extract_text_from_image_returns_joined_lines() -> None:
+    with patch.object(orchestrator_services.textract, "detect_document_text") as mock_detect:
+        mock_detect.return_value = {
+            "Blocks": [
+                {"BlockType": "LINE", "Text": "First line"},
+                {"BlockType": "WORD", "Text": "ignored"},
+                {"BlockType": "LINE", "Text": "Second line"},
+            ]
+        }
+
+        extracted = orchestrator_services.extract_text_from_image("bucket", "uploads/a.jpg")
+
+    assert extracted == "First line\nSecond line"
+    mock_detect.assert_called_once_with(
+        Document={"S3Object": {"Bucket": "bucket", "Name": "uploads/a.jpg"}}
+    )
+
+
+# Verifies Textract extraction returns None when no non-empty line blocks are present.
+def test_extract_text_from_image_returns_none_without_lines() -> None:
+    with patch.object(orchestrator_services.textract, "detect_document_text") as mock_detect:
+        mock_detect.return_value = {
+            "Blocks": [
+                {"BlockType": "WORD", "Text": "token"},
+                {"BlockType": "LINE", "Text": "   "},
+            ]
+        }
+
+        extracted = orchestrator_services.extract_text_from_image("bucket", "uploads/a.jpg")
+
+    assert extracted is None
 
 
 # Verifies success notifications are skipped when topic configuration is absent.

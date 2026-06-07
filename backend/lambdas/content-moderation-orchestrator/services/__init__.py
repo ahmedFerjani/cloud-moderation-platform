@@ -10,7 +10,7 @@ from . import (
 from .image_labeling_service import detect_moderation_labels, extract_text_from_image, rekognition
 from .identity_service import extract_image_id_from_s3_key, generate_image_hash
 from .repository_service import find_existing_image, store_moderation_result, table
-from .storage_service import delete_invalid_upload, download_image, s3
+from .storage_service import delete_uploaded_image, download_image, s3
 from .text_insights_service import analyze_extracted_text, comprehend
 
 sns = _notification_service.sns
@@ -25,7 +25,7 @@ def send_success_notification(object_key: str, moderation_labels: list):
 
 __all__ = [
     "analyze_extracted_text",
-    "delete_invalid_upload",
+    "delete_uploaded_image",
     "download_image",
     "extract_image_id_from_s3_key",
     "find_existing_image",

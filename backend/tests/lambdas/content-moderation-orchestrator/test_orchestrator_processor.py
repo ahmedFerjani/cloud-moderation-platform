@@ -23,24 +23,26 @@ def test_duplicate_image_skips_processing() -> None:
                 "find_existing_image",
                 return_value={"status": "safe", "image_id": "img-existing"},
             ):
-                with patch.object(orchestrator_processor, "validate_image") as mock_validate:
-                    with patch.object(
-                        orchestrator_processor, "detect_moderation_labels"
-                    ) as mock_labels:
+                with patch.object(orchestrator_processor, "delete_uploaded_image") as mock_delete:
+                    with patch.object(orchestrator_processor, "validate_image") as mock_validate:
                         with patch.object(
-                            orchestrator_processor, "extract_text_from_image"
-                        ) as mock_textract:
+                            orchestrator_processor, "detect_moderation_labels"
+                        ) as mock_labels:
                             with patch.object(
-                                orchestrator_processor, "analyze_extracted_text"
-                            ) as mock_comprehend:
+                                orchestrator_processor, "extract_text_from_image"
+                            ) as mock_textract:
                                 with patch.object(
-                                    orchestrator_processor, "store_moderation_result"
-                                ) as mock_store:
+                                    orchestrator_processor, "analyze_extracted_text"
+                                ) as mock_comprehend:
                                     with patch.object(
-                                        orchestrator_processor, "send_success_notification"
-                                    ) as mock_notify:
-                                        orchestrator_processor.process_moderation_event(event)
+                                        orchestrator_processor, "store_moderation_result"
+                                    ) as mock_store:
+                                        with patch.object(
+                                            orchestrator_processor, "send_success_notification"
+                                        ) as mock_notify:
+                                            orchestrator_processor.process_moderation_event(event)
 
+    mock_delete.assert_called_once_with("test-bucket", "uploads/sample-image.jpg")
     mock_validate.assert_not_called()
     mock_labels.assert_not_called()
     mock_textract.assert_not_called()
@@ -58,7 +60,7 @@ def test_app_error_path_deletes_invalid_upload() -> None:
         "validate_upload_size",
         side_effect=orchestrator_processor.APPError("INVALID", "bad", 400),
     ):
-        with patch.object(orchestrator_processor, "delete_invalid_upload") as mock_delete:
+        with patch.object(orchestrator_processor, "delete_uploaded_image") as mock_delete:
             orchestrator_processor.process_moderation_event(event)
 
     mock_delete.assert_called_once()
@@ -110,7 +112,7 @@ def test_success_path_stores_and_notifies() -> None:
                                         ) as mock_notify:
                                             with patch.object(
                                                 orchestrator_processor,
-                                                "delete_invalid_upload",
+                                                "delete_uploaded_image",
                                             ) as mock_delete:
                                                 orchestrator_processor.process_moderation_event(
                                                     event

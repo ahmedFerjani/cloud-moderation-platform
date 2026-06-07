@@ -179,7 +179,7 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
     assert notification["labels_count"] == 1
 
 
-# Checks duplicate uploads are skipped.
+# Checks duplicate uploads are deleted and skipped.
 def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
     services, _processor, handler = load_orchestrator_stack()
     service_module = cast(Any, services)
@@ -212,4 +212,4 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
 
     assert len(service_module.table.put_items) == 0
     assert len(service_module.sns.published_messages) == 0
-    assert service_module.s3.deleted_objects == []
+    assert service_module.s3.deleted_objects == [("test-bucket", "uploads/sample-image.jpg")]

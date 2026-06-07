@@ -4,7 +4,7 @@ from common.logger import log
 from common.exceptions import APPError
 from services import (
     analyze_extracted_text,
-    delete_invalid_upload,
+    delete_uploaded_image,
     detect_moderation_labels,
     extract_text_from_image,
     download_image,
@@ -68,10 +68,15 @@ def process_moderation_event(event):
 
             if existing_item and existing_item["status"] != "failed":
 
+                delete_uploaded_image(bucket_name, object_key)
+
                 log(
                     "INFO",
-                    "Duplicate image detected",
-                    {**ctx, "existing_image_id": existing_item["image_id"]},
+                    "Duplicate image detected and deleted",
+                    {
+                        **ctx,
+                        "existing_image_id": existing_item["image_id"],
+                    },
                 )
 
                 duplicate_records += 1
@@ -136,7 +141,7 @@ def process_moderation_event(event):
 
         except APPError as e:
 
-            delete_invalid_upload(bucket_name, object_key)
+            delete_uploaded_image(bucket_name, object_key)
 
             rejected_records += 1
 

@@ -10,6 +10,6 @@ def download_image(bucket_name: str, object_key: str) -> bytes:
     return s3_response["Body"].read()
 
 
-def delete_invalid_upload(bucket_name: str, object_key: str):
+def delete_uploaded_image(bucket_name: str, object_key: str):
 
     s3.delete_object(Bucket=bucket_name, Key=object_key)

@@ -16,9 +16,9 @@ def test_download_image_reads_s3_body() -> None:
     mock_get.assert_called_once_with(Bucket="bucket", Key="uploads/a.jpg")
 
 
-# Verifies invalid uploads are deleted from S3 with the expected bucket and key.
-def test_delete_invalid_upload_calls_s3_delete() -> None:
+# Verifies uploaded images are deleted from S3 with the expected bucket and key.
+def test_delete_uploaded_image_calls_s3_delete() -> None:
     with patch.object(storage_service.s3, "delete_object") as mock_delete:
-        storage_service.delete_invalid_upload("bucket", "uploads/a.jpg")
+        storage_service.delete_uploaded_image("bucket", "uploads/a.jpg")
 
     mock_delete.assert_called_once_with(Bucket="bucket", Key="uploads/a.jpg")

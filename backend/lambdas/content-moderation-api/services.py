@@ -8,8 +8,9 @@ from common.exceptions import APPError
 from constants import (
     ALLOWED_CONTENT_TYPES,
     DEFAULT_PAGE_SIZE,
+    MAX_UPLOAD_FILES,
     MAX_PAGE_SIZE,
-    MAX_UPLOAD_SIZE_BYTES,
+    MAX_UPLOAD_FILE_SIZE_BYTES,
     UPLOAD_URL_EXPIRES_IN_SECONDS,
 )
 
@@ -23,14 +24,63 @@ table = dynamodb.Table(TABLE_NAME)  # type: ignore
 
 def generate_upload_url(body: dict) -> dict:
 
+    content_types = normalize_content_types(body)
+
+    uploads = [create_presigned_upload(content_type) for content_type in content_types]
+
+    return api_response(
+        200,
+        {
+            "uploads": uploads,
+            "count": len(uploads),
+            "expires_in": UPLOAD_URL_EXPIRES_IN_SECONDS,
+            "max_upload_size_bytes": MAX_UPLOAD_FILE_SIZE_BYTES,
+        },
+    )
+
+
+def normalize_content_types(body: dict) -> list[str]:
     content_type = body.get("content_type")
 
-    if not content_type:
+    if content_type is None:
         raise APPError("MISSING_CONTENT_TYPE", "Missing content_type", 400)
 
-    if content_type not in ALLOWED_CONTENT_TYPES:
-        raise APPError("UNSUPPORTED_CONTENT_TYPE", "Unsupported content type", 400)
+    if isinstance(content_type, str):
+        content_types = [content_type]
+    elif isinstance(content_type, list):
+        content_types = content_type
+    else:
+        raise APPError(
+            "INVALID_CONTENT_TYPE",
+            "content_type must be a string or an array of strings",
+            400,
+        )
 
+    if len(content_types) == 0:
+        raise APPError("MISSING_CONTENT_TYPE", "Missing content_type", 400)
+
+    if len(content_types) > MAX_UPLOAD_FILES:
+        raise APPError(
+            "TOO_MANY_FILES",
+            f"A maximum of {MAX_UPLOAD_FILES} files can be uploaded per request",
+            422,
+        )
+
+    for normalized_content_type in content_types:
+        if not isinstance(normalized_content_type, str):
+            raise APPError(
+                "INVALID_CONTENT_TYPE",
+                "content_type must be a string or an array of strings",
+                400,
+            )
+
+        if normalized_content_type not in ALLOWED_CONTENT_TYPES:
+            raise APPError("UNSUPPORTED_CONTENT_TYPE", "Unsupported content type", 415)
+
+    return content_types
+
+
+def create_presigned_upload(content_type: str) -> dict:
     extension = "jpg" if content_type == "image/jpeg" else "png"
 
     image_id = str(uuid.uuid4())
@@ -43,7 +93,7 @@ def generate_upload_url(body: dict) -> dict:
         Conditions=[
             ["starts-with", "$key", "uploads/"],
             {"Content-Type": content_type},
-            ["content-length-range", 1, MAX_UPLOAD_SIZE_BYTES],
+            ["content-length-range", 1, MAX_UPLOAD_FILE_SIZE_BYTES],
         ],
         ExpiresIn=UPLOAD_URL_EXPIRES_IN_SECONDS,
     )
@@ -54,18 +104,16 @@ def generate_upload_url(body: dict) -> dict:
         {"image_id": image_id, "object_key": object_key, "content_type": content_type},
     )
 
-    return api_response(
-        200,
-        {
-            "upload_url": presigned_post["url"],
-            "upload_method": "POST",
-            "upload_form_fields": presigned_post["fields"],
-            "image_id": image_id,
-            "object_key": object_key,
-            "expires_in": UPLOAD_URL_EXPIRES_IN_SECONDS,
-            "max_upload_size_bytes": MAX_UPLOAD_SIZE_BYTES,
-        },
-    )
+    return {
+        "upload_url": presigned_post["url"],
+        "upload_method": "POST",
+        "upload_form_fields": presigned_post["fields"],
+        "image_id": image_id,
+        "object_key": object_key,
+        "content_type": content_type,
+        "expires_in": UPLOAD_URL_EXPIRES_IN_SECONDS,
+        "max_upload_size_bytes": MAX_UPLOAD_FILE_SIZE_BYTES,
+    }
 
 
 def get_moderation_result(image_id: str) -> dict:

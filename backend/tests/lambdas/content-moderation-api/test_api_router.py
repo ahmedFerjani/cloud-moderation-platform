@@ -17,6 +17,18 @@ def test_post_generate_upload_route_uses_body(api_event_factory) -> None:
     mock_fn.assert_called_once_with({"content_type": "image/jpeg"})
 
 
+# Verifies POST upload route forwards list-form content_type payloads unchanged.
+def test_post_generate_upload_route_uses_list_content_type(api_event_factory) -> None:
+    event = api_event_factory("api-generate-upload-url.json")
+    event["body"] = json.dumps({"content_type": ["image/jpeg", "image/png"]})
+
+    with patch.object(api_router, "generate_upload_url", return_value={"ok": True}) as mock_fn:
+        result = api_router.route_request(event)
+
+    assert result == {"ok": True}
+    mock_fn.assert_called_once_with({"content_type": ["image/jpeg", "image/png"]})
+
+
 # Verifies list route parses limit and forwards the normalized value to service layer.
 def test_get_results_route_calls_service_with_parsed_limit(api_event_factory) -> None:
     event = api_event_factory("api-moderation-results.json")

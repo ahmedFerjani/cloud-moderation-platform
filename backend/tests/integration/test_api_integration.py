@@ -41,15 +41,40 @@ def test_api_handler_routes_generate_upload_url_end_to_end() -> None:
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
     assert_api_headers(response)
-    assert body["upload_url"] == "https://example-upload.test"
-    assert body["upload_method"] == "POST"
-    assert body["upload_form_fields"]["Content-Type"] == "image/jpeg"
-    assert body["object_key"] == body["upload_form_fields"]["key"]
-    assert body["object_key"].startswith("uploads/")
-    assert body["object_key"].endswith(".jpg")
-    assert body["max_upload_size_bytes"] == service_module.MAX_UPLOAD_SIZE_BYTES
+    assert body["count"] == 1
+    assert body["uploads"][0]["upload_url"] == "https://example-upload.test"
+    assert body["uploads"][0]["upload_method"] == "POST"
+    assert body["uploads"][0]["upload_form_fields"]["Content-Type"] == "image/jpeg"
+    assert body["uploads"][0]["object_key"] == body["uploads"][0]["upload_form_fields"]["key"]
+    assert body["uploads"][0]["object_key"].startswith("uploads/")
+    assert body["uploads"][0]["object_key"].endswith(".jpg")
+    assert body["max_upload_size_bytes"] == service_module.MAX_UPLOAD_FILE_SIZE_BYTES
     assert body["expires_in"] == service_module.UPLOAD_URL_EXPIRES_IN_SECONDS
     assert len(fake_s3.presigned_posts) == 1
+
+
+# Verifies the upload URL route returns a presigned payload per file when content_type is a list.
+def test_api_handler_routes_generate_upload_url_multifile_end_to_end() -> None:
+    api_services, _api_router, api_handler = load_api_stack()
+    service_module = cast(Any, api_services)
+    fake_s3 = FakeS3Client()
+    service_module.s3 = fake_s3
+
+    event = api_runtime_event("api-generate-upload-url.json")
+    event["body"] = json.dumps({"content_type": ["image/jpeg", "image/png"]})
+
+    with patch.object(api_handler, "capture_sample_event"):
+        response = api_handler.lambda_handler(event, runtime_context("req-api-multifile"))
+
+    body = json.loads(response["body"])
+    assert response["statusCode"] == 200
+    assert_api_headers(response)
+    assert body["count"] == 2
+    assert len(body["uploads"]) == 2
+    assert body["uploads"][0]["content_type"] == "image/jpeg"
+    assert body["uploads"][1]["content_type"] == "image/png"
+    assert body["max_upload_size_bytes"] == service_module.MAX_UPLOAD_FILE_SIZE_BYTES
+    assert len(fake_s3.presigned_posts) == 2
 
 
 # Verifies the single-result route returns the stored moderation record by image ID.
@@ -129,9 +154,26 @@ def test_api_handler_returns_unsupported_content_type_error_contract() -> None:
 
     assert_api_error(
         response,
-        400,
+        415,
         "UNSUPPORTED_CONTENT_TYPE",
         "Unsupported content type",
+    )
+
+
+# Verifies too-many-files payloads are rejected with an unprocessable-entity contract.
+def test_api_handler_returns_too_many_files_error_contract() -> None:
+    _api_services, _api_router, api_handler = load_api_stack()
+    event = api_runtime_event("api-generate-upload-url.json")
+    event["body"] = json.dumps({"content_type": ["image/jpeg"] * 11})
+
+    with patch.object(api_handler, "capture_sample_event"):
+        response = api_handler.lambda_handler(event, runtime_context("req-too-many-files"))
+
+    assert_api_error(
+        response,
+        422,
+        "TOO_MANY_FILES",
+        "A maximum of 10 files can be uploaded per request",
     )
 
 

@@ -66,7 +66,7 @@ def test_generate_upload_url_success(_mock_log: MagicMock) -> None:
     mock_post.assert_called_once()
 
 
-# Verifies batch upload URL generation returns one presigned upload payload per requested content type.
+# Verifies one presigned upload URL generation per content type.
 @patch.object(api_services, "log")
 def test_generate_upload_url_batch_success(_mock_log: MagicMock) -> None:
     with patch.object(

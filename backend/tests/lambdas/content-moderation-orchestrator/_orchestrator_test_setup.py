@@ -27,12 +27,20 @@ def orchestrator_runtime_event() -> dict:
     return event
 
 
-orchestrator_services = load_module(
-    "orchestrator_services",
-    ORCHESTRATOR_PATH / "services.py",
+orchestrator_validation = load_module(
+    "orchestrator_validation",
+    ORCHESTRATOR_PATH / "validation.py",
     # Prevent cross-test collision with other lambda constants modules.
-    clear_modules=("constants",),
+    clear_modules=("constants", "validation"),
 )
+sys.modules["validation"] = orchestrator_validation
+orchestrator_services = load_module(
+    "services",
+    ORCHESTRATOR_PATH / "services" / "__init__.py",
+    # Prevent cross-test collision with other lambda constants modules.
+    clear_modules=("constants", "services"),
+)
+orchestrator_services = sys.modules["services"]
 sys.modules["services"] = orchestrator_services
 orchestrator_processor = load_module("orchestrator_processor", ORCHESTRATOR_PATH / "processor.py")
 sys.modules["processor"] = orchestrator_processor

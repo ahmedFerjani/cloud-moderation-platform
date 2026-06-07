@@ -11,11 +11,10 @@ from services import (
     extract_image_id_from_s3_key,
     send_success_notification,
     store_moderation_result,
-    validate_image,
-    validate_upload_size,
     generate_image_hash,
     find_existing_image,
 )
+from validation import validate_image, validate_upload_size
 
 
 def extract_s3_records(event):

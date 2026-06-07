@@ -52,11 +52,18 @@ def load_api_stack():
 # Loads orchestrator lambda modules as an isolated stack with correct import wiring.
 def load_orchestrator_stack():
     prioritize_sys_path(ORCHESTRATOR_PATH)
-    orchestrator_services = load_module(
-        "integration_orchestrator_services",
-        ORCHESTRATOR_PATH / "services.py",
-        clear_modules=("constants",),
+    orchestrator_validation = load_module(
+        "integration_orchestrator_validation",
+        ORCHESTRATOR_PATH / "validation.py",
+        clear_modules=("constants", "validation"),
     )
+    sys.modules["validation"] = orchestrator_validation
+    orchestrator_services = load_module(
+        "services",
+        ORCHESTRATOR_PATH / "services" / "__init__.py",
+        clear_modules=("constants", "services"),
+    )
+    orchestrator_services = sys.modules["services"]
     sys.modules["services"] = orchestrator_services
     orchestrator_processor = load_module(
         "integration_orchestrator_processor", ORCHESTRATOR_PATH / "processor.py"

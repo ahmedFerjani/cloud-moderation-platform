@@ -124,6 +124,14 @@ Resources:
               Action:
                 - textract:DetectDocumentText
               Resource: "*"
+            - Sid: AnalyzeTextWithComprehend
+              Effect: Allow
+              Action:
+                - comprehend:DetectDominantLanguage
+                - comprehend:DetectSentiment
+                - comprehend:DetectPiiEntities
+                - comprehend:DetectToxicContent
+              Resource: "*"
             - Sid: StoreAndLookupModerationResults
               Effect: Allow
               Action:

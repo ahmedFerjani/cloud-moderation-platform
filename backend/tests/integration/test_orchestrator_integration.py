@@ -1,7 +1,9 @@
+from decimal import Decimal
 from typing import Any, cast
 from unittest.mock import patch
 
 from _integration_test_setup import (
+    FakeComprehendClient,
     FakeRekognitionClient,
     FakeS3Client,
     FakeSNSClient,
@@ -20,6 +22,7 @@ def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
     service_module.s3 = FakeS3Client()
     service_module.rekognition = FakeRekognitionClient(labels=[])
     service_module.textract = FakeTextractClient(blocks=[])
+    service_module.comprehend = FakeComprehendClient()
     service_module.sns = FakeSNSClient()
     service_module.SNS_SUCCESS_TOPIC_ARN = "arn:aws:sns:us-east-1:123456789012:test-topic"
     fake_table = FakeTable()
@@ -51,6 +54,7 @@ def test_orchestrator_handler_deletes_invalid_upload_end_to_end() -> None:
     service_module.s3 = fake_s3
     service_module.rekognition = FakeRekognitionClient(labels=[])
     service_module.textract = FakeTextractClient(blocks=[])
+    service_module.comprehend = FakeComprehendClient()
     service_module.sns = FakeSNSClient()
     service_module.table = FakeTable()
 
@@ -82,6 +86,17 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
     service_module.textract = FakeTextractClient(
         blocks=[{"BlockType": "LINE", "Text": "Extracted warning text"}]
     )
+    service_module.comprehend = FakeComprehendClient(
+        sentiment="NEGATIVE",
+        sentiment_scores={
+            "Positive": 0.01,
+            "Negative": 0.9,
+            "Neutral": 0.07,
+            "Mixed": 0.02,
+        },
+        pii_entities=[{"Type": "NAME", "Score": 0.95}],
+        toxic_labels=[{"Name": "INSULT", "Score": 0.83}],
+    )
     service_module.sns = FakeSNSClient()
     service_module.SNS_SUCCESS_TOPIC_ARN = "arn:aws:sns:us-east-1:123456789012:test-topic"
     fake_table = FakeTable()
@@ -95,6 +110,12 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
     assert stored_item["status"] == "unsafe"
     assert stored_item["unsafe_detected"]
     assert stored_item["extracted_text"] == "Extracted warning text"
+    assert stored_item["text_insights"]["language_code"] == "en"
+    assert stored_item["text_insights"]["sentiment"] == "NEGATIVE"
+    assert stored_item["text_insights"]["toxicity_detected"]
+    assert stored_item["text_insights"]["max_toxicity_score"] == Decimal("0.83")
+    assert stored_item["text_insights"]["pii_entities_count"] == 1
+    assert stored_item["text_insights"]["pii_entity_types"] == ["NAME"]
     assert len(stored_item["moderation_labels"]) == 1
     assert stored_item["moderation_labels"][0]["Name"] == "Explicit Nudity"
     assert len(service_module.sns.published_messages) == 1
@@ -111,6 +132,7 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
     service_module.s3 = FakeS3Client()
     service_module.rekognition = FakeRekognitionClient(labels=[])
     service_module.textract = FakeTextractClient(blocks=[])
+    service_module.comprehend = FakeComprehendClient()
     service_module.sns = FakeSNSClient()
     service_module.table = FakeTable(
         existing_item={

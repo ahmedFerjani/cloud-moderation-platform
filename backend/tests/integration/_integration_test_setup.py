@@ -169,6 +169,43 @@ class FakeTextractClient:
         return {"Blocks": self.blocks}
 
 
+# In-memory Comprehend fake for language, sentiment, and PII analysis.
+class FakeComprehendClient:
+    def __init__(
+        self,
+        language_code: str = "en",
+        sentiment: str = "NEUTRAL",
+        sentiment_scores: dict | None = None,
+        pii_entities: list[dict] | None = None,
+        toxic_labels: list[dict] | None = None,
+    ) -> None:
+        self.language_code = language_code
+        self.sentiment = sentiment
+        self.sentiment_scores = sentiment_scores or {
+            "Positive": 0.25,
+            "Negative": 0.25,
+            "Neutral": 0.45,
+            "Mixed": 0.05,
+        }
+        self.pii_entities = pii_entities or []
+        self.toxic_labels = toxic_labels or []
+
+    def detect_dominant_language(self, **_kwargs):
+        return {"Languages": [{"LanguageCode": self.language_code, "Score": 0.99}]}
+
+    def detect_sentiment(self, **_kwargs):
+        return {
+            "Sentiment": self.sentiment,
+            "SentimentScore": self.sentiment_scores,
+        }
+
+    def detect_pii_entities(self, **_kwargs):
+        return {"Entities": self.pii_entities}
+
+    def detect_toxic_content(self, **_kwargs):
+        return {"ResultList": [{"Labels": self.toxic_labels}]}
+
+
 # In-memory SNS fake that records published notification payloads.
 class FakeSNSClient:
     def __init__(self) -> None:

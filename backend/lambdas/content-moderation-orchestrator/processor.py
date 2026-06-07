@@ -3,6 +3,7 @@ import json
 from common.logger import log
 from common.exceptions import APPError
 from services import (
+    analyze_extracted_text,
     delete_invalid_upload,
     detect_moderation_labels,
     extract_text_from_image,
@@ -91,13 +92,38 @@ def process_moderation_event(event):
             )
 
             extracted_text = extract_text_from_image(bucket_name, object_key)
+            text_insights = None
 
             if extracted_text:
                 log("INFO", "Textract completed", {**ctx, "text_length": len(extracted_text)})
+                try:
+                    text_insights = analyze_extracted_text(extracted_text)
+                    log(
+                        "INFO",
+                        "Comprehend completed",
+                        {
+                            **ctx,
+                            "language_code": text_insights.get("language_code"),
+                            "sentiment": text_insights.get("sentiment"),
+                            "toxicity_detected": text_insights.get("toxicity_detected"),
+                            "max_toxicity_score": text_insights.get("max_toxicity_score"),
+                            "toxicity_labels_count": len(text_insights.get("toxicity_labels", [])),
+                            "pii_entities_count": text_insights.get("pii_entities_count"),
+                        },
+                    )
+                except Exception:
+                    # Keep moderation flow resilient even if optional NLP analysis fails.
+                    log("WARN", "Comprehend analysis failed; continuing without text insights", ctx)
             else:
                 log("INFO", "Textract completed", {**ctx, "text_length": 0})
 
-            store_moderation_result(moderation_labels, object_key, image_hash, extracted_text)
+            store_moderation_result(
+                moderation_labels,
+                object_key,
+                image_hash,
+                extracted_text,
+                text_insights,
+            )
 
             log("INFO", "DynamoDB stored", ctx)
 

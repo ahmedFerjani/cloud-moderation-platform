@@ -25,6 +25,22 @@ def assert_api_error(response: dict, status_code: int, code: str, message: str) 
     assert body["error"]["message"] == message
 
 
+# Verifies the health route returns a successful operational status payload.
+def test_api_handler_routes_get_health_end_to_end() -> None:
+    _api_services, _api_router, api_handler = load_api_stack()
+    event = api_runtime_event("api-moderation-results.json")
+    event["requestContext"]["http"]["method"] = "GET"
+    event["rawPath"] = "/health"
+
+    with patch.object(api_handler, "capture_sample_event"):
+        response = api_handler.lambda_handler(event, runtime_context("req-health"))
+
+    body = json.loads(response["body"])
+    assert response["statusCode"] == 200
+    assert_api_headers(response)
+    assert body == {"status": "ok"}
+
+
 # Verifies the upload URL route returns the full presigned POST contract.
 def test_api_handler_routes_generate_upload_url_end_to_end() -> None:
     api_services, _api_router, api_handler = load_api_stack()

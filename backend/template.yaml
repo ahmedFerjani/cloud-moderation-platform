@@ -81,6 +81,12 @@ Resources:
             Path: /generate-upload-url
             Method: post
 
+        GetHealth:
+          Type: HttpApi
+          Properties:
+            Path: /health
+            Method: get
+
         GetModerationResults:
           Type: HttpApi
           Properties:

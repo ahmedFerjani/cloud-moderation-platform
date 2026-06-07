@@ -1,5 +1,6 @@
 import json
 from common.exceptions import APPError
+from common.responses import api_response
 from services import (
     generate_upload_url,
     get_moderation_result,
@@ -11,6 +12,11 @@ from validation import parse_last_evaluated_key, parse_limit
 def route_request(event):
     method = event["requestContext"]["http"]["method"]
     path = event["rawPath"]
+
+    # GET /health
+    if method == "GET" and path == "/health":
+
+        return api_response(200, {"status": "ok"})
 
     # POST /generate-upload-url
     if method == "POST" and path == "/generate-upload-url":

@@ -6,6 +6,18 @@ import pytest
 from _api_test_setup import api_router
 
 
+# Verifies health route returns a successful health payload.
+def test_get_health_route_returns_ok(api_event_factory) -> None:
+    event = api_event_factory("api-moderation-results.json")
+    event["requestContext"]["http"]["method"] = "GET"
+    event["rawPath"] = "/health"
+
+    response = api_router.route_request(event)
+
+    assert response["statusCode"] == 200
+    assert json.loads(response["body"]) == {"status": "ok"}
+
+
 # Verifies POST upload route parses body JSON and forwards payload to upload generation service.
 def test_post_generate_upload_route_uses_body(api_event_factory) -> None:
     event = api_event_factory("api-generate-upload-url.json")

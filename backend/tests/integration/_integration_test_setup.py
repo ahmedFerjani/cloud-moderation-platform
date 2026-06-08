@@ -63,8 +63,6 @@ def load_orchestrator_stack():
         ORCHESTRATOR_PATH / "services" / "__init__.py",
         clear_modules=("constants", "services"),
     )
-    orchestrator_services = sys.modules["services"]
-    sys.modules["services"] = orchestrator_services
     orchestrator_processor = load_module(
         "integration_orchestrator_processor", ORCHESTRATOR_PATH / "processor.py"
     )

@@ -151,10 +151,20 @@ class FakeS3Client:
             "fields": {"key": kwargs["Key"], "Content-Type": kwargs["Fields"]["Content-Type"]},
         }
 
-    def get_object(self, Bucket: str, Key: str):
+    def get_object(
+        self,
+        Bucket: str,
+        Key: str,
+        ExpectedBucketOwner: str | None = None,
+    ):
         return {"Body": FakeBody(self.image_bytes)}
 
-    def delete_object(self, Bucket: str, Key: str):
+    def delete_object(
+        self,
+        Bucket: str,
+        Key: str,
+        ExpectedBucketOwner: str | None = None,
+    ):
         self.deleted_objects.append((Bucket, Key))
 
 

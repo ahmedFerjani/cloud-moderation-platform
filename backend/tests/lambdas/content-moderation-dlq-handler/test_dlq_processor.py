@@ -19,9 +19,11 @@ def test_extract_dlq_messages() -> None:
 def test_process_dlq_event_calls_store_and_notify() -> None:
     event = dlq_runtime_event()
 
-    with patch.object(dlq_processor, "store_failure") as mock_store:
-        with patch.object(dlq_processor, "send_notification") as mock_notify:
-            dlq_processor.process_dlq_event(event)
+    with (
+        patch.object(dlq_processor, "store_failure") as mock_store,
+        patch.object(dlq_processor, "send_notification") as mock_notify,
+    ):
+        dlq_processor.process_dlq_event(event)
 
     mock_store.assert_called_once()
     mock_notify.assert_called_once()

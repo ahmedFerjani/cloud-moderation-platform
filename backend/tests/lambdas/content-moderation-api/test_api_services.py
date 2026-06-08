@@ -9,13 +9,15 @@ from _api_test_setup import api_services, api_validation
 # Verifies upload URL generation returns stable response shape and object naming conventions.
 @patch.object(api_services, "log")
 def test_generate_upload_url_success(_mock_log: MagicMock) -> None:
-    with patch.object(api_services.uuid, "uuid4", return_value="id-123"):
-        with patch.object(api_services.s3, "generate_presigned_post") as mock_post:
-            mock_post.return_value = {
-                "url": "https://example.com/upload",
-                "fields": {"Content-Type": "image/jpeg"},
-            }
-            response = api_services.generate_upload_url({"content_type": "image/jpeg"})
+    with (
+        patch.object(api_services.uuid, "uuid4", return_value="id-123"),
+        patch.object(api_services.s3, "generate_presigned_post") as mock_post,
+    ):
+        mock_post.return_value = {
+            "url": "https://example.com/upload",
+            "fields": {"Content-Type": "image/jpeg"},
+        }
+        response = api_services.generate_upload_url({"content_type": "image/jpeg"})
 
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
@@ -30,19 +32,15 @@ def test_generate_upload_url_success(_mock_log: MagicMock) -> None:
 # Verifies one presigned upload URL generation per content type.
 @patch.object(api_services, "log")
 def test_generate_upload_url_batch_success(_mock_log: MagicMock) -> None:
-    with patch.object(
-        api_services.uuid,
-        "uuid4",
-        side_effect=["id-1", "id-2"],
+    with (
+        patch.object(api_services.uuid, "uuid4", side_effect=["id-1", "id-2"]),
+        patch.object(api_services.s3, "generate_presigned_post") as mock_post,
     ):
-        with patch.object(api_services.s3, "generate_presigned_post") as mock_post:
-            mock_post.return_value = {
-                "url": "https://example.com/upload",
-                "fields": {"Content-Type": "image/jpeg"},
-            }
-            response = api_services.generate_upload_url(
-                {"content_type": ["image/jpeg", "image/png"]}
-            )
+        mock_post.return_value = {
+            "url": "https://example.com/upload",
+            "fields": {"Content-Type": "image/jpeg"},
+        }
+        response = api_services.generate_upload_url({"content_type": ["image/jpeg", "image/png"]})
 
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
@@ -59,17 +57,19 @@ def test_generate_upload_url_accepts_max_files(_mock_log: MagicMock) -> None:
     max_files = api_validation.MAX_UPLOAD_FILES
     content_types = ["image/jpeg"] * max_files
 
-    with patch.object(
-        api_services.uuid,
-        "uuid4",
-        side_effect=[f"id-{index}" for index in range(max_files)],
+    with (
+        patch.object(
+            api_services.uuid,
+            "uuid4",
+            side_effect=[f"id-{index}" for index in range(max_files)],
+        ),
+        patch.object(api_services.s3, "generate_presigned_post") as mock_post,
     ):
-        with patch.object(api_services.s3, "generate_presigned_post") as mock_post:
-            mock_post.return_value = {
-                "url": "https://example.com/upload",
-                "fields": {"Content-Type": "image/jpeg"},
-            }
-            response = api_services.generate_upload_url({"content_type": content_types})
+        mock_post.return_value = {
+            "url": "https://example.com/upload",
+            "fields": {"Content-Type": "image/jpeg"},
+        }
+        response = api_services.generate_upload_url({"content_type": content_types})
 
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
@@ -80,9 +80,11 @@ def test_generate_upload_url_accepts_max_files(_mock_log: MagicMock) -> None:
 
 # Verifies detail lookup raises not-found when DynamoDB has no matching moderation item.
 def test_get_moderation_result_not_found() -> None:
-    with patch.object(api_services.table, "get_item", return_value={}):
-        with pytest.raises(api_services.APPError) as ctx:
-            api_services.get_moderation_result("img-1")
+    with (
+        patch.object(api_services.table, "get_item", return_value={}),
+        pytest.raises(api_services.APPError) as ctx,
+    ):
+        api_services.get_moderation_result("img-1")
 
     assert ctx.value.code == "MODERATION_RESULT_NOT_FOUND"
 

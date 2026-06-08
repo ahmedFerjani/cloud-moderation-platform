@@ -8,22 +8,26 @@ notification_service = orchestrator_services.notification_service
 
 # Verifies success notifications are skipped when topic configuration is absent.
 def test_send_success_notification_skips_without_topic() -> None:
-    with patch.object(notification_service, "SNS_SUCCESS_TOPIC_ARN", None):
-        with patch.object(notification_service.sns, "publish") as mock_publish:
-            notification_service.send_success_notification("uploads/a.jpg", [])
+    with (
+        patch.object(notification_service, "SNS_SUCCESS_TOPIC_ARN", None),
+        patch.object(notification_service.sns, "publish") as mock_publish,
+    ):
+        notification_service.send_success_notification("uploads/a.jpg", [])
 
     mock_publish.assert_not_called()
 
 
 # Verifies success notifications include the expected envelope and moderation summary payload.
 def test_send_success_notification_publishes_payload() -> None:
-    with patch.object(
-        notification_service,
-        "SNS_SUCCESS_TOPIC_ARN",
-        "arn:aws:sns:us-east-1:123456789012:topic",
+    with (
+        patch.object(
+            notification_service,
+            "SNS_SUCCESS_TOPIC_ARN",
+            "arn:aws:sns:us-east-1:123456789012:topic",
+        ),
+        patch.object(notification_service.sns, "publish") as mock_publish,
     ):
-        with patch.object(notification_service.sns, "publish") as mock_publish:
-            notification_service.send_success_notification("uploads/a.jpg", [{"Name": "Violence"}])
+        notification_service.send_success_notification("uploads/a.jpg", [{"Name": "Violence"}])
 
     mock_publish.assert_called_once()
     publish_kwargs = mock_publish.call_args.kwargs

@@ -212,4 +212,6 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
 
     assert len(service_module.table.put_items) == 0
     assert len(service_module.sns.published_messages) == 0
-    assert service_module.s3.deleted_objects == [("test-bucket", "uploads/sample-image.jpg")]
+    assert service_module.s3.deleted_objects == [
+        ("<normalized-bucket>", "uploads/sample-image.jpg")
+    ]

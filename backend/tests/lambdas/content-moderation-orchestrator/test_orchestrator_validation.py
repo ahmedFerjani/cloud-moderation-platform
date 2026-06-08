@@ -19,9 +19,11 @@ def test_validate_upload_size_boundaries() -> None:
 
 # Verifies non-image payloads raise the invalid-image business error.
 def test_validate_image_invalid_file_raises() -> None:
-    with patch.object(orchestrator_validation.Image, "open", side_effect=Exception):
-        with pytest.raises(orchestrator_validation.APPError) as ctx:
-            orchestrator_validation.validate_image(b"not-an-image")
+    with (
+        patch.object(orchestrator_validation.Image, "open", side_effect=Exception),
+        pytest.raises(orchestrator_validation.APPError) as ctx,
+    ):
+        orchestrator_validation.validate_image(b"not-an-image")
 
     assert ctx.value.code == "INVALID_IMAGE_FILE"
 
@@ -29,9 +31,11 @@ def test_validate_image_invalid_file_raises() -> None:
 # Verifies unsupported formats raise the unsupported-image-type business error.
 def test_validate_image_unsupported_type_raises() -> None:
     fake_image = SimpleNamespace(format="GIF")
-    with patch.object(orchestrator_validation.Image, "open", return_value=fake_image):
-        with pytest.raises(orchestrator_validation.APPError) as ctx:
-            orchestrator_validation.validate_image(b"gif-bytes")
+    with (
+        patch.object(orchestrator_validation.Image, "open", return_value=fake_image),
+        pytest.raises(orchestrator_validation.APPError) as ctx,
+    ):
+        orchestrator_validation.validate_image(b"gif-bytes")
 
     assert ctx.value.code == "UNSUPPORTED_IMAGE_TYPE"
 

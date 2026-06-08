@@ -54,17 +54,21 @@ def test_store_failure_defaults_reason_when_missing() -> None:
 
 # Verifies notification publishing is skipped when no SNS topic is configured.
 def test_send_notification_skips_when_topic_missing() -> None:
-    with patch.object(dlq_services, "SNS_TOPIC_ARN", None):
-        with patch.object(dlq_services.sns, "publish") as mock_publish:
-            dlq_services.send_notification({"s3_key": "uploads/img-1.jpg"})
+    with (
+        patch.object(dlq_services, "SNS_TOPIC_ARN", None),
+        patch.object(dlq_services.sns, "publish") as mock_publish,
+    ):
+        dlq_services.send_notification({"s3_key": "uploads/img-1.jpg"})
 
     mock_publish.assert_not_called()
 
 
 # Verifies notification publishing is invoked when SNS topic configuration is present.
 def test_send_notification_publishes_when_topic_configured() -> None:
-    with patch.object(dlq_services, "SNS_TOPIC_ARN", "arn:aws:sns:region:acct:topic"):
-        with patch.object(dlq_services.sns, "publish") as mock_publish:
-            dlq_services.send_notification({"s3_key": "uploads/img-1.jpg", "error": "moved_to_dlq"})
+    with (
+        patch.object(dlq_services, "SNS_TOPIC_ARN", "arn:aws:sns:region:acct:topic"),
+        patch.object(dlq_services.sns, "publish") as mock_publish,
+    ):
+        dlq_services.send_notification({"s3_key": "uploads/img-1.jpg", "error": "moved_to_dlq"})
 
     mock_publish.assert_called_once()

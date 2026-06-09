@@ -3,14 +3,16 @@ from unittest.mock import patch
 
 from _orchestrator_test_setup import orchestrator_services
 
+comprehend = orchestrator_services.text_insights_service.comprehend
+
 
 # Verifies Comprehend analysis returns moderation-oriented text insights.
 def test_analyze_extracted_text_returns_insights() -> None:
     with (
-        patch.object(orchestrator_services.comprehend, "detect_dominant_language") as mock_lang,
-        patch.object(orchestrator_services.comprehend, "detect_sentiment") as mock_sentiment,
-        patch.object(orchestrator_services.comprehend, "detect_pii_entities") as mock_pii,
-        patch.object(orchestrator_services.comprehend, "detect_toxic_content") as mock_toxic,
+        patch.object(comprehend, "detect_dominant_language") as mock_lang,
+        patch.object(comprehend, "detect_sentiment") as mock_sentiment,
+        patch.object(comprehend, "detect_pii_entities") as mock_pii,
+        patch.object(comprehend, "detect_toxic_content") as mock_toxic,
     ):
         mock_lang.return_value = {"Languages": [{"LanguageCode": "en", "Score": 0.99}]}
         mock_sentiment.return_value = {
@@ -54,10 +56,10 @@ def test_analyze_extracted_text_returns_insights() -> None:
 # Verifies PII detection is skipped when language is unsupported by Comprehend PII API.
 def test_analyze_extracted_text_skips_pii_for_unsupported_language() -> None:
     with (
-        patch.object(orchestrator_services.comprehend, "detect_dominant_language") as mock_lang,
-        patch.object(orchestrator_services.comprehend, "detect_sentiment") as mock_sentiment,
-        patch.object(orchestrator_services.comprehend, "detect_pii_entities") as mock_pii,
-        patch.object(orchestrator_services.comprehend, "detect_toxic_content") as mock_toxic,
+        patch.object(comprehend, "detect_dominant_language") as mock_lang,
+        patch.object(comprehend, "detect_sentiment") as mock_sentiment,
+        patch.object(comprehend, "detect_pii_entities") as mock_pii,
+        patch.object(comprehend, "detect_toxic_content") as mock_toxic,
     ):
         mock_lang.return_value = {"Languages": [{"LanguageCode": "fr", "Score": 0.99}]}
         mock_sentiment.return_value = {

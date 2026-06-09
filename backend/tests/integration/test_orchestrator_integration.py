@@ -26,15 +26,6 @@ def _configure_orchestrator_service_doubles(
     table,
     sns_topic_arn: str | None = None,
 ) -> None:
-    # Keep package-level references for existing test assertions.
-    service_module.s3 = s3_client
-    service_module.rekognition = rekognition_client
-    service_module.textract = textract_client
-    service_module.comprehend = comprehend_client
-    service_module.sns = sns_client
-    service_module.table = table
-    service_module.SNS_SUCCESS_TOPIC_ARN = sns_topic_arn
-
     # Wire concrete split modules used by orchestrator runtime functions.
     service_module.storage_service.s3 = s3_client
     service_module.image_labeling_service.rekognition = rekognition_client
@@ -77,8 +68,8 @@ def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
     assert stored_item["status"] == "safe"
     assert stored_item["s3_key"] == "uploads/sample-image.jpg"
     assert "extracted_text" not in stored_item
-    assert len(service_module.sns.published_messages) == 1
-    notification = service_module.sns.last_message_body()
+    assert len(service_module.notification_service.sns.published_messages) == 1
+    notification = service_module.notification_service.sns.last_message_body()
     assert notification["event_type"] == "SUCCESS"
     assert notification["status"] == "safe"
     assert not notification["unsafe_detected"]
@@ -111,8 +102,8 @@ def test_orchestrator_handler_deletes_invalid_upload_end_to_end() -> None:
         handler.lambda_handler(event, context)
 
     assert fake_s3.deleted_objects == [("<normalized-bucket>", "uploads/sample-image.jpg")]
-    assert len(service_module.table.put_items) == 0
-    assert len(service_module.sns.published_messages) == 0
+    assert len(service_module.repository_service.table.put_items) == 0
+    assert len(service_module.notification_service.sns.published_messages) == 0
 
 
 # Verifies flagged moderation labels are persisted and surfaced as an unsafe notification.
@@ -172,8 +163,8 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
     assert stored_item["text_insights"]["pii_entity_types"] == ["NAME"]
     assert len(stored_item["moderation_labels"]) == 1
     assert stored_item["moderation_labels"][0]["Name"] == "Explicit Nudity"
-    assert len(service_module.sns.published_messages) == 1
-    notification = service_module.sns.last_message_body()
+    assert len(service_module.notification_service.sns.published_messages) == 1
+    notification = service_module.notification_service.sns.last_message_body()
     assert notification["status"] == "unsafe"
     assert notification["unsafe_detected"]
     assert notification["labels_count"] == 1
@@ -210,9 +201,9 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
     with patch.object(handler, "capture_sample_event"):
         handler.lambda_handler(event, runtime_context("req-duplicate"))
 
-    assert len(service_module.table.put_items) == 0
-    assert len(service_module.sns.published_messages) == 0
-    assert service_module.s3.deleted_objects == [
+    assert len(service_module.repository_service.table.put_items) == 0
+    assert len(service_module.notification_service.sns.published_messages) == 0
+    assert service_module.storage_service.s3.deleted_objects == [
         ("<normalized-bucket>", "uploads/sample-image.jpg")
     ]
 
@@ -250,8 +241,8 @@ def test_orchestrator_handler_retries_when_existing_item_failed_end_to_end() -> 
             orchestrator_runtime_event(), runtime_context("req-failed-duplicate")
         )
 
-    assert service_module.s3.deleted_objects == [
+    assert service_module.storage_service.s3.deleted_objects == [
         ("<normalized-bucket>", "uploads/old-failed-image.jpg")
     ]
-    assert len(service_module.table.put_items) == 1
-    assert len(service_module.sns.published_messages) == 1
+    assert len(service_module.repository_service.table.put_items) == 1
+    assert len(service_module.notification_service.sns.published_messages) == 1

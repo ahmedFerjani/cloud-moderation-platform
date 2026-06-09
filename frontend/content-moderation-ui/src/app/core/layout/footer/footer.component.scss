@@ -1,0 +1,13 @@
+.heart-icon-color {
+  color: #e53935;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-link:hover mat-icon {
+  opacity: 0.75;
+}

@@ -6,7 +6,7 @@ from _orchestrator_test_setup import orchestrator_processor, orchestrator_runtim
 # Verifies S3 records are extracted correctly from SQS wrapper payloads.
 def test_extract_s3_records_from_sqs_payload() -> None:
     event = orchestrator_runtime_event()
-    records = list(orchestrator_processor.extract_s3_records(event))
+    records = list(orchestrator_processor._extract_s3_records(event))
 
     assert len(records) == 1
     assert records[0]["eventSource"] == "aws:s3"
@@ -129,3 +129,64 @@ def test_existing_failed_item_does_not_skip_processing() -> None:
     mock_delete.assert_called_once_with("<normalized-bucket>", "uploads/previous-failed.jpg")
     mock_store.assert_called_once()
     mock_notify.assert_called_once()
+
+
+# Verifies failed duplicate entries without stored s3_key continue without deleting old objects.
+def test_existing_failed_item_without_s3_key_continues_without_deletion() -> None:
+    event = orchestrator_runtime_event()
+
+    with (
+        patch.object(orchestrator_processor, "validate_upload_size"),
+        patch.object(orchestrator_processor, "download_image", return_value=b"img"),
+        patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"),
+        patch.object(
+            orchestrator_processor,
+            "find_existing_image",
+            return_value={
+                "status": "failed",
+                "image_id": "img-existing",
+            },
+        ),
+        patch.object(orchestrator_processor, "delete_uploaded_image") as mock_delete,
+        patch.object(orchestrator_processor, "validate_image", return_value="jpeg"),
+        patch.object(orchestrator_processor, "detect_moderation_labels", return_value=[]),
+        patch.object(orchestrator_processor, "extract_text_from_image", return_value=None),
+        patch.object(orchestrator_processor, "analyze_extracted_text") as mock_comprehend,
+        patch.object(orchestrator_processor, "store_moderation_result") as mock_store,
+        patch.object(orchestrator_processor, "send_success_notification") as mock_notify,
+    ):
+        orchestrator_processor.process_moderation_event(event)
+
+    mock_comprehend.assert_not_called()
+    mock_delete.assert_not_called()
+    mock_store.assert_called_once()
+    mock_notify.assert_called_once()
+
+
+# Verifies final batch summary log includes total and all status counters.
+def test_batch_end_log_includes_total_and_status_counters() -> None:
+    event = orchestrator_runtime_event()
+
+    with (
+        patch.object(orchestrator_processor, "validate_upload_size"),
+        patch.object(orchestrator_processor, "download_image", return_value=b"img"),
+        patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"),
+        patch.object(orchestrator_processor, "find_existing_image", return_value=None),
+        patch.object(orchestrator_processor, "validate_image", return_value="jpeg"),
+        patch.object(orchestrator_processor, "detect_moderation_labels", return_value=[]),
+        patch.object(orchestrator_processor, "extract_text_from_image", return_value=None),
+        patch.object(orchestrator_processor, "store_moderation_result"),
+        patch.object(orchestrator_processor, "send_success_notification"),
+        patch.object(orchestrator_processor, "log") as mock_log,
+    ):
+        orchestrator_processor.process_moderation_event(event)
+
+    batch_end_call = next(
+        call for call in mock_log.call_args_list if call.args[1] == "Moderation batch END"
+    )
+    payload = batch_end_call.args[2]
+
+    assert payload["total_records"] == 1
+    assert payload["success"] == 1
+    assert payload["duplicate"] == 0
+    assert payload["rejected"] == 0

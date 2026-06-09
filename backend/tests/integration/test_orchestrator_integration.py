@@ -217,7 +217,7 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
     ]
 
 
-# Verifies failed duplicate history triggers old-object cleanup while current upload still processes.
+# Verifies failed duplicate history triggers old-object cleanup.
 def test_orchestrator_handler_retries_when_existing_item_failed_end_to_end() -> None:
     services, _processor, handler = load_orchestrator_stack()
     service_module = cast(Any, services)

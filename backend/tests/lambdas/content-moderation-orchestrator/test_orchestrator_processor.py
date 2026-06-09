@@ -109,8 +109,13 @@ def test_existing_failed_item_does_not_skip_processing() -> None:
         patch.object(
             orchestrator_processor,
             "find_existing_image",
-            return_value={"status": "failed", "image_id": "img-existing"},
+            return_value={
+                "status": "failed",
+                "image_id": "img-existing",
+                "s3_key": "uploads/previous-failed.jpg",
+            },
         ),
+        patch.object(orchestrator_processor, "delete_uploaded_image") as mock_delete,
         patch.object(orchestrator_processor, "validate_image", return_value="jpeg"),
         patch.object(orchestrator_processor, "detect_moderation_labels", return_value=[]),
         patch.object(orchestrator_processor, "extract_text_from_image", return_value=None),
@@ -121,5 +126,6 @@ def test_existing_failed_item_does_not_skip_processing() -> None:
         orchestrator_processor.process_moderation_event(event)
 
     mock_comprehend.assert_not_called()
+    mock_delete.assert_called_once_with("<normalized-bucket>", "uploads/previous-failed.jpg")
     mock_store.assert_called_once()
     mock_notify.assert_called_once()

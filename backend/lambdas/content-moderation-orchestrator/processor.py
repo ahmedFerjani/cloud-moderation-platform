@@ -83,6 +83,22 @@ def process_moderation_event(event):
 
                 continue
 
+            if existing_item and existing_item["status"] == "failed":
+
+                existing_s3_key = existing_item.get("s3_key")
+                if existing_s3_key:
+                    delete_uploaded_image(bucket_name, existing_s3_key)
+
+                log(
+                    "INFO",
+                    "Existing failed item found; deleting previous object and continuing",
+                    {
+                        **ctx,
+                        "existing_image_id": existing_item.get("image_id"),
+                        "existing_s3_key": existing_s3_key,
+                    },
+                )
+
             image_type = validate_image(image_data)
 
             log("INFO", "Image validated", {**ctx, "image_type": image_type})

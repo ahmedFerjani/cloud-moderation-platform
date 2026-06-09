@@ -215,3 +215,43 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
     assert service_module.s3.deleted_objects == [
         ("<normalized-bucket>", "uploads/sample-image.jpg")
     ]
+
+
+# Verifies failed duplicate history triggers old-object cleanup while current upload still processes.
+def test_orchestrator_handler_retries_when_existing_item_failed_end_to_end() -> None:
+    services, _processor, handler = load_orchestrator_stack()
+    service_module = cast(Any, services)
+    fake_s3 = FakeS3Client()
+    fake_rekognition = FakeRekognitionClient(labels=[])
+    fake_textract = FakeTextractClient(blocks=[])
+    fake_comprehend = FakeComprehendClient()
+    fake_sns = FakeSNSClient()
+    fake_table = FakeTable(
+        existing_item={
+            "image_id": "existing-failed-image",
+            "status": "failed",
+            "s3_key": "uploads/old-failed-image.jpg",
+            "image_hash": "ec4c891067050ba7b2f28c818666200e695328857bf52060d5140a707858de5b",
+        }
+    )
+    _configure_orchestrator_service_doubles(
+        service_module,
+        s3_client=fake_s3,
+        rekognition_client=fake_rekognition,
+        textract_client=fake_textract,
+        comprehend_client=fake_comprehend,
+        sns_client=fake_sns,
+        table=fake_table,
+        sns_topic_arn="arn:aws:sns:us-east-1:123456789012:test-topic",
+    )
+
+    with patch.object(handler, "capture_sample_event"):
+        handler.lambda_handler(
+            orchestrator_runtime_event(), runtime_context("req-failed-duplicate")
+        )
+
+    assert service_module.s3.deleted_objects == [
+        ("<normalized-bucket>", "uploads/old-failed-image.jpg")
+    ]
+    assert len(service_module.table.put_items) == 1
+    assert len(service_module.sns.published_messages) == 1

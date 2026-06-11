@@ -22,6 +22,11 @@ export const routes: Routes = [
             (m) => m.moderationResultsRoutes,
           ),
       },
+      {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
+      },
     ],
   },
   {

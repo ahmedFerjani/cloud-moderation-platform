@@ -7,3 +7,11 @@ module "content_bucket" {
   purpose      = "uploads"
   region       = local.region
 }
+
+module "moderation_table" {
+  source = "./modules/dynamodb"
+
+  environment  = var.environment
+  project_name = var.project_name
+  purpose      = "moderation-results"
+}

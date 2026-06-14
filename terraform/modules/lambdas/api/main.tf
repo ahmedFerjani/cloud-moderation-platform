@@ -2,7 +2,6 @@ resource "aws_iam_role" "this" {
   name = lower(
     "${var.project_name}-${var.environment}-api-lambda-role"
   )
-  path               = "/system/"
   assume_role_policy = var.lambda_assume_role_json
 }
 

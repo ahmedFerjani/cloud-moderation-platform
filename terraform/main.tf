@@ -41,3 +41,11 @@ module "orchestrator_lambda" {
   content_bucket_arn           = module.content_bucket.bucket_arn
   moderation_results_table_arn = module.moderation_table.table_arn
 }
+
+module "sns" {
+  source = "./modules/sns"
+
+  project_name = var.project_name
+  environment  = var.environment
+  purpose      = "moderation-failures"
+}

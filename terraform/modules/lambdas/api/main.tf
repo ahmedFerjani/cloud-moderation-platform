@@ -1,5 +1,7 @@
 resource "aws_iam_role" "this" {
-  name               = "${var.project_name}-${var.environment}-api-lambda-role"
+  name = lower(
+    "${var.project_name}-${var.environment}-api-lambda-role"
+  )
   path               = "/system/"
   assume_role_policy = var.lambda_assume_role_json
 }
@@ -10,7 +12,9 @@ resource "aws_iam_role_policy_attachment" "basic" {
 }
 
 resource "aws_iam_role_policy" "api_lambda_policy" {
-  name   = "${var.project_name}-${var.environment}-api-lambda-policy"
+  name = lower(
+    "${var.project_name}-${var.environment}-api-lambda-policy"
+  )
   role   = aws_iam_role.this.id
   policy = data.aws_iam_policy_document.api_lambda_policy.json
 }

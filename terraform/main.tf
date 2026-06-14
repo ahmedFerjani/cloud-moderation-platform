@@ -58,3 +58,17 @@ module "sqs" {
   project_name = var.project_name
   environment  = var.environment
 }
+
+module "dql_handler_lambda" {
+  source = "./modules/lambdas/dql_hanlder"
+
+  environment  = var.environment
+  project_name = var.project_name
+
+  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
+  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
+
+  dlq_arn                      = module.sqs.dlq_arn
+  moderation_results_table_arn = module.moderation_table.table_arn
+  failure_topic_arn            = module.sns.topic_arn
+}

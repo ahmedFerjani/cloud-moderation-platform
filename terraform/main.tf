@@ -48,4 +48,6 @@ module "sns" {
   project_name = var.project_name
   environment  = var.environment
   purpose      = "moderation-failures"
+
+  notification_emails = var.notification_emails
 }

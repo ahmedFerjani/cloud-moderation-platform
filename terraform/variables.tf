@@ -15,3 +15,8 @@ variable "project_name" {
   type        = string
   default     = "content-moderation"
 }
+
+variable "notification_emails" {
+  description = "List of email addresses to receive failure notifications"
+  type        = list(string)
+}

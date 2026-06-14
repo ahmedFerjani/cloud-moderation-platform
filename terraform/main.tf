@@ -13,7 +13,7 @@ module "moderation_table" {
 
   environment  = var.environment
   project_name = var.project_name
-  purpose      = "moderation-results"
+  purpose      = "results"
 }
 
 module "api_lambda" {
@@ -47,7 +47,7 @@ module "sns" {
 
   project_name = var.project_name
   environment  = var.environment
-  purpose      = "moderation-failures"
+  purpose      = "failures"
 
   notification_emails = var.notification_emails
 }

@@ -28,3 +28,16 @@ module "api_lambda" {
   content_bucket_arn           = module.content_bucket.bucket_arn
   moderation_results_table_arn = module.moderation_table.table_arn
 }
+
+module "orchestrator_lambda" {
+  source = "./modules/lambdas/orchestrator"
+
+  environment  = var.environment
+  project_name = var.project_name
+
+  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
+  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
+
+  content_bucket_arn           = module.content_bucket.bucket_arn
+  moderation_results_table_arn = module.moderation_table.table_arn
+}

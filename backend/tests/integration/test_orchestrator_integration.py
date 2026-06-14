@@ -6,7 +6,6 @@ from _integration_test_setup import (
     FakeComprehendClient,
     FakeRekognitionClient,
     FakeS3Client,
-    FakeSNSClient,
     FakeTable,
     FakeTextractClient,
     load_orchestrator_stack,
@@ -22,21 +21,17 @@ def _configure_orchestrator_service_doubles(
     rekognition_client,
     textract_client,
     comprehend_client,
-    sns_client,
     table,
-    sns_topic_arn: str | None = None,
 ) -> None:
     # Wire concrete split modules used by orchestrator runtime functions.
     service_module.storage_service.s3 = s3_client
     service_module.image_labeling_service.rekognition = rekognition_client
     service_module.image_labeling_service.textract = textract_client
     service_module.text_insights_service.comprehend = comprehend_client
-    service_module.notification_service.sns = sns_client
-    service_module.notification_service.SNS_SUCCESS_TOPIC_ARN = sns_topic_arn
     service_module.repository_service.table = table
 
 
-# Verifies a valid image is persisted as safe and emits the success notification payload.
+# Verifies a valid image is persisted as safe.
 def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
     services, _processor, handler = load_orchestrator_stack()
     service_module = cast(Any, services)
@@ -44,7 +39,6 @@ def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
     fake_rekognition = FakeRekognitionClient(labels=[])
     fake_textract = FakeTextractClient(blocks=[])
     fake_comprehend = FakeComprehendClient()
-    fake_sns = FakeSNSClient()
     fake_table = FakeTable()
     _configure_orchestrator_service_doubles(
         service_module,
@@ -52,9 +46,7 @@ def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
         rekognition_client=fake_rekognition,
         textract_client=fake_textract,
         comprehend_client=fake_comprehend,
-        sns_client=fake_sns,
         table=fake_table,
-        sns_topic_arn="arn:aws:sns:us-east-1:123456789012:test-topic",
     )
 
     event = orchestrator_runtime_event()
@@ -68,14 +60,9 @@ def test_orchestrator_handler_processes_safe_image_end_to_end() -> None:
     assert stored_item["status"] == "safe"
     assert stored_item["s3_key"] == "uploads/sample-image.jpg"
     assert "extracted_text" not in stored_item
-    assert len(service_module.notification_service.sns.published_messages) == 1
-    notification = service_module.notification_service.sns.last_message_body()
-    assert notification["event_type"] == "SUCCESS"
-    assert notification["status"] == "safe"
-    assert not notification["unsafe_detected"]
 
 
-# Verifies unreadable uploads are deleted and do not create downstream records or notifications.
+# Verifies unreadable uploads are deleted and do not create downstream records.
 def test_orchestrator_handler_deletes_invalid_upload_end_to_end() -> None:
     services, _processor, handler = load_orchestrator_stack()
     service_module = cast(Any, services)
@@ -83,7 +70,6 @@ def test_orchestrator_handler_deletes_invalid_upload_end_to_end() -> None:
     fake_rekognition = FakeRekognitionClient(labels=[])
     fake_textract = FakeTextractClient(blocks=[])
     fake_comprehend = FakeComprehendClient()
-    fake_sns = FakeSNSClient()
     fake_table = FakeTable()
     _configure_orchestrator_service_doubles(
         service_module,
@@ -91,7 +77,6 @@ def test_orchestrator_handler_deletes_invalid_upload_end_to_end() -> None:
         rekognition_client=fake_rekognition,
         textract_client=fake_textract,
         comprehend_client=fake_comprehend,
-        sns_client=fake_sns,
         table=fake_table,
     )
 
@@ -103,10 +88,9 @@ def test_orchestrator_handler_deletes_invalid_upload_end_to_end() -> None:
 
     assert fake_s3.deleted_objects == [("<normalized-bucket>", "uploads/sample-image.jpg")]
     assert len(service_module.repository_service.table.put_items) == 0
-    assert len(service_module.notification_service.sns.published_messages) == 0
 
 
-# Verifies flagged moderation labels are persisted and surfaced as an unsafe notification.
+# Verifies flagged moderation labels are persisted.
 def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
     services, _processor, handler = load_orchestrator_stack()
     service_module = cast(Any, services)
@@ -134,7 +118,6 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
         pii_entities=[{"Type": "NAME", "Score": 0.95}],
         toxic_labels=[{"Name": "INSULT", "Score": 0.83}],
     )
-    fake_sns = FakeSNSClient()
     fake_table = FakeTable()
     _configure_orchestrator_service_doubles(
         service_module,
@@ -142,9 +125,7 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
         rekognition_client=fake_rekognition,
         textract_client=fake_textract,
         comprehend_client=fake_comprehend,
-        sns_client=fake_sns,
         table=fake_table,
-        sns_topic_arn="arn:aws:sns:us-east-1:123456789012:test-topic",
     )
 
     with patch.object(handler, "capture_sample_event"):
@@ -163,11 +144,6 @@ def test_orchestrator_handler_processes_unsafe_image_end_to_end() -> None:
     assert stored_item["text_insights"]["pii_entity_types"] == ["NAME"]
     assert len(stored_item["moderation_labels"]) == 1
     assert stored_item["moderation_labels"][0]["Name"] == "Explicit Nudity"
-    assert len(service_module.notification_service.sns.published_messages) == 1
-    notification = service_module.notification_service.sns.last_message_body()
-    assert notification["status"] == "unsafe"
-    assert notification["unsafe_detected"]
-    assert notification["labels_count"] == 1
 
 
 # Checks duplicate uploads are deleted and skipped.
@@ -178,7 +154,6 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
     fake_rekognition = FakeRekognitionClient(labels=[])
     fake_textract = FakeTextractClient(blocks=[])
     fake_comprehend = FakeComprehendClient()
-    fake_sns = FakeSNSClient()
     fake_table = FakeTable(
         existing_item={
             "image_id": "existing-image",
@@ -192,7 +167,6 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
         rekognition_client=fake_rekognition,
         textract_client=fake_textract,
         comprehend_client=fake_comprehend,
-        sns_client=fake_sns,
         table=fake_table,
     )
 
@@ -202,7 +176,6 @@ def test_orchestrator_handler_skips_duplicate_image_end_to_end() -> None:
         handler.lambda_handler(event, runtime_context("req-duplicate"))
 
     assert len(service_module.repository_service.table.put_items) == 0
-    assert len(service_module.notification_service.sns.published_messages) == 0
     assert service_module.storage_service.s3.deleted_objects == [
         ("<normalized-bucket>", "uploads/sample-image.jpg")
     ]
@@ -216,7 +189,6 @@ def test_orchestrator_handler_retries_when_existing_item_failed_end_to_end() -> 
     fake_rekognition = FakeRekognitionClient(labels=[])
     fake_textract = FakeTextractClient(blocks=[])
     fake_comprehend = FakeComprehendClient()
-    fake_sns = FakeSNSClient()
     fake_table = FakeTable(
         existing_item={
             "image_id": "existing-failed-image",
@@ -231,9 +203,7 @@ def test_orchestrator_handler_retries_when_existing_item_failed_end_to_end() -> 
         rekognition_client=fake_rekognition,
         textract_client=fake_textract,
         comprehend_client=fake_comprehend,
-        sns_client=fake_sns,
         table=fake_table,
-        sns_topic_arn="arn:aws:sns:us-east-1:123456789012:test-topic",
     )
 
     with patch.object(handler, "capture_sample_event"):
@@ -245,4 +215,3 @@ def test_orchestrator_handler_retries_when_existing_item_failed_end_to_end() -> 
         ("<normalized-bucket>", "uploads/old-failed-image.jpg")
     ]
     assert len(service_module.repository_service.table.put_items) == 1
-    assert len(service_module.notification_service.sns.published_messages) == 1

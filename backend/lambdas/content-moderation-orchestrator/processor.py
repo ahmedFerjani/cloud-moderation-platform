@@ -9,7 +9,6 @@ from services import (
     extract_text_from_image,
     download_image,
     extract_image_id_from_s3_key,
-    send_success_notification,
     store_moderation_result,
     generate_image_hash,
     find_existing_image,
@@ -154,11 +153,6 @@ def _process_single_record(s3_record):
         )
 
         log("INFO", "DynamoDB stored", ctx)
-
-        send_success_notification(object_key, moderation_labels)
-
-        log("INFO", "SNS sent", ctx)
-        log("INFO", "Processing image END", ctx)
 
         return STATUS_SUCCESS
 

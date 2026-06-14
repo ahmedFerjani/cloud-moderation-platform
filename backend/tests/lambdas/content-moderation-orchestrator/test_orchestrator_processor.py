@@ -30,7 +30,6 @@ def test_duplicate_image_skips_processing() -> None:
         patch.object(orchestrator_processor, "extract_text_from_image") as mock_textract,
         patch.object(orchestrator_processor, "analyze_extracted_text") as mock_comprehend,
         patch.object(orchestrator_processor, "store_moderation_result") as mock_store,
-        patch.object(orchestrator_processor, "send_success_notification") as mock_notify,
     ):
         orchestrator_processor.process_moderation_event(event)
 
@@ -40,7 +39,6 @@ def test_duplicate_image_skips_processing() -> None:
     mock_textract.assert_not_called()
     mock_comprehend.assert_not_called()
     mock_store.assert_not_called()
-    mock_notify.assert_not_called()
 
 
 # Verifies business validation errors trigger cleanup by deleting the uploaded object.
@@ -60,7 +58,7 @@ def test_app_error_path_deletes_invalid_upload() -> None:
     mock_delete.assert_called_once()
 
 
-# Verifies successful moderation stores results, emits notifications, and avoids deletion.
+# Verifies successful moderation stores results, and avoids deletion.
 def test_success_path_stores_and_notifies() -> None:
     event = orchestrator_runtime_event()
 
@@ -82,7 +80,6 @@ def test_success_path_stores_and_notifies() -> None:
             return_value={"sentiment": "NEGATIVE"},
         ),
         patch.object(orchestrator_processor, "store_moderation_result") as mock_store,
-        patch.object(orchestrator_processor, "send_success_notification") as mock_notify,
         patch.object(orchestrator_processor, "delete_uploaded_image") as mock_delete,
     ):
         orchestrator_processor.process_moderation_event(event)
@@ -94,7 +91,6 @@ def test_success_path_stores_and_notifies() -> None:
         "Sample extracted text",
         {"sentiment": "NEGATIVE"},
     )
-    mock_notify.assert_called_once_with("uploads/sample-image.jpg", [])
     mock_delete.assert_not_called()
 
 
@@ -121,14 +117,12 @@ def test_existing_failed_item_does_not_skip_processing() -> None:
         patch.object(orchestrator_processor, "extract_text_from_image", return_value=None),
         patch.object(orchestrator_processor, "analyze_extracted_text") as mock_comprehend,
         patch.object(orchestrator_processor, "store_moderation_result") as mock_store,
-        patch.object(orchestrator_processor, "send_success_notification") as mock_notify,
     ):
         orchestrator_processor.process_moderation_event(event)
 
     mock_comprehend.assert_not_called()
     mock_delete.assert_called_once_with("<normalized-bucket>", "uploads/previous-failed.jpg")
     mock_store.assert_called_once()
-    mock_notify.assert_called_once()
 
 
 # Verifies failed duplicate entries without stored s3_key continue without deleting old objects.
@@ -153,14 +147,12 @@ def test_existing_failed_item_without_s3_key_continues_without_deletion() -> Non
         patch.object(orchestrator_processor, "extract_text_from_image", return_value=None),
         patch.object(orchestrator_processor, "analyze_extracted_text") as mock_comprehend,
         patch.object(orchestrator_processor, "store_moderation_result") as mock_store,
-        patch.object(orchestrator_processor, "send_success_notification") as mock_notify,
     ):
         orchestrator_processor.process_moderation_event(event)
 
     mock_comprehend.assert_not_called()
     mock_delete.assert_not_called()
     mock_store.assert_called_once()
-    mock_notify.assert_called_once()
 
 
 # Verifies final batch summary log includes total and all status counters.
@@ -176,7 +168,6 @@ def test_batch_end_log_includes_total_and_status_counters() -> None:
         patch.object(orchestrator_processor, "detect_moderation_labels", return_value=[]),
         patch.object(orchestrator_processor, "extract_text_from_image", return_value=None),
         patch.object(orchestrator_processor, "store_moderation_result"),
-        patch.object(orchestrator_processor, "send_success_notification"),
         patch.object(orchestrator_processor, "log") as mock_log,
     ):
         orchestrator_processor.process_moderation_event(event)

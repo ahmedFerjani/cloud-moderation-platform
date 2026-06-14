@@ -1,14 +1,12 @@
 from . import (
     identity_service,
     image_labeling_service,
-    notification_service,
     repository_service,
     storage_service,
     text_insights_service,
 )
 from .image_labeling_service import detect_moderation_labels, extract_text_from_image
 from .identity_service import extract_image_id_from_s3_key, generate_image_hash
-from .notification_service import send_success_notification
 from .repository_service import find_existing_image, store_moderation_result
 from .storage_service import delete_uploaded_image, download_image
 from .text_insights_service import analyze_extracted_text
@@ -20,13 +18,11 @@ __all__ = [
     "extract_image_id_from_s3_key",
     "find_existing_image",
     "generate_image_hash",
-    "send_success_notification",
     "store_moderation_result",
     "detect_moderation_labels",
     "extract_text_from_image",
     "identity_service",
     "image_labeling_service",
-    "notification_service",
     "repository_service",
     "storage_service",
     "text_insights_service",

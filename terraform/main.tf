@@ -51,3 +51,10 @@ module "sns" {
 
   notification_emails = var.notification_emails
 }
+
+module "sqs" {
+  source = "./modules/sqs"
+
+  project_name = var.project_name
+  environment  = var.environment
+}

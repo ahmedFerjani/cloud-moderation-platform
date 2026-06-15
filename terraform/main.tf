@@ -72,3 +72,14 @@ module "dql_handler_lambda" {
   moderation_results_table_arn = module.moderation_table.table_arn
   failure_topic_arn            = module.sns.topic_arn
 }
+
+module "lambda-layers" {
+  source = "./modules/layers"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  serverless_utils_zip_path = "${local.layers_dir}/serverless_utils/python.zip"
+
+  image_processing_zip_path = "${local.layers_dir}/image_processing/python.zip"
+}

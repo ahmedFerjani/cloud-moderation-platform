@@ -6,7 +6,7 @@ from pathlib import Path
 from helpers import ensure_sys_path, find_backend_root, load_event, load_module
 
 BACKEND_ROOT = find_backend_root(Path(__file__))
-COMMON_PATH = BACKEND_ROOT / "layers" / "serverless-utils-layer" / "python"
+COMMON_PATH = BACKEND_ROOT / "layers" / "serverless-utils" / "python"
 ORCHESTRATOR_PATH = BACKEND_ROOT / "lambdas" / "content-moderation-orchestrator"
 EVENTS_PATH = BACKEND_ROOT / "events"
 

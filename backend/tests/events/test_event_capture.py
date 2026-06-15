@@ -5,9 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-COMMON_LAYER_PATH = (
-    Path(__file__).resolve().parents[2] / "layers" / "serverless-utils" / "python"
-)
+COMMON_LAYER_PATH = Path(__file__).resolve().parents[2] / "layers" / "serverless-utils" / "python"
 
 if str(COMMON_LAYER_PATH) not in sys.path:
     sys.path.insert(0, str(COMMON_LAYER_PATH))

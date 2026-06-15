@@ -15,7 +15,7 @@ def test_handler_calls_capture_and_router(api_event_factory, api_context) -> Non
         result = api_handler.lambda_handler(event, api_context)
 
     assert result == {"statusCode": 200}
-    mock_capture.assert_called_once_with("content-moderation-api", event, api_context)
+    mock_capture.assert_called_once_with("api", event, api_context)
     mock_route.assert_called_once_with(event)
 
 

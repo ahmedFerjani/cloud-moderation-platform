@@ -20,7 +20,7 @@ def test_handler_calls_capture_and_processor() -> None:
     ):
         orchestrator_handler.lambda_handler(event, context)
 
-    mock_capture.assert_called_once_with("content-moderation-orchestrator", event, context)
+    mock_capture.assert_called_once_with("orchestrator", event, context)
     mock_process.assert_called_once_with(event)
 
 

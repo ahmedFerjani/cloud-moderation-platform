@@ -150,9 +150,9 @@ jobs:
             --cov-report=xml:backend/test-reports/unit/coverage.xml \
             --cov-fail-under=80 \
             backend/tests/events \
-            backend/tests/lambdas/content-moderation-api \
-            backend/tests/lambdas/content-moderation-orchestrator \
-            backend/tests/lambdas/content-moderation-dlq-handler \
+            backend/tests/lambdas/api \
+            backend/tests/lambdas/orchestrator \
+            backend/tests/lambdas/dlq_handler \
             --junitxml=backend/test-reports/unit/junit.xml
 
       - name: Publish unit test report

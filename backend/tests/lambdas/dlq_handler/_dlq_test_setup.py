@@ -7,7 +7,7 @@ from helpers import ensure_sys_path, find_backend_root, load_event, load_module
 
 BACKEND_ROOT = find_backend_root(Path(__file__))
 COMMON_PATH = BACKEND_ROOT / "layers" / "serverless_utils" / "python"
-DLQ_PATH = BACKEND_ROOT / "lambdas" / "content-moderation-dlq-handler"
+DLQ_PATH = BACKEND_ROOT / "lambdas" / "dlq_handler"
 EVENTS_PATH = BACKEND_ROOT / "events"
 
 ensure_sys_path((COMMON_PATH, DLQ_PATH))

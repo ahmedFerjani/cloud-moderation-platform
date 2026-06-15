@@ -87,11 +87,11 @@ def test_capture_logs_json_payload_in_aws_mode() -> None:
         clear=False,
     ):
         with patch("common.event_capture.log") as mock_log:
-            event_capture.capture_sample_event("content-moderation-api", event, context)
+            event_capture.capture_sample_event("api", event, context)
 
     mock_log.assert_called_once()
     _, _, extra = mock_log.call_args.args
-    assert extra["lambda_name"] == "content-moderation-api"
+    assert extra["lambda_name"] == "api"
     assert extra["aws_request_id"] == "req-123"
     assert extra["event_payload"] == event
     assert extra["event_truncated"] == 0
@@ -112,12 +112,12 @@ def test_capture_saves_event_to_file_in_sam_local_mode() -> None:
             return_value="events/captured/sample.json",
         ) as mock_save:
             with patch("common.event_capture.log") as mock_log:
-                event_capture.capture_sample_event("content-moderation-api", event, context)
+                event_capture.capture_sample_event("api", event, context)
 
-    mock_save.assert_called_once_with("content-moderation-api", event, "req-local")
+    mock_save.assert_called_once_with("api", event, "req-local")
     mock_log.assert_called_once()
     _, _, extra = mock_log.call_args.args
-    assert extra["lambda_name"] == "content-moderation-api"
+    assert extra["lambda_name"] == "api"
     assert extra["aws_request_id"] == "req-local"
     assert extra["event_file_path"] == "events/captured/sample.json"
 
@@ -133,7 +133,7 @@ def test_capture_truncates_oversized_payload_in_aws_mode() -> None:
         clear=False,
     ):
         with patch("common.event_capture.log") as mock_log:
-            event_capture.capture_sample_event("content-moderation-api", event, context)
+            event_capture.capture_sample_event("api", event, context)
 
     _, _, extra = mock_log.call_args.args
     assert extra["event_truncated"] == 1

@@ -7,7 +7,7 @@ from router import route_request
 @api_exception_handler
 def lambda_handler(event, context):
 
-    capture_sample_event("content-moderation-api", event, context)
+    capture_sample_event("api", event, context)
 
     log("INFO", "Content moderation API Lambda INVOKED")
 

@@ -7,7 +7,7 @@ from helpers import ensure_sys_path, find_backend_root, load_event, load_module
 
 BACKEND_ROOT = find_backend_root(Path(__file__))
 COMMON_PATH = BACKEND_ROOT / "layers" / "serverless_utils" / "python"
-API_PATH = BACKEND_ROOT / "lambdas" / "content-moderation-api"
+API_PATH = BACKEND_ROOT / "lambdas" / "api"
 EVENTS_PATH = BACKEND_ROOT / "events"
 
 ensure_sys_path((COMMON_PATH, API_PATH))

@@ -7,7 +7,7 @@ from processor import process_dlq_event
 @worker_exception_handler
 def lambda_handler(event, context):
 
-    capture_sample_event("content-moderation-dlq-handler", event, context)
+    capture_sample_event("dlq_handler", event, context)
 
     log("INFO", "DLQ handler INVOKED")
 

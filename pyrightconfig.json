@@ -16,24 +16,24 @@
   ],
   "executionEnvironments": [
     {
-      "root": "backend/lambdas/content-moderation-api",
+      "root": "backend/lambdas/api",
       "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
-      "root": "backend/lambdas/content-moderation-orchestrator",
+      "root": "backend/lambdas/orchestrator",
       "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
-      "root": "backend/lambdas/content-moderation-dlq-handler",
+      "root": "backend/lambdas/dlq_handler",
       "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
       "root": "backend/tests",
       "extraPaths": [
         "backend/tests",
-        "backend/lambdas/content-moderation-api",
-        "backend/lambdas/content-moderation-orchestrator",
-        "backend/lambdas/content-moderation-dlq-handler",
+        "backend/lambdas/api",
+        "backend/lambdas/orchestrator",
+        "backend/lambdas/dlq_handler",
         "backend/layers/serverless_utils/python"
       ]
     },

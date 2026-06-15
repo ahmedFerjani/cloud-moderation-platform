@@ -7,7 +7,7 @@ from processor import process_moderation_event
 @worker_exception_handler
 def lambda_handler(event, context):
 
-    capture_sample_event("content-moderation-orchestrator", event, context)
+    capture_sample_event("orchestrator", event, context)
 
     log("INFO", "Content moderation INVOKED")
 

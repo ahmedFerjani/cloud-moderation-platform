@@ -13,9 +13,9 @@ if str(TESTS_ROOT) not in sys.path:
 
 BACKEND_ROOT = find_backend_root(Path(__file__))
 COMMON_PATH = BACKEND_ROOT / "layers" / "serverless_utils" / "python"
-API_PATH = BACKEND_ROOT / "lambdas" / "content-moderation-api"
-ORCHESTRATOR_PATH = BACKEND_ROOT / "lambdas" / "content-moderation-orchestrator"
-DLQ_PATH = BACKEND_ROOT / "lambdas" / "content-moderation-dlq-handler"
+API_PATH = BACKEND_ROOT / "lambdas" / "api"
+ORCHESTRATOR_PATH = BACKEND_ROOT / "lambdas" / "orchestrator"
+DLQ_PATH = BACKEND_ROOT / "lambdas" / "dlq_handler"
 EVENTS_PATH = BACKEND_ROOT / "events"
 
 ensure_sys_path((DLQ_PATH, ORCHESTRATOR_PATH, API_PATH, COMMON_PATH))

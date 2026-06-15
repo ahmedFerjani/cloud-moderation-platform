@@ -3,13 +3,13 @@
     "backend/lambdas",
     "backend/tests",
     "backend/scripts",
-    "backend/layers/serverless-utils/python/common"
+    "backend/layers/serverless_utils/python/common"
   ],
   "exclude": [
     "**/__pycache__",
     "**/.venv",
     "**/venv",
-    "backend/layers/image-processing/python",
+    "backend/layers/image_processing/python",
     "**/node_modules",
     "**/.*",
     "test_env"
@@ -17,15 +17,15 @@
   "executionEnvironments": [
     {
       "root": "backend/lambdas/content-moderation-api",
-      "extraPaths": ["backend/layers/serverless-utils/python"]
+      "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
       "root": "backend/lambdas/content-moderation-orchestrator",
-      "extraPaths": ["backend/layers/serverless-utils/python"]
+      "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
       "root": "backend/lambdas/content-moderation-dlq-handler",
-      "extraPaths": ["backend/layers/serverless-utils/python"]
+      "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
       "root": "backend/tests",
@@ -34,12 +34,12 @@
         "backend/lambdas/content-moderation-api",
         "backend/lambdas/content-moderation-orchestrator",
         "backend/lambdas/content-moderation-dlq-handler",
-        "backend/layers/serverless-utils/python"
+        "backend/layers/serverless_utils/python"
       ]
     },
     {
       "root": "backend/scripts",
-      "extraPaths": ["backend/layers/serverless-utils/python"]
+      "extraPaths": ["backend/layers/serverless_utils/python"]
     }
   ]
 }

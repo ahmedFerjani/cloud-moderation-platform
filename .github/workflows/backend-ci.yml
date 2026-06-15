@@ -49,7 +49,7 @@ jobs:
             -r backend/requirements-ci-tests.txt
 
       - name: Run ruff lint checks
-        run: ruff check backend/lambdas backend/tests backend/scripts backend/layers/serverless-utils/python/common
+        run: ruff check backend/lambdas backend/tests backend/scripts backend/layers/serverless_utils/python/common
 
       - name: Run black formatting checks
         env:
@@ -59,7 +59,7 @@ jobs:
             --check \
             --line-length="${BLACK_LINE_LENGTH}" \
             backend/lambdas backend/tests backend/scripts \
-            backend/layers/serverless-utils/python/common
+            backend/layers/serverless_utils/python/common
 
       - name: Run flake8 lint checks
         env:
@@ -68,7 +68,7 @@ jobs:
           flake8 \
             --max-line-length="${FLAKE8_MAX_LINE_LENGTH}" \
             backend/lambdas backend/tests backend/scripts \
-            backend/layers/serverless-utils/python/common
+            backend/layers/serverless_utils/python/common
 
       - name: Run pyright type checks
         run: pyright --project pyrightconfig.json
@@ -114,7 +114,7 @@ jobs:
           bandit -q -r \
             backend/lambdas \
             backend/scripts \
-            backend/layers/serverless-utils/python/common
+            backend/layers/serverless_utils/python/common
 
   backend-unit-tests:
     name: Unit Tests
@@ -145,7 +145,7 @@ jobs:
           pytest \
             --override-ini="addopts=-ra --strict-config" \
             --cov=backend/lambdas \
-            --cov=backend/layers/serverless-utils/python/common \
+            --cov=backend/layers/serverless_utils/python/common \
             --cov-report=term-missing \
             --cov-report=xml:backend/test-reports/unit/coverage.xml \
             --cov-fail-under=80 \

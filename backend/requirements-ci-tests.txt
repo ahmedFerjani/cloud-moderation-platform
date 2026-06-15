@@ -1,6 +1,6 @@
 # Dependencies needed to run backend unit and integration tests in CI
 boto3==1.43.18
-# Keep this Pillow version in sync with backend/layers/image-processing/requirements.txt
+# Keep this Pillow version in sync with backend/layers/image_processing/requirements.txt
 Pillow==12.2.0
 pytest==9.0.3
 pytest-cov==6.2.1

@@ -16,19 +16,6 @@ module "moderation_table" {
   purpose      = "results"
 }
 
-module "orchestrator_lambda" {
-  source = "./modules/lambdas/orchestrator"
-
-  environment  = var.environment
-  project_name = var.project_name
-
-  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
-  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
-
-  content_bucket_arn           = module.content_bucket.bucket_arn
-  moderation_results_table_arn = module.moderation_table.table_arn
-}
-
 module "sns" {
   source = "./modules/sns"
 
@@ -92,4 +79,23 @@ module "dql_handler_lambda" {
 
   moderation_table_name = module.moderation_table.table_name
   moderation_table_arn  = module.moderation_table.table_arn
+}
+
+module "orchestrator_lambda" {
+  source = "./modules/lambdas/orchestrator"
+
+  environment  = var.environment
+  project_name = var.project_name
+
+  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
+  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
+
+  orchestrator_lambda_zip_path = "${local.packages_dir}/orchestrator.zip"
+  serverless_utils_layer_arn   = module.lambda-layers.serverless_utils_layer_arn
+  image_processing_lambda_arn  = module.lambda-layers.image_processing_layer_arn
+
+  bucket_owner_id       = local.account_id
+  content_bucket_arn    = module.content_bucket.bucket_arn
+  moderation_table_arn  = module.moderation_table.table_arn
+  moderation_table_name = module.moderation_table.table_name
 }

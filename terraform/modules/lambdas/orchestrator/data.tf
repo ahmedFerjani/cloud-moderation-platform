@@ -26,11 +26,11 @@ data "aws_iam_policy_document" "orchestrator_lambda_policy" {
 
   statement {
     actions   = ["dynamodb:PutItem"]
-    resources = [var.moderation_results_table_arn]
+    resources = [var.moderation_table_arn]
   }
 
   statement {
     actions   = ["dynamodb:Query"]
-    resources = ["${var.moderation_results_table_arn}/index/imageHash-index"]
+    resources = ["${var.moderation_table_arn}/index/imageHash-index"]
   }
 }

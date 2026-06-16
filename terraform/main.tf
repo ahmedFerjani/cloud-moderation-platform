@@ -16,19 +16,6 @@ module "moderation_table" {
   purpose      = "results"
 }
 
-module "api_lambda" {
-  source = "./modules/lambdas/api"
-
-  environment  = var.environment
-  project_name = var.project_name
-
-  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
-  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
-
-  content_bucket_arn           = module.content_bucket.bucket_arn
-  moderation_results_table_arn = module.moderation_table.table_arn
-}
-
 module "orchestrator_lambda" {
   source = "./modules/lambdas/orchestrator"
 
@@ -62,8 +49,8 @@ module "sqs" {
 module "dql_handler_lambda" {
   source = "./modules/lambdas/dql_hanlder"
 
-  environment  = var.environment
   project_name = var.project_name
+  environment  = var.environment
 
   lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
   lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
@@ -81,4 +68,23 @@ module "lambda-layers" {
 
   serverless_utils_zip_path = "${local.packages_dir}/serverless-utils.zip"
   image_processing_zip_path = "${local.packages_dir}/image-processing.zip"
+}
+
+module "api_lambda" {
+  source = "./modules/lambdas/api"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
+  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
+
+  api_lambda_zip_path        = "${local.packages_dir}/api.zip"
+  serverless_utils_layer_arn = module.lambda-layers.serverless_utils_layer_arn
+
+  content_bucket_name = module.content_bucket.bucket_name
+  content_bucket_arn  = module.content_bucket.bucket_arn
+
+  moderation_results_table_name = module.moderation_table.table_name
+  moderation_results_table_arn  = module.moderation_table.table_arn
 }

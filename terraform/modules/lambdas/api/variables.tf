@@ -44,12 +44,12 @@ variable "content_bucket_arn" {
   type        = string
 }
 
-variable "moderation_results_table_name" {
+variable "moderation_table_name" {
   description = "Name of the DynamoDB table for moderation results"
   type        = string
 }
 
-variable "moderation_results_table_arn" {
+variable "moderation_table_arn" {
   description = "ARN of the DynamoDB table for moderation results"
   type        = string
 }

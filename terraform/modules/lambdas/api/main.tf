@@ -42,9 +42,9 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
+      CAPTURE_SAMPLE_EVENTS = tostring(var.environment == "dev")
       BUCKET_NAME           = var.content_bucket_name
       TABLE_NAME            = var.moderation_table_name
-      CAPTURE_SAMPLE_EVENTS = tostring(var.environment == "dev")
     }
   }
 }

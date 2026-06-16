@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "dlq_handler_lambda_policy" {
 
   statement {
     actions   = ["dynamodb:PutItem"]
-    resources = [var.moderation_results_table_arn]
+    resources = [var.moderation_table_arn]
   }
 
   statement {

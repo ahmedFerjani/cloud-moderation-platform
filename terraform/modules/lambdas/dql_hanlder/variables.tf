@@ -8,6 +8,22 @@ variable "environment" {
   type        = string
 }
 
+variable "runtime" {
+  description = "Runtime for DLQ Handler Lambda"
+  type        = string
+  default     = "python3.14"
+}
+
+variable "dlq_handler_lambda_zip_path" {
+  description = "Path to the DLQ Handler Lambda zip file"
+  type        = string
+}
+
+variable "serverless_utils_layer_arn" {
+  description = "ARN of the serverless utils layer"
+  type        = string
+}
+
 variable "lambda_assume_role_json" {
   description = "IAM trust policy JSON allowing Lambda service to assume this role"
   type        = string
@@ -23,8 +39,13 @@ variable "dlq_arn" {
   type        = string
 }
 
-variable "moderation_results_table_arn" {
+variable "moderation_table_arn" {
   description = "ARN of the DynamoDB table for moderation results"
+  type        = string
+}
+
+variable "moderation_table_name" {
+  description = "Name of the DynamoDB table for moderation results"
   type        = string
 }
 

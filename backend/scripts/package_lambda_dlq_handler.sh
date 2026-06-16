@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-OUTPUT="packages/dlq_handler.zip"
+OUTPUT="packages/dlq-handler.zip"
 SOURCE="lambdas/dlq_handler"
 
 echo "Packaging dlq handler lambda..."

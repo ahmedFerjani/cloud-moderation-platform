@@ -85,6 +85,6 @@ module "api_lambda" {
   content_bucket_name = module.content_bucket.bucket_name
   content_bucket_arn  = module.content_bucket.bucket_arn
 
-  moderation_results_table_name = module.moderation_table.table_name
-  moderation_results_table_arn  = module.moderation_table.table_arn
+  moderation_table_name = module.moderation_table.table_name
+  moderation_table_arn  = module.moderation_table.table_arn
 }

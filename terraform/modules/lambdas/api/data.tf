@@ -10,6 +10,6 @@ data "aws_iam_policy_document" "api_lambda_policy" {
       "dynamodb:Scan"
     ]
 
-    resources = [var.moderation_results_table_arn]
+    resources = [var.moderation_table_arn]
   }
 }

@@ -49,8 +49,8 @@ module "api_lambda" {
   project_name = var.project_name
   environment  = var.environment
 
-  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
-  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
+  lambda_assume_role_json    = local.lambda_assume_role_json
+  lambda_basic_execution_arn = local.lambda_basic_execution_arn
 
   api_lambda_zip_path        = "${local.packages_dir}/api.zip"
   serverless_utils_layer_arn = module.lambda-layers.serverless_utils_layer_arn
@@ -68,8 +68,8 @@ module "dql_handler_lambda" {
   project_name = var.project_name
   environment  = var.environment
 
-  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
-  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
+  lambda_assume_role_json    = local.lambda_assume_role_json
+  lambda_basic_execution_arn = local.lambda_basic_execution_arn
 
   dlq_handler_lambda_zip_path = "${local.packages_dir}/dlq-handler.zip"
   serverless_utils_layer_arn  = module.lambda-layers.serverless_utils_layer_arn
@@ -87,8 +87,8 @@ module "orchestrator_lambda" {
   environment  = var.environment
   project_name = var.project_name
 
-  lambda_assume_role_json    = data.aws_iam_policy_document.lambda_assume_role.json
-  lambda_basic_execution_arn = data.aws_iam_policy.lambda_basic_execution.arn
+  lambda_assume_role_json    = local.lambda_assume_role_json
+  lambda_basic_execution_arn = local.lambda_basic_execution_arn
 
   orchestrator_lambda_zip_path = "${local.packages_dir}/orchestrator.zip"
   serverless_utils_layer_arn   = module.lambda-layers.serverless_utils_layer_arn

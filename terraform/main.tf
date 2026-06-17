@@ -62,8 +62,8 @@ module "api_lambda" {
   moderation_table_arn  = module.moderation_table.table_arn
 }
 
-module "dql_handler_lambda" {
-  source = "./modules/lambdas/dql_hanlder"
+module "dlq_handler_lambda" {
+  source = "./modules/lambdas/dlq_hanlder"
 
   project_name = var.project_name
   environment  = var.environment

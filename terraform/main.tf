@@ -99,3 +99,13 @@ module "orchestrator_lambda" {
   moderation_table_arn  = module.moderation_table.table_arn
   moderation_table_name = module.moderation_table.table_name
 }
+
+module "triggers" {
+  source = "./modules/triggers"
+
+  bucket_id  = module.content_bucket.bucket_id
+  bucket_arn = module.content_bucket.bucket_arn
+
+  main_queue_url = module.sqs.main_queue_url
+  main_queue_arn = module.sqs.main_queue_arn
+}

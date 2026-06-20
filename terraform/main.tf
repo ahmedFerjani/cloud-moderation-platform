@@ -108,4 +108,8 @@ module "triggers" {
 
   main_queue_url = module.sqs.main_queue_url
   main_queue_arn = module.sqs.main_queue_arn
+  dlq_arn        = module.sqs.dlq_arn
+
+  orchestrator_lambda_arn = module.orchestrator_lambda.lambda_arn
+  dlq_handler_lambda_arn  = module.dlq_handler_lambda.lambda_arn
 }

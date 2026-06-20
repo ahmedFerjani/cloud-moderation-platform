@@ -33,4 +33,13 @@ data "aws_iam_policy_document" "orchestrator_lambda_policy" {
     actions   = ["dynamodb:Query"]
     resources = ["${var.moderation_table_arn}/index/imageHash-index"]
   }
+
+  statement {
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
+    ]
+    resources = [var.main_queue_arn]
+  }
 }

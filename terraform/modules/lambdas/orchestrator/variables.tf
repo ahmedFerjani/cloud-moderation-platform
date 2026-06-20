@@ -58,3 +58,8 @@ variable "moderation_table_arn" {
   description = "ARN of the DynamoDB table for moderation results"
   type        = string
 }
+
+variable "main_queue_arn" {
+  description = "ARN of the main SQS queue"
+  type        = string
+}

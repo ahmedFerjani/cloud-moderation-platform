@@ -33,7 +33,6 @@ resource "aws_s3_bucket_notification" "this" {
   depends_on = [aws_sqs_queue_policy.this]
 }
 
-
 resource "aws_lambda_event_source_mapping" "orchestrator" {
   event_source_arn = var.main_queue_arn
   function_name    = var.orchestrator_lambda_arn

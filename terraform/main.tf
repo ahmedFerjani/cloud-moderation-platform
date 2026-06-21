@@ -115,3 +115,10 @@ module "triggers" {
   orchestrator_lambda_arn = module.orchestrator_lambda.lambda_arn
   dlq_handler_lambda_arn  = module.dlq_handler_lambda.lambda_arn
 }
+
+module "api_gateway" {
+  source = "./modules/api-gateway"
+
+  project_name = var.project_name
+  environment  = var.environment
+}

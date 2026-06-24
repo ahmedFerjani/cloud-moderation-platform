@@ -121,4 +121,7 @@ module "api_gateway" {
 
   project_name = var.project_name
   environment  = var.environment
+
+  api_lambda_invoke_arn    = module.api_lambda.lambda_arn
+  api_lambda_function_name = module.api_lambda.lambda_name
 }

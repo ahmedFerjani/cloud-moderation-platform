@@ -1,7 +1,7 @@
 {
   "version": "2.0",
-  "routeKey": "GET /moderation-results",
-  "rawPath": "/moderation-results",
+  "routeKey": "GET /images",
+  "rawPath": "/images",
   "rawQueryString": "",
   "headers": {
     "accept": "*/*",
@@ -22,13 +22,13 @@
     "domainPrefix": "<redacted>",
     "http": {
       "method": "GET",
-      "path": "/moderation-results",
+      "path": "/images",
       "protocol": "HTTP/1.1",
       "sourceIp": "<redacted>",
       "userAgent": "<redacted>"
     },
     "requestId": "<redacted>",
-    "routeKey": "GET /moderation-results",
+    "routeKey": "GET /images",
     "stage": "$default",
     "time": "<redacted>",
     "timeEpoch": "<redacted>"

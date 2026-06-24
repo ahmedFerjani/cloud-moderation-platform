@@ -37,10 +37,7 @@ export class UploadApiService {
       content_type: contentTypes,
     };
 
-    return this.http.post<GenerateUploadUrlsResponse>(
-      `${this.apiBaseUrl}/generate-upload-url`,
-      payload,
-    );
+    return this.http.post<GenerateUploadUrlsResponse>(`${this.apiBaseUrl}/uploads`, payload);
   }
 
   async uploadFileToPresignedPost(

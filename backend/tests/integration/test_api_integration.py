@@ -28,7 +28,7 @@ def assert_api_error(response: dict, status_code: int, code: str, message: str) 
 # Verifies the health route returns a successful operational status payload.
 def test_api_handler_routes_get_health_end_to_end() -> None:
     _api_services, _api_router, api_handler = load_api_stack()
-    event = api_runtime_event("api-moderation-results.json")
+    event = api_runtime_event("api-images.json")
     event["requestContext"]["http"]["method"] = "GET"
     event["rawPath"] = "/health"
 
@@ -48,7 +48,7 @@ def test_api_handler_routes_generate_upload_url_end_to_end() -> None:
     fake_s3 = FakeS3Client()
     service_module.s3 = fake_s3
 
-    event = api_runtime_event("api-generate-upload-url.json")
+    event = api_runtime_event("api-uploads.json")
     context = runtime_context("req-api")
 
     with patch.object(api_handler, "capture_sample_event"):
@@ -76,7 +76,7 @@ def test_api_handler_routes_generate_upload_url_multifile_end_to_end() -> None:
     fake_s3 = FakeS3Client()
     service_module.s3 = fake_s3
 
-    event = api_runtime_event("api-generate-upload-url.json")
+    event = api_runtime_event("api-uploads.json")
     event["body"] = json.dumps({"content_type": ["image/jpeg", "image/png"]})
 
     with patch.object(api_handler, "capture_sample_event"):
@@ -107,7 +107,7 @@ def test_api_handler_routes_get_moderation_result_end_to_end() -> None:
         ]
     )
 
-    event = api_runtime_event("api-moderation-result-by-image-id.json")
+    event = api_runtime_event("api-image-by-id.json")
 
     with patch.object(api_handler, "capture_sample_event"):
         response = api_handler.lambda_handler(event, runtime_context("req-get-one"))
@@ -130,7 +130,7 @@ def test_api_handler_routes_list_moderation_results_end_to_end() -> None:
         ]
     )
 
-    event = api_runtime_event("api-moderation-results.json")
+    event = api_runtime_event("api-images.json")
     event["queryStringParameters"] = {"limit": "1"}
 
     with patch.object(api_handler, "capture_sample_event"):
@@ -148,7 +148,7 @@ def test_api_handler_routes_list_moderation_results_end_to_end() -> None:
 # Verifies malformed request bodies are normalized into the public invalid-JSON error contract.
 def test_api_handler_returns_invalid_json_error_contract() -> None:
     _api_services, _api_router, api_handler = load_api_stack()
-    event = api_runtime_event("api-generate-upload-url.json")
+    event = api_runtime_event("api-uploads.json")
     event["body"] = "{bad-json"
 
     with patch.object(api_handler, "capture_sample_event"):
@@ -160,7 +160,7 @@ def test_api_handler_returns_invalid_json_error_contract() -> None:
 # Verifies unsupported upload content types are rejected with the expected API error payload.
 def test_api_handler_returns_unsupported_content_type_error_contract() -> None:
     _api_services, _api_router, api_handler = load_api_stack()
-    event = api_runtime_event("api-generate-upload-url.json")
+    event = api_runtime_event("api-uploads.json")
     event["body"] = json.dumps({"content_type": "image/gif"})
 
     with patch.object(api_handler, "capture_sample_event"):
@@ -179,7 +179,7 @@ def test_api_handler_returns_unsupported_content_type_error_contract() -> None:
 # Verifies too-many-files payloads are rejected with an unprocessable-entity contract.
 def test_api_handler_returns_too_many_files_error_contract() -> None:
     _api_services, _api_router, api_handler = load_api_stack()
-    event = api_runtime_event("api-generate-upload-url.json")
+    event = api_runtime_event("api-uploads.json")
     event["body"] = json.dumps({"content_type": ["image/jpeg"] * 11})
 
     with patch.object(api_handler, "capture_sample_event"):
@@ -198,7 +198,7 @@ def test_api_handler_returns_not_found_error_contract() -> None:
     api_services, _api_router, api_handler = load_api_stack()
     service_module = cast(Any, api_services)
     service_module.table = FakeTable(items=[])
-    event = api_runtime_event("api-moderation-result-by-image-id.json")
+    event = api_runtime_event("api-image-by-id.json")
 
     with patch.object(api_handler, "capture_sample_event"):
         response = api_handler.lambda_handler(event, runtime_context("req-not-found"))
@@ -214,7 +214,7 @@ def test_api_handler_returns_not_found_error_contract() -> None:
 # Verifies invalid pagination input is rejected with the expected validation error contract.
 def test_api_handler_returns_invalid_limit_error_contract() -> None:
     _api_services, _api_router, api_handler = load_api_stack()
-    event = api_runtime_event("api-moderation-results.json")
+    event = api_runtime_event("api-images.json")
     event["queryStringParameters"] = {"limit": "invalid"}
 
     with patch.object(api_handler, "capture_sample_event"):
@@ -226,7 +226,7 @@ def test_api_handler_returns_invalid_limit_error_contract() -> None:
 # Verifies unmatched routes are normalized into the public route-not-found error contract.
 def test_api_handler_returns_route_not_found_error_contract() -> None:
     _api_services, _api_router, api_handler = load_api_stack()
-    event = api_runtime_event("api-moderation-results.json")
+    event = api_runtime_event("api-images.json")
     event["rawPath"] = "/unknown-route"
     event["requestContext"]["http"]["path"] = "/unknown-route"
     event["requestContext"]["http"]["method"] = "POST"
@@ -243,7 +243,7 @@ def test_api_handler_returns_aws_service_error_contract() -> None:
     service_module = cast(Any, api_services)
     fake_s3 = FakeS3Client()
     service_module.s3 = fake_s3
-    event = api_runtime_event("api-generate-upload-url.json")
+    event = api_runtime_event("api-uploads.json")
     aws_error = ClientError(
         error_response={
             "Error": {"Code": "InternalError", "Message": "simulated upstream failure"}

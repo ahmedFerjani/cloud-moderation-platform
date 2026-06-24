@@ -6,7 +6,7 @@ from _api_test_setup import api_handler
 
 # Verifies the API handler captures sample events and delegates request routing.
 def test_handler_calls_capture_and_router(api_event_factory, api_context) -> None:
-    event = api_event_factory("api-moderation-results.json")
+    event = api_event_factory("api-images.json")
 
     with (
         patch.object(api_handler, "capture_sample_event") as mock_capture,
@@ -21,7 +21,7 @@ def test_handler_calls_capture_and_router(api_event_factory, api_context) -> Non
 
 # Verifies JSON decode errors from routing are translated into the public 400 contract.
 def test_handler_returns_invalid_json_error_response(api_event_factory, api_context) -> None:
-    event = api_event_factory("api-generate-upload-url.json")
+    event = api_event_factory("api-uploads.json")
 
     with (
         patch.object(api_handler, "capture_sample_event"),

@@ -18,8 +18,8 @@ def route_request(event):
 
         return api_response(200, {"status": "ok"})
 
-    # POST /generate-upload-url
-    if method == "POST" and path == "/generate-upload-url":
+    # POST /uploads
+    if method == "POST" and path == "/uploads":
 
         if "body" not in event:
 
@@ -29,15 +29,15 @@ def route_request(event):
 
         return generate_upload_url(body)
 
-    # GET /moderation-results/{imageId}
-    if method == "GET" and path.startswith("/moderation-results/"):
+    # GET /images/{id}
+    if method == "GET" and path.startswith("/images/"):
 
-        image_id = path.split("/moderation-results/")[1]
+        image_id = path.split("/images/")[1]
 
         return get_moderation_result(image_id)
 
-    # GET /moderation-results
-    if method == "GET" and path == "/moderation-results":
+    # GET /images
+    if method == "GET" and path == "/images":
 
         params = event.get("queryStringParameters") or {}
         limit = parse_limit(params)

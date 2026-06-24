@@ -42,7 +42,7 @@ def test_all_fixtures_have_no_raw_account_ids_or_ips() -> None:
 
 # Verifies API upload fixture includes expected redactions in request metadata.
 def test_api_generate_upload_fixture_redactions() -> None:
-    payload = _load_fixture("api-generate-upload-url.json")
+    payload = _load_fixture("api-uploads.json")
 
     assert payload["headers"]["host"] == "<redacted>"
     assert payload["headers"]["user-agent"] == "<redacted>"
@@ -52,8 +52,8 @@ def test_api_generate_upload_fixture_redactions() -> None:
 
 
 # Verifies image ID fixture values are normalized consistently across route and context fields.
-def test_api_moderation_by_image_id_fixture_is_normalized() -> None:
-    payload = _load_fixture("api-moderation-result-by-image-id.json")
+def test_api_image_by_id_fixture_is_normalized() -> None:
+    payload = _load_fixture("api-image-by-id.json")
     expected_id = "00000000-0000-0000-0000-000000000000"
 
     assert payload["pathParameters"]["imageId"] == expected_id
@@ -92,29 +92,29 @@ def test_dlq_fixture_resource_names_normalized() -> None:
 
 # Verifies upload fixture aligns with API router POST contract expectations.
 def test_api_post_fixture_matches_router_contract() -> None:
-    payload = _load_fixture("api-generate-upload-url.json")
+    payload = _load_fixture("api-uploads.json")
 
     assert payload["requestContext"]["http"]["method"] == "POST"
-    assert payload["rawPath"] == "/generate-upload-url"
+    assert payload["rawPath"] == "/uploads"
     assert "body" in payload
     assert payload["body"]["content_type"] == "image/jpeg"
 
 
 # Verifies list fixture aligns with API router GET collection contract.
 def test_api_list_fixture_matches_router_contract() -> None:
-    payload = _load_fixture("api-moderation-results.json")
+    payload = _load_fixture("api-images.json")
 
     assert payload["requestContext"]["http"]["method"] == "GET"
-    assert payload["rawPath"] == "/moderation-results"
+    assert payload["rawPath"] == "/images"
     assert "pathParameters" not in payload
 
 
 # Verifies by-ID fixture aligns with API router path-parameter contract.
 def test_api_by_id_fixture_matches_router_contract() -> None:
-    payload = _load_fixture("api-moderation-result-by-image-id.json")
+    payload = _load_fixture("api-image-by-id.json")
 
     assert payload["requestContext"]["http"]["method"] == "GET"
-    assert payload["routeKey"] == "GET /moderation-results/{imageId}"
+    assert payload["routeKey"] == "GET /images/{id}"
     assert "pathParameters" in payload
     assert "imageId" in payload["pathParameters"]
 

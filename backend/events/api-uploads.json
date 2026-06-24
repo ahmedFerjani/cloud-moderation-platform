@@ -1,12 +1,13 @@
 {
   "version": "2.0",
-  "routeKey": "GET /moderation-results/{imageId}",
-  "rawPath": "/moderation-results/00000000-0000-0000-0000-000000000000",
+  "routeKey": "POST /uploads",
+  "rawPath": "/uploads",
   "rawQueryString": "",
   "headers": {
     "accept": "*/*",
     "accept-encoding": "gzip, deflate, br",
-    "content-length": "0",
+    "content-length": "36",
+    "content-type": "application/json",
     "host": "<redacted>",
     "postman-token": "<redacted>",
     "user-agent": "<redacted>",
@@ -21,20 +22,20 @@
     "domainName": "<redacted>",
     "domainPrefix": "<redacted>",
     "http": {
-      "method": "GET",
-      "path": "/moderation-results/00000000-0000-0000-0000-000000000000",
+      "method": "POST",
+      "path": "/uploads",
       "protocol": "HTTP/1.1",
       "sourceIp": "<redacted>",
       "userAgent": "<redacted>"
     },
     "requestId": "<redacted>",
-    "routeKey": "GET /moderation-results/{imageId}",
+    "routeKey": "POST /uploads",
     "stage": "$default",
     "time": "<redacted>",
     "timeEpoch": "<redacted>"
   },
-  "pathParameters": {
-    "imageId": "00000000-0000-0000-0000-000000000000"
+  "body": {
+    "content_type": "image/jpeg"
   },
   "isBase64Encoded": false
 }

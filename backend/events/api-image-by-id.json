@@ -1,13 +1,12 @@
 {
   "version": "2.0",
-  "routeKey": "POST /generate-upload-url",
-  "rawPath": "/generate-upload-url",
+  "routeKey": "GET /images/{id}",
+  "rawPath": "/images/00000000-0000-0000-0000-000000000000",
   "rawQueryString": "",
   "headers": {
     "accept": "*/*",
     "accept-encoding": "gzip, deflate, br",
-    "content-length": "36",
-    "content-type": "application/json",
+    "content-length": "0",
     "host": "<redacted>",
     "postman-token": "<redacted>",
     "user-agent": "<redacted>",
@@ -22,20 +21,20 @@
     "domainName": "<redacted>",
     "domainPrefix": "<redacted>",
     "http": {
-      "method": "POST",
-      "path": "/generate-upload-url",
+      "method": "GET",
+      "path": "/images/00000000-0000-0000-0000-000000000000",
       "protocol": "HTTP/1.1",
       "sourceIp": "<redacted>",
       "userAgent": "<redacted>"
     },
     "requestId": "<redacted>",
-    "routeKey": "POST /generate-upload-url",
+    "routeKey": "GET /images/{id}",
     "stage": "$default",
     "time": "<redacted>",
     "timeEpoch": "<redacted>"
   },
-  "body": {
-    "content_type": "image/jpeg"
+  "pathParameters": {
+    "imageId": "00000000-0000-0000-0000-000000000000"
   },
   "isBase64Encoded": false
 }

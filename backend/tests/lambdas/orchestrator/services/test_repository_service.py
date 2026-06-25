@@ -43,7 +43,7 @@ def test_find_existing_image_returns_none_when_missing() -> None:
         result = repository_service.find_existing_image("hash-1")
 
     assert result is None
-    assert mock_query.call_args.kwargs["IndexName"] == "image_hash"
+    assert mock_query.call_args.kwargs["IndexName"] == "imageHash-index"
     assert mock_query.call_args.kwargs["Limit"] == 1
 
 

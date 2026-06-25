@@ -47,8 +47,8 @@ def store_moderation_result(
 def find_existing_image(image_hash: str):
 
     dynamodb_response = table.query(
-        IndexName="image_hash",
-        KeyConditionExpression=Key("image_hash").eq(image_hash),
+        IndexName="imageHash-index",
+        KeyConditionExpression=Key("imageHash").eq(image_hash),
         Limit=1,
     )
 

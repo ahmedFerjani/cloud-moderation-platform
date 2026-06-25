@@ -1,4 +1,4 @@
-import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import type { UploadState } from '../../models/upload-state.model';
 
@@ -6,7 +6,6 @@ import type { UploadState } from '../../models/upload-state.model';
   selector: 'app-upload-feedback',
   imports: [MatProgressBarModule],
   templateUrl: './upload-feedback.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './upload-feedback.component.scss',
 })
 export class UploadFeedbackComponent {

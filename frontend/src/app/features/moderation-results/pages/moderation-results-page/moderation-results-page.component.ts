@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -34,7 +34,6 @@ import type { OnInit } from '@angular/core';
     MatSelectModule,
   ],
   templateUrl: './moderation-results-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './moderation-results-page.component.scss',
 })
 export class ModerationResultsPageComponent implements OnInit {

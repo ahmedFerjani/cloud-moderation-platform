@@ -1,11 +1,10 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-selected-file-preview',
   imports: [MatButtonModule],
   templateUrl: './selected-file-preview.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './selected-file-preview.component.scss',
 })
 export class SelectedFilePreviewComponent {

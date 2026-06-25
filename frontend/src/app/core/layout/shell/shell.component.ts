@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
 import { NavbarComponent } from '../navbar/navbar.component';
@@ -7,7 +7,6 @@ import { NavbarComponent } from '../navbar/navbar.component';
   selector: 'app-shell',
   imports: [NavbarComponent, FooterComponent, RouterOutlet],
   templateUrl: './shell.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './shell.component.scss',
 })
 export class ShellComponent {}

@@ -26,9 +26,9 @@ def store_moderation_result(
     status = "unsafe" if unsafe_detected else "safe"
 
     item = {
-        "image_id": image_id,
-        "s3_key": object_key,
+        "imageId": image_id,
         "image_hash": image_hash,
+        "s3_key": object_key,
         "timestamp": datetime.now().isoformat(),
         "status": status,
         "unsafe_detected": unsafe_detected,

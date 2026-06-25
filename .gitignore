@@ -99,7 +99,7 @@ backend/layers/**/dist/
 ############################################
 # Frontend local proxy config
 ############################################
-frontend/content-moderation-ui/proxy.conf.local.json
+frontend/proxy.conf.local.json
 
 ############################################
 # Local CI tooling

@@ -23,3 +23,7 @@ variable "account_id" {
   type        = string
 }
 
+variable "frontend_origins" {
+  description = "List of allowed origins for S3 CORS"
+  type        = list(string)
+}

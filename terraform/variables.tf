@@ -20,3 +20,8 @@ variable "notification_emails" {
   description = "List of email addresses to receive failure notifications"
   type        = list(string)
 }
+
+variable "s3_frontend_origins" {
+  description = "List of allowed origins for S3 CORS"
+  type        = list(string)
+}

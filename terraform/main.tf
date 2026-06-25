@@ -6,6 +6,8 @@ module "content_bucket" {
   project_name = var.project_name
   purpose      = "uploads"
   region       = local.region
+
+  frontend_origins = var.s3_frontend_origins
 }
 
 module "moderation_table" {

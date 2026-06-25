@@ -1,4 +1,11 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { SelectedFilePreviewComponent } from '../../components/selected-file-preview/selected-file-preview.component';
@@ -20,6 +27,7 @@ import type { UploadState } from '../../models/upload-state.model';
     SelectedFilePreviewComponent,
     UploadFeedbackComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './upload-page.component.html',
 })
 export class UploadPageComponent {

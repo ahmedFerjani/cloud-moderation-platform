@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-upload-picker',
   imports: [MatButtonModule, MatIconModule],
   templateUrl: './upload-picker.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './upload-picker.component.scss',
 })
 export class UploadPickerComponent {

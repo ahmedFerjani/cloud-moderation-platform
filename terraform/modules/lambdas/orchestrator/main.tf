@@ -23,11 +23,6 @@ resource "aws_lambda_function" "this" {
   function_name = lower("${var.project_name}-${var.environment}-orchestrator-lambda")
   role          = aws_iam_role.this.arn
 
-  depends_on = [
-    aws_iam_role_policy_attachment.basic,
-    aws_iam_role_policy.orchestrator_lambda_policy,
-  ]
-
   handler       = "handler.lambda_handler"
   runtime       = var.runtime
   architectures = ["arm64"]
@@ -50,4 +45,9 @@ resource "aws_lambda_function" "this" {
       TABLE_NAME            = var.moderation_table_name
     }
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.basic,
+    aws_iam_role_policy.orchestrator_lambda_policy,
+  ]
 }

@@ -16,5 +16,5 @@ output "moderation_table_arn" {
 
 output "cognito_login_url" {
   description = "Cognito login URL"
-  value       = "https://${var.project_name}-${var.environment}.auth.${var.aws_region}.amazoncognito.com/login?client_id=${module.cognito.client_id}&response_type=code&scope=email+openid+profile&redirect_uri=${var.callback_urls[0]}"
+  value       = "${module.cognito.hosted_ui_url}/login?client_id=${module.cognito.client_id}&response_type=code&scope=email+openid+profile&redirect_uri=${var.callback_urls[0]}"
 }

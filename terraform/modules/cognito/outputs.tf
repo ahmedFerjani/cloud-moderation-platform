@@ -8,6 +8,11 @@ output "client_id" {
   value       = aws_cognito_user_pool_client.this.id
 }
 
+output "hosted_ui_url" {
+  description = "Cognito hosted UI base URL"
+  value       = "https://${aws_cognito_user_pool_domain.this.domain}.auth.${var.region}.amazoncognito.com"
+}
+
 output "jwt_audience" {
   description = "JWT audience"
   value       = aws_cognito_user_pool_client.this.id
@@ -15,5 +20,5 @@ output "jwt_audience" {
 
 output "jwt_issuer" {
   description = "JWT issuer URL"
-  value       = "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.this.id}"
+  value       = "https://${aws_cognito_user_pool.this.endpoint}"
 }

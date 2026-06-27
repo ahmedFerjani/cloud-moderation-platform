@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "this" {
-  name         = lower("${var.project_name}-${var.environment}-${var.purpose}")
+  name         = lower("${var.name_prefix}-${var.purpose}")
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "imageId"
 

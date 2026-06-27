@@ -1,11 +1,11 @@
 resource "aws_apigatewayv2_api" "this" {
-  name          = lower("${var.project_name}-${var.environment}")
+  name          = "${var.name_prefix}-api"
   protocol_type = "HTTP"
   description   = "Content moderation API"
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/apigateway/${lower("${var.project_name}-${var.environment}")}"
+  name              = "/aws/apigateway/${var.name_prefix}"
   retention_in_days = 30
 }
 
@@ -32,10 +32,10 @@ resource "aws_apigatewayv2_stage" "this" {
 }
 
 resource "aws_apigatewayv2_integration" "this" {
-  api_id             = aws_apigatewayv2_api.this.id
-  integration_type   = "AWS_PROXY"
-  integration_uri    = var.api_lambda_invoke_arn
-  integration_method = "POST"
+  api_id                 = aws_apigatewayv2_api.this.id
+  integration_type       = "AWS_PROXY"
+  integration_uri        = var.api_lambda_invoke_arn
+  integration_method     = "POST"
   payload_format_version = "2.0"
 }
 

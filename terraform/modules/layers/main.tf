@@ -1,5 +1,5 @@
 resource "aws_lambda_layer_version" "serverless_utils" {
-  layer_name  = lower("${var.project_name}-${var.environment}-serverless-utils")
+  layer_name  = "${var.name_prefix}-serverless-utils"
   description = "Shared Python utilities: logger, encoders, response helpers"
 
   filename         = var.serverless_utils_zip_path
@@ -12,7 +12,7 @@ resource "aws_lambda_layer_version" "serverless_utils" {
 }
 
 resource "aws_lambda_layer_version" "image_processing" {
-  layer_name  = lower("${var.project_name}-${var.environment}-image-processing")
+  layer_name  = "${var.name_prefix}-image-processing"
   description = "Image processing dependencies layer"
 
   filename         = var.image_processing_zip_path

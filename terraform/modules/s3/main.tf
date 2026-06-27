@@ -1,7 +1,5 @@
 resource "aws_s3_bucket" "this" {
-  bucket = lower(
-    "${var.project_name}-${var.environment}-${var.purpose}-${var.region}-${var.account_id}"
-  )
+  bucket        = lower("${var.name_prefix}-${var.purpose}-${var.region}-${var.account_id}")
   force_destroy = var.environment == "dev"
 }
 

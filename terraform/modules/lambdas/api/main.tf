@@ -1,5 +1,5 @@
 resource "aws_iam_role" "this" {
-  name               = lower("${var.project_name}-${var.environment}-api-lambda-role")
+  name               = "${var.name_prefix}-api-lambda-role"
   assume_role_policy = var.lambda_assume_role_json
 }
 
@@ -9,18 +9,18 @@ resource "aws_iam_role_policy_attachment" "basic" {
 }
 
 resource "aws_iam_role_policy" "api_lambda_policy" {
-  name   = lower("${var.project_name}-${var.environment}-api-lambda-policy")
+  name   = "${var.name_prefix}-api-lambda-policy"
   role   = aws_iam_role.this.id
   policy = data.aws_iam_policy_document.api_lambda_policy.json
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  name              = lower("/aws/lambda/${var.project_name}-${var.environment}-api-lambda")
+  name              = "/aws/lambda/${var.name_prefix}-api-lambda"
   retention_in_days = 30
 }
 
 resource "aws_lambda_function" "this" {
-  function_name = lower("${var.project_name}-${var.environment}-api-lambda")
+  function_name = "${var.name_prefix}-api-lambda"
   role          = aws_iam_role.this.arn
 
   handler       = "handler.lambda_handler"

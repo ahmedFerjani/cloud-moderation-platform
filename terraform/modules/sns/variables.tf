@@ -1,10 +1,5 @@
-variable "project_name" {
-  description = "Project name"
-  type        = string
-}
-
-variable "environment" {
-  description = "Deployment environment"
+variable "name_prefix" {
+  description = "Prefix for resource names"
   type        = string
 }
 

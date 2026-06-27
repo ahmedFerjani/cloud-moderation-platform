@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "this" {
-  name = lower("${var.project_name}-${var.environment}-${var.purpose}")
+  name = lower("${var.name_prefix}-${var.purpose}")
 }
 
 resource "aws_sns_topic_subscription" "email" {

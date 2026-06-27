@@ -1,11 +1,11 @@
 module "content_bucket" {
   source = "./modules/s3"
 
-  account_id   = local.account_id
-  environment  = var.environment
-  project_name = var.project_name
-  purpose      = "uploads"
-  region       = local.region
+  account_id  = local.account_id
+  name_prefix = local.name_prefix
+  environment = var.environment
+  purpose     = "uploads"
+  region      = local.region
 
   frontend_origins = var.s3_frontend_origins
 }
@@ -13,17 +13,15 @@ module "content_bucket" {
 module "moderation_table" {
   source = "./modules/dynamodb"
 
-  environment  = var.environment
-  project_name = var.project_name
-  purpose      = "results"
+  name_prefix = local.name_prefix
+  purpose     = "results"
 }
 
 module "sns" {
   source = "./modules/sns"
 
-  project_name = var.project_name
-  environment  = var.environment
-  purpose      = "failures"
+  name_prefix = local.name_prefix
+  purpose     = "failures"
 
   notification_emails = var.notification_emails
 }
@@ -31,15 +29,13 @@ module "sns" {
 module "sqs" {
   source = "./modules/sqs"
 
-  project_name = var.project_name
-  environment  = var.environment
+  name_prefix = local.name_prefix
 }
 
 module "lambda-layers" {
   source = "./modules/layers"
 
-  project_name = var.project_name
-  environment  = var.environment
+  name_prefix = local.name_prefix
 
   serverless_utils_zip_path = "${local.packages_dir}/serverless-utils.zip"
   image_processing_zip_path = "${local.packages_dir}/image-processing.zip"
@@ -48,8 +44,8 @@ module "lambda-layers" {
 module "api_lambda" {
   source = "./modules/lambdas/api"
 
-  project_name = var.project_name
-  environment  = var.environment
+  name_prefix = local.name_prefix
+  environment = var.environment
 
   lambda_assume_role_json    = local.lambda_assume_role_json
   lambda_basic_execution_arn = local.lambda_basic_execution_arn
@@ -67,8 +63,8 @@ module "api_lambda" {
 module "dlq_handler_lambda" {
   source = "./modules/lambdas/dlq_hanlder"
 
-  project_name = var.project_name
-  environment  = var.environment
+  name_prefix = local.name_prefix
+  environment = var.environment
 
   lambda_assume_role_json    = local.lambda_assume_role_json
   lambda_basic_execution_arn = local.lambda_basic_execution_arn
@@ -86,8 +82,8 @@ module "dlq_handler_lambda" {
 module "orchestrator_lambda" {
   source = "./modules/lambdas/orchestrator"
 
-  environment  = var.environment
-  project_name = var.project_name
+  name_prefix = local.name_prefix
+  environment = var.environment
 
   lambda_assume_role_json    = local.lambda_assume_role_json
   lambda_basic_execution_arn = local.lambda_basic_execution_arn
@@ -121,8 +117,8 @@ module "triggers" {
 module "api_gateway" {
   source = "./modules/api-gateway"
 
-  project_name = var.project_name
-  environment  = var.environment
+  name_prefix = local.name_prefix
+  environment = var.environment
 
   api_lambda_invoke_arn    = module.api_lambda.lambda_arn
   api_lambda_function_name = module.api_lambda.lambda_name

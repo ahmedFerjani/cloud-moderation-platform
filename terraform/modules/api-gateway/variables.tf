@@ -17,3 +17,13 @@ variable "api_lambda_function_name" {
   description = "Name of the API Lambda function to be invoked by the API Gateway"
   type        = string
 }
+
+variable "jwt_issuer" {
+  description = "JWT issuer for the API Gateway authorizer"
+  type        = string
+}
+
+variable "jwt_audience" {
+  description = "JWT audience for the API Gateway authorizer"
+  type        = string
+}

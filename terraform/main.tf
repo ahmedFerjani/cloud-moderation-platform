@@ -122,6 +122,9 @@ module "api_gateway" {
 
   api_lambda_invoke_arn    = module.api_lambda.lambda_arn
   api_lambda_function_name = module.api_lambda.lambda_name
+
+  jwt_issuer   = module.cognito.jwt_issuer
+  jwt_audience = module.cognito.jwt_audience
 }
 
 module "cognito" {
@@ -129,6 +132,7 @@ module "cognito" {
 
   project_name = var.project_name
   environment  = var.environment
+  name_prefix  = local.name_prefix
   region       = local.region
 
   callback_urls = var.callback_urls

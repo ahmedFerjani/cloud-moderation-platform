@@ -76,3 +76,16 @@ resource "aws_lambda_permission" "api_gateway" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/*/*"
 }
+
+resource "aws_apigatewayv2_authorizer" "example" {
+  api_id = aws_apigatewayv2_api.this.id
+  name   = "${var.name_prefix}-jwt"
+
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+
+  jwt_configuration {
+    issuer   = var.jwt_issuer
+    audience = [var.jwt_audience]
+  }
+}

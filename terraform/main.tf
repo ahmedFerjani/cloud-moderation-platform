@@ -130,4 +130,7 @@ module "cognito" {
   project_name = var.project_name
   environment  = var.environment
   region       = local.region
+
+  callback_urls = var.callback_urls
+  logout_urls   = var.logout_urls
 }

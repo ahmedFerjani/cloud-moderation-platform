@@ -25,3 +25,13 @@ variable "s3_frontend_origins" {
   description = "List of allowed origins for S3 CORS"
   type        = list(string)
 }
+
+variable "callback_urls" {
+  description = "List of allowed callback URLs for the Cognito app client"
+  type        = list(string)
+}
+
+variable "logout_urls" {
+  description = "List of allowed logout URLs for the Cognito app client"
+  type        = list(string)
+}

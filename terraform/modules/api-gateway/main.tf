@@ -67,25 +67,33 @@ resource "aws_apigatewayv2_route" "get_health" {
 }
 
 resource "aws_apigatewayv2_route" "post_uploads" {
-  api_id    = aws_apigatewayv2_api.this.id
-  route_key = "POST /uploads"
-  target    = "integrations/${aws_apigatewayv2_integration.this.id}"
+  api_id             = aws_apigatewayv2_api.this.id
+  route_key          = "POST /uploads"
+  target             = "integrations/${aws_apigatewayv2_integration.this.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }
 
 resource "aws_apigatewayv2_route" "get_images" {
-  api_id    = aws_apigatewayv2_api.this.id
-  route_key = "GET /images"
-  target    = "integrations/${aws_apigatewayv2_integration.this.id}"
+  api_id             = aws_apigatewayv2_api.this.id
+  route_key          = "GET /images"
+  target             = "integrations/${aws_apigatewayv2_integration.this.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }
 
 resource "aws_apigatewayv2_route" "get_image_by_id" {
-  api_id    = aws_apigatewayv2_api.this.id
-  route_key = "GET /images/{id}"
-  target    = "integrations/${aws_apigatewayv2_integration.this.id}"
+  api_id             = aws_apigatewayv2_api.this.id
+  route_key          = "GET /images/{id}"
+  target             = "integrations/${aws_apigatewayv2_integration.this.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }
 
 resource "aws_apigatewayv2_route" "get_dashboard" {
-  api_id    = aws_apigatewayv2_api.this.id
-  route_key = "GET /dashboard"
-  target    = "integrations/${aws_apigatewayv2_integration.this.id}"
+  api_id             = aws_apigatewayv2_api.this.id
+  route_key          = "GET /dashboard"
+  target             = "integrations/${aws_apigatewayv2_integration.this.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }

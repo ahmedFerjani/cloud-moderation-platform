@@ -26,6 +26,7 @@ module.exports = defineConfig([
     },
     processor: angular.processInlineTemplates,
     rules: {
+      "@typescript-eslint/no-deprecated": "warn",
       "@typescript-eslint/only-throw-error": "off",
       '@angular-eslint/directive-selector': [
         'error',

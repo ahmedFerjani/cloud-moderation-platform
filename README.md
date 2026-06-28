@@ -55,11 +55,11 @@ terraform init \
 
 ### Runtime Config
 
-The frontend loads configuration at runtime from `src/assets/config/app.config.json`. This file is not committed — copy the template and fill in real values:
+The frontend loads configuration at runtime from `public/config/app.config.json`. This file is not committed — copy the template and fill in real values:
 
 ```bash
-cp frontend/src/assets/config/app.config.template.json \
-   frontend/src/assets/config/app.config.json
+cp frontend/public/config/app.config.template.json \
+   frontend/public/config/app.config.json
 ```
 
 Then populate with Terraform outputs:

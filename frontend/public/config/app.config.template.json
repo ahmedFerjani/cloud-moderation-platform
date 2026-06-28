@@ -1,4 +1,6 @@
 {
+  "apiUrl": "/api",
+
   "cognito": {
     "authority": "https://cognito-idp.<region>.amazonaws.com/<user-pool-id>",
     "redirectUrl": "<app-base-url>/callback",
@@ -6,6 +8,5 @@
     "scope": "openid email profile",
     "responseType": "code",
     "logoutUrl": "<app-base-url>"
-  },
-  "apiUrl": "/api"
+  }
 }

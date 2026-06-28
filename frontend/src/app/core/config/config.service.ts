@@ -1,12 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { APP_CONFIG_PATH } from './config.constants';
 import type { AppConfig } from './config.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class ConfigService {
   private readonly http = inject(HttpClient);
   private config: AppConfig | null = null;

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import type { Observable } from 'rxjs';
 
@@ -25,9 +25,7 @@ export interface GenerateUploadUrlsResponse {
   max_upload_size_bytes: number;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class UploadApiService {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/$/, '');

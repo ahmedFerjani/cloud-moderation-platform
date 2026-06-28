@@ -1,12 +1,10 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { UploadApiService } from '../data-access/upload-api.service';
 import type { GenerateUploadUrlsResponse } from '../data-access/upload-api.service';
 import type { UploadState } from '../models/upload-state.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class UploadFacadeService {
   private readonly uploadApiService = inject(UploadApiService);
 

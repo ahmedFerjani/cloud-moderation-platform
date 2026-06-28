@@ -1,4 +1,5 @@
 # Cloud Moderation Platform
+
 🚧 WORK IN PROGRESS 🚧
 
 A cloud-native image moderation platform built using AWS serverless architecture.
@@ -41,11 +42,50 @@ terraform init \
 ```
 
 **Notes:**
+
 - The S3 bucket must already exist
 - Enable bucket versioning
 - Enable server-side encryption
 - Keep Block Public Access enabled
 - If backend settings change, run `terraform init -reconfigure`
+
+---
+
+## Frontend Configuration
+
+### Runtime Config
+
+The frontend loads configuration at runtime from `src/assets/config/app.config.json`. This file is not committed — copy the template and fill in real values:
+
+```bash
+cp frontend/src/assets/config/app.config.template.json \
+   frontend/src/assets/config/app.config.json
+```
+
+Then populate with Terraform outputs:
+
+```bash
+terraform output cognito_user_pool_id   # → cognito.authority (user pool ID segment)
+terraform output cognito_client_id      # → cognito.clientId
+terraform output api_endpoint           # → reference only — apiUrl uses proxy in dev
+```
+
+### API Proxy
+
+In development, API calls are proxied through Angular's dev server to avoid exposing the real API Gateway URL in the browser:
+
+Angular → /api/\* → proxy → API Gateway
+
+The proxy target is configured in `frontend/proxy.conf.ts`. Replace the placeholder with your API Gateway URL:
+
+```typescript
+'/api': {
+  target: 'https://<api-gateway-id>.execute-api.<region>.amazonaws.com',
+  ...
+}
+```
+
+> In production, CloudFront handles routing — the proxy is development-only.
 
 ---
 

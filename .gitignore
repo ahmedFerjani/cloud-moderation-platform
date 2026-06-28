@@ -13,6 +13,7 @@ Thumbs.db
 .env.*
 *.pem
 *.key
+frontend/src/assets/config/app.config.json
 
 ############################################
 # Node.js Dependencies (Frontend + tooling)

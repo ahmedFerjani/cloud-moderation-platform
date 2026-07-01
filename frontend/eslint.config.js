@@ -26,8 +26,6 @@ module.exports = defineConfig([
     },
     processor: angular.processInlineTemplates,
     rules: {
-      "@typescript-eslint/no-deprecated": "warn",
-      "@typescript-eslint/only-throw-error": "off",
       '@angular-eslint/directive-selector': [
         'error',
         {
@@ -44,6 +42,8 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
+      '@typescript-eslint/no-deprecated': 'warn',
+      '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/consistent-type-imports': [
         'error',

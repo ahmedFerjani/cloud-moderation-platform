@@ -1,3 +1,4 @@
+import { authGuard } from './core/auth/auth.guard';
 import { ShellComponent } from './core/layout/shell/shell.component';
 import type { Routes } from '@angular/router';
 
@@ -5,6 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     component: ShellComponent,
+    canActivate: [authGuard],
     children: [
       {
         path: '',

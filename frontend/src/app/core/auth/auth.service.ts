@@ -20,6 +20,10 @@ export class AuthService {
     return this.oidcSecurityService.checkAuth();
   }
 
+  getAccessToken(): Observable<string> {
+    return this.oidcSecurityService.getAccessToken();
+  }
+
   login(): void {
     this.oidcSecurityService.authorize();
   }

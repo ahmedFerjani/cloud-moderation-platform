@@ -5,6 +5,7 @@ import type { CanActivateFn } from '@angular/router';
 
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
+
   return authService.isAuthenticated$.pipe(
     map((isAuthenticated) => {
       if (isAuthenticated) {

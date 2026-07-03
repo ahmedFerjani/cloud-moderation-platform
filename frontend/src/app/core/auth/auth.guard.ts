@@ -1,4 +1,4 @@
-import { inject } from '@angular/core/primitives/di';
+import { inject } from '@angular/core';
 import { map } from 'rxjs';
 import { AuthService } from './auth.service';
 import type { CanActivateFn } from '@angular/router';

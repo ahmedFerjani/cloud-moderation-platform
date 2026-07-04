@@ -6,11 +6,11 @@ import { AuthService } from '../auth.service';
 import type { OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-callback',
-  templateUrl: './callback.component.html',
+  selector: 'app-oidc-callback',
+  templateUrl: './oidc-callback.component.html',
   imports: [MatProgressSpinner],
 })
-export class CallbackComponent implements OnInit {
+export class OidcCallbackComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 

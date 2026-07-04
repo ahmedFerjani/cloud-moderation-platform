@@ -34,7 +34,7 @@ export const routes: Routes = [
   {
     path: 'callback',
     loadComponent: () =>
-      import('./core/auth/callback/callback.component').then((m) => m.CallbackComponent),
+      import('./core/auth/oidc-callback/oidc-callback.component').then((m) => m.OidcCallbackComponent),
   },
   {
     path: '**',

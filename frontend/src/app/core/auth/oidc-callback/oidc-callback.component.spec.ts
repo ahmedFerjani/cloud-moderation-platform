@@ -2,17 +2,17 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AuthService } from '../auth.service';
-import { CallbackComponent } from './callback.component';
+import { OidcCallbackComponent } from './oidc-callback.component';
 import type { ComponentFixture } from '@angular/core/testing';
 
-describe('CallbackComponent', () => {
-  let component: CallbackComponent;
-  let fixture: ComponentFixture<CallbackComponent>;
+describe('OidcCallbackComponent', () => {
+  let component: OidcCallbackComponent;
+  let fixture: ComponentFixture<OidcCallbackComponent>;
   const navigateByUrl = () => Promise.resolve(true);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CallbackComponent],
+      imports: [OidcCallbackComponent],
       providers: [
         {
           provide: AuthService,
@@ -29,7 +29,7 @@ describe('CallbackComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CallbackComponent);
+    fixture = TestBed.createComponent(OidcCallbackComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

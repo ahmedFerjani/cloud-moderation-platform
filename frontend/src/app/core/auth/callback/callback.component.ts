@@ -15,7 +15,7 @@ export class CallbackComponent implements OnInit {
   private readonly router = inject(Router);
 
   ngOnInit(): void {
-    this.handleCallback();
+    void this.handleCallback();
   }
 
   private async handleCallback(): Promise<void> {

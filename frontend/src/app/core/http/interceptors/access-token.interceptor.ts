@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { switchMap, take } from 'rxjs';
-import { addAccessToken } from './http-auth.util';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
+import { addAccessToken } from '../utils/http-auth.util';
 import type { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 
 export function accessTokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {

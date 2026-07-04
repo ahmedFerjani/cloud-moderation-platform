@@ -8,8 +8,8 @@ import { type ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { initAuth } from './core/auth/auth.initializer';
+import { initConfig, initIcons, provideOidcAuth } from './core/bootstrap';
 import { accessTokenInterceptor } from './core/http/access-token.interceptor';
-import { initConfig, initIcons, provideOidcAuth } from './core/providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [

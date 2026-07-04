@@ -32,6 +32,11 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'callback',
+    loadComponent: () =>
+      import('./core/auth/callback/callback.component').then((m) => m.CallbackComponent),
+  },
+  {
     path: '**',
     redirectTo: 'upload',
   },

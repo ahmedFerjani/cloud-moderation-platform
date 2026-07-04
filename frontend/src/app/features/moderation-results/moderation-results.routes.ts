@@ -1,6 +1,6 @@
-import { ModerationResultsPageComponent } from './pages/moderation-results-page/moderation-results-page.component';
+import { ModerationResultsComponent } from './pages/moderation-results-page/moderation-results.component';
 import type { Routes } from '@angular/router';
 
 export const moderationResultsRoutes: Routes = [
-  { path: '', component: ModerationResultsPageComponent },
+  { path: '', component: ModerationResultsComponent },
 ];

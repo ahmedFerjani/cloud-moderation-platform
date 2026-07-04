@@ -19,7 +19,7 @@ import type {
 import type { OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-moderation-results-page',
+  selector: 'app-moderation-results',
   imports: [
     DatePipe,
     FormsModule,
@@ -33,10 +33,10 @@ import type { OnInit } from '@angular/core';
     MatProgressSpinnerModule,
     MatSelectModule,
   ],
-  templateUrl: './moderation-results-page.component.html',
-  styleUrl: './moderation-results-page.component.scss',
+  templateUrl: './moderation-results.component.html',
+  styleUrl: './moderation-results.component.scss',
 })
-export class ModerationResultsPageComponent implements OnInit {
+export class ModerationResultsComponent implements OnInit {
   private readonly moderationResultsApiService = inject(ModerationResultsApiService);
 
   protected readonly selectedStatuses = signal<('safe' | 'unsafe')[]>(['safe', 'unsafe']);

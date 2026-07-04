@@ -1,4 +1,4 @@
-import { UploadPageComponent } from './pages/upload-page/upload-page.component';
+import { UploadComponent } from './pages/upload-page/upload.component';
 import type { Routes } from '@angular/router';
 
-export const uploadRoutes: Routes = [{ path: '', component: UploadPageComponent }];
+export const uploadRoutes: Routes = [{ path: '', component: UploadComponent }];

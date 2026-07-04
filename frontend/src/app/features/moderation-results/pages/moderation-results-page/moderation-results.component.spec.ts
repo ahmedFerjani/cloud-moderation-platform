@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { ModerationResultsPageComponent } from './moderation-results-page.component';
+import { ModerationResultsComponent } from './moderation-results.component';
 import { ModerationResultsApiService } from '../../data-access/moderation-results-api.service';
 import type { ModerationResultsResponse } from '../../models/moderation-results.model';
 import type { ComponentFixture } from '@angular/core/testing';
 
-describe('ModerationResultsPageComponent', () => {
-  let component: ModerationResultsPageComponent;
-  let fixture: ComponentFixture<ModerationResultsPageComponent>;
+describe('ModerationResultsComponent', () => {
+  let component: ModerationResultsComponent;
+  let fixture: ComponentFixture<ModerationResultsComponent>;
 
   beforeEach(async () => {
     const moderationResultsResponse: ModerationResultsResponse = {
@@ -17,7 +17,7 @@ describe('ModerationResultsPageComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ModerationResultsPageComponent],
+      imports: [ModerationResultsComponent],
       providers: [
         {
           provide: ModerationResultsApiService,
@@ -28,7 +28,7 @@ describe('ModerationResultsPageComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ModerationResultsPageComponent);
+    fixture = TestBed.createComponent(ModerationResultsComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

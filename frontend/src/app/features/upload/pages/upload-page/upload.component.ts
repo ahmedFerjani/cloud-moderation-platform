@@ -9,7 +9,7 @@ import { initialUploadState } from '../../models/upload-state.model';
 import type { UploadState } from '../../models/upload-state.model';
 
 @Component({
-  selector: 'app-upload-page',
+  selector: 'app-upload',
   host: {
     class: 'block',
   },
@@ -20,9 +20,9 @@ import type { UploadState } from '../../models/upload-state.model';
     SelectedFilePreviewComponent,
     UploadFeedbackComponent,
   ],
-  templateUrl: './upload-page.component.html',
+  templateUrl: './upload.component.html',
 })
-export class UploadPageComponent {
+export class UploadComponent {
   private readonly uploadFacadeService = inject(UploadFacadeService);
 
   protected readonly selectedFiles = signal<File[]>([]);

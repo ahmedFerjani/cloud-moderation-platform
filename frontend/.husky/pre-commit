@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-cd frontend/content-moderation-ui || exit 1
-npx --no-install lint-staged

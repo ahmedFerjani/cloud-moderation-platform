@@ -69,21 +69,21 @@ Local setup:
 2. Set `target` to your AWS API base URL (including stage if required).
 3. Restart `ng serve` after updating proxy settings.
 
-## Git Hooks (Husky + lint-staged)
+## Git Hooks
 
-Hooks are stored under `frontend/content-moderation-ui/.husky` and run lint-staged on pre-commit.
-
-- Running `npm install` in `frontend/content-moderation-ui` executes `prepare` and installs Husky automatically.
-- If hooks do not run, configure the hooks path once:
+Hooks are at repository root (`.husky/`). Setup:
 
 ```bash
-git config core.hooksPath frontend/content-moderation-ui/.husky
+cd .. && npm install
 ```
 
-- If needed, make the hook executable:
+On pre-commit, staged frontend files run: `prettier --check`, `eslint --max-warnings=0`, `tsc -b --noEmit` (when `.ts` files staged).
+
+If hooks don't run, run:
 
 ```bash
-chmod +x frontend/content-moderation-ui/.husky/pre-commit
+git config core.hooksPath .husky
+chmod +x .husky/pre-commit
 ```
 
 ## Additional Resources

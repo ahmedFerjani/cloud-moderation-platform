@@ -89,6 +89,30 @@ The proxy target is configured in `frontend/proxy.conf.ts`. Replace the placehol
 
 ---
 
+## Git Hooks
+
+Git hooks are centralized at repository root under `.husky`.
+
+Run this once after cloning:
+
+```bash
+npm install
+```
+
+On pre-commit:
+- **Staged format & lint:** Frontend (prettier, eslint), Backend (ruff, black, flake8)
+- **Full-project type checks:** Frontend typecheck and Backend pyright (when relevant files are staged)
+
+Config: `.husky/pre-commit` (hook), `package.json` (lint-staged rules), `frontend/package.json` (frontend scripts)
+
+This installs Husky from root `package.json` and activates pre-commit checks for both frontend and backend changes.
+Staged-file checks use root lint-staged configs split by domain:
+
+- `.lintstaged.frontend.cjs`
+- `.lintstaged.backend.cjs`
+
+---
+
 ## License
 
 MIT License

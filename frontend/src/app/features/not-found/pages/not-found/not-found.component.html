@@ -1,0 +1,20 @@
+<section class="page-section--centered">
+  <mat-card appearance="outlined" class="w-full max-w-3xl">
+    <mat-card-content class="flex flex-col items-center gap-6 p-8 text-center">
+      <mat-icon aria-hidden="true" class="!h-24 !w-24 !text-8xl">search_off</mat-icon>
+      <div class="space-y-3">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-muted">404 error</p>
+        <h1 class="text-3xl font-semibold md:text-4xl">This page does not exist</h1>
+        <p class="max-w-2xl text-muted">
+          The link may be outdated, the page may have moved, or the address may be incorrect
+        </p>
+      </div>
+      <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a mat-flat-button routerLink="/upload" aria-label="Go to upload page">Go to Upload</a>
+        <a mat-stroked-button routerLink="/dashboard" aria-label="Go to dashboard page">
+          Go to Dashboard
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>

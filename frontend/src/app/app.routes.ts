@@ -4,6 +4,13 @@ import type { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'callback',
+    loadComponent: () =>
+      import('./core/auth/oidc-callback/oidc-callback.component').then(
+        (m) => m.OidcCallbackComponent,
+      ),
+  },
+  {
     path: '',
     component: ShellComponent,
     canActivate: [authGuard],
@@ -29,17 +36,15 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
       },
+      {
+        path: 'not-found',
+        loadChildren: () =>
+          import('./features/not-found/not-found.routes').then((m) => m.notFoundRoutes),
+      },
+      {
+        path: '**',
+        redirectTo: 'not-found',
+      },
     ],
-  },
-  {
-    path: 'callback',
-    loadComponent: () =>
-      import('./core/auth/oidc-callback/oidc-callback.component').then(
-        (m) => m.OidcCallbackComponent,
-      ),
-  },
-  {
-    path: '**',
-    redirectTo: 'upload',
   },
 ];

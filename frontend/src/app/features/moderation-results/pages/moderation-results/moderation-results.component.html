@@ -1,4 +1,4 @@
-<section class="mx-auto grid max-w-5xl gap-4">
+<section class="page-section max-w-5xl">
   <header class="flex items-center justify-between gap-3">
     <div class="grid gap-1">
       <h2 class="m-0 text-2xl font-semibold tracking-tight">Moderation Results</h2>
@@ -32,7 +32,7 @@
 
   @if (isLoading()) {
     <mat-card appearance="outlined">
-      <mat-card-content class="grid justify-items-center gap-3 py-6">
+      <mat-card-content class="py-6">
         <mat-spinner
           class="mx-auto"
           diameter="80"
@@ -44,9 +44,14 @@
     <mat-card appearance="outlined">
       <mat-card-content class="grid gap-3 py-4">
         <p class="m-0 text-sm text-error">{{ errorMessageValue }}</p>
-        <div>
-          <button mat-flat-button type="button" (click)="loadModerationResults()">Retry</button>
-        </div>
+        <button
+          mat-flat-button
+          type="button"
+          class="justify-self-start"
+          (click)="loadModerationResults()"
+        >
+          Retry
+        </button>
       </mat-card-content>
     </mat-card>
   } @else if (!hasItems()) {
@@ -60,7 +65,8 @@
       <mat-card-header>
         <mat-card-title>{{ count() }} results</mat-card-title>
       </mat-card-header>
-      <mat-card-content class="pb-0 pt-2">
+
+      <mat-card-content class="grid gap-3 pt-2">
         <mat-button-toggle-group
           aria-label="Filter moderation results by status"
           name="status-filter"
@@ -83,8 +89,7 @@
             Unsafe
           </mat-button-toggle>
         </mat-button-toggle-group>
-      </mat-card-content>
-      <mat-card-content class="my-1">
+
         @if (hasFilteredItems()) {
           <mat-accordion multi>
             @for (item of filteredItems(); track item.image_id) {
@@ -104,24 +109,18 @@
                       </span>
                     </div>
                   </mat-panel-title>
-                  <mat-panel-description
-                    class="ml-auto shrink-0 justify-end text-right text-xs text-muted"
-                  >
+                  <mat-panel-description class="ml-auto shrink-0 text-right text-xs text-muted">
                     {{ item.timestamp | date: 'medium' }}
                   </mat-panel-description>
                 </mat-expansion-panel-header>
 
-                <div class="grid gap-2">
-                  @if (item.moderation_labels.length) {
-                    <mat-chip-set aria-label="moderation labels" class="flex flex-wrap gap-2">
-                      @for (label of item.moderation_labels; track label.Name) {
-                        <mat-chip>
-                          {{ label.Name }}
-                        </mat-chip>
-                      }
-                    </mat-chip-set>
-                  }
-                </div>
+                @if (item.moderation_labels.length) {
+                  <mat-chip-set aria-label="moderation labels" class="flex flex-wrap gap-2">
+                    @for (label of item.moderation_labels; track label.Name) {
+                      <mat-chip>{{ label.Name }}</mat-chip>
+                    }
+                  </mat-chip-set>
+                }
 
                 <p class="m-0 mt-1 flex items-center gap-1.5 text-xs text-muted">
                   <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>

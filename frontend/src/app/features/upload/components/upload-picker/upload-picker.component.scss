@@ -1,8 +1,9 @@
-.upload-picker {
-  background-color: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+:host {
+  display: block;
 }
 
-.upload-picker.mat-mdc-outlined-button {
+.upload-picker {
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
   border-style: dashed;
   border-width: 2px;
   border-radius: 0.5rem;

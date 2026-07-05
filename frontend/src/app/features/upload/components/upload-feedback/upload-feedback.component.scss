@@ -1,5 +1,8 @@
-.upload-status,
-.upload-error {
+:host {
+  display: block;
+}
+
+.upload-message {
   margin: 0;
   font-size: 0.875rem;
 }

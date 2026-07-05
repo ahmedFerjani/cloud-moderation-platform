@@ -1,4 +1,4 @@
-<section class="mx-auto grid max-w-3xl gap-5">
+<section class="page-section max-w-3xl">
   <header class="grid gap-1.5">
     <h2 class="m-0 text-2xl font-semibold tracking-tight">Image Intake</h2>
     <p class="m-0 text-sm text-muted">Submit up to 10 images for automated moderation checks.</p>
@@ -14,12 +14,11 @@
 
     <mat-card-content class="grid gap-4 pt-2">
       <app-upload-picker
-        class="block"
         describedBy="upload-accepted-format"
         [disabled]="isUploading()"
         [maxFiles]="10"
         (filesSelected)="setSelectedFiles($event)"
-      ></app-upload-picker>
+      />
 
       @if (selectedFilesCount() > 0) {
         <div class="grid gap-1.5">
@@ -37,7 +36,7 @@
                 [sizeLabel]="formatFileSize(file.size)"
                 [previewUrl]="filePreviewUrl($index)"
                 (removeRequested)="removeSelectedFile($index)"
-              ></app-selected-file-preview>
+              />
             }
           </div>
         </div>
@@ -45,7 +44,7 @@
         <p class="m-0 text-sm text-muted" aria-live="polite">No images selected yet.</p>
       }
 
-      <app-upload-feedback [uploadState]="uploadState()"></app-upload-feedback>
+      <app-upload-feedback [uploadState]="uploadState()" />
     </mat-card-content>
 
     <mat-card-actions class="justify-center px-4 pb-4">

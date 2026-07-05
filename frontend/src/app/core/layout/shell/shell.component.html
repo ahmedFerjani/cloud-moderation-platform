@@ -1,7 +1,9 @@
-<app-navbar></app-navbar>
+<div class="flex min-h-screen flex-col">
+  <app-navbar></app-navbar>
 
-<main class="shell-content">
-  <router-outlet />
-</main>
+  <main class="flex flex-1 flex-col p-4">
+    <router-outlet />
+  </main>
 
-<app-footer></app-footer>
+  <app-footer></app-footer>
+</div>

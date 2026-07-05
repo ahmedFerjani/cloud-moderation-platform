@@ -7,6 +7,5 @@ import { NavbarComponent } from '../navbar/navbar.component';
   selector: 'app-shell',
   imports: [NavbarComponent, FooterComponent, RouterOutlet],
   templateUrl: './shell.component.html',
-  styleUrl: './shell.component.scss',
 })
 export class ShellComponent {}

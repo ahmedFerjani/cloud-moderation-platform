@@ -14,3 +14,13 @@
     border-color: var(--mat-sys-outline-variant);
   }
 }
+
+@layer components {
+  .page-section {
+    @apply mx-auto grid w-full;
+  }
+
+  .page-section--centered {
+    @apply flex flex-1 items-center justify-center;
+  }
+}

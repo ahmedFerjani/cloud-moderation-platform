@@ -5,6 +5,8 @@ import type { LoginResponse } from 'angular-auth-oidc-client';
 
 @Service()
 export class AuthService {
+  private static readonly REDIRECT_URL_KEY = 'auth.redirect-url';
+
   private readonly oidcSecurityService = inject(OidcSecurityService);
 
   readonly userData = this.oidcSecurityService.userData;
@@ -18,6 +20,18 @@ export class AuthService {
 
   checkAuth(): Observable<LoginResponse> {
     return this.oidcSecurityService.checkAuth();
+  }
+
+  setRedirectUrl(url: string): void {
+    sessionStorage.setItem(AuthService.REDIRECT_URL_KEY, url);
+  }
+
+  getRedirectUrl(): string | null {
+    return sessionStorage.getItem(AuthService.REDIRECT_URL_KEY);
+  }
+
+  clearRedirectUrl(): void {
+    sessionStorage.removeItem(AuthService.REDIRECT_URL_KEY);
   }
 
   getAccessToken(): Observable<string> {

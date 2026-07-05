@@ -19,8 +19,16 @@ export class OidcCallbackComponent implements OnInit {
   }
 
   private async handleCallback(): Promise<void> {
-    await firstValueFrom(this.auth.checkAuth());
+    const response = await firstValueFrom(this.auth.checkAuth());
 
-    await this.router.navigateByUrl('/upload');
+    if (!response.isAuthenticated) {
+      return;
+    }
+
+    const redirectUrl = this.auth.getRedirectUrl() ?? '/upload';
+
+    this.auth.clearRedirectUrl();
+
+    await this.router.navigateByUrl(redirectUrl);
   }
 }

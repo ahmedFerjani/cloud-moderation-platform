@@ -12,6 +12,7 @@ export function initIcons() {
   const sanitizer = inject(DomSanitizer);
 
   const ICONS: IconDefinition[] = [
+    { name: 'logo', path: 'icons/logo.svg' },
     { name: 'github', path: 'icons/github.svg' },
     { name: 'linkedin', path: 'icons/linkedin.svg' },
   ];

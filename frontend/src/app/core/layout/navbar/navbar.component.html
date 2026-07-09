@@ -26,4 +26,47 @@
       <span>Upload</span>
     </a>
   </nav>
+
+  @if (authService.isAuthenticated()) {
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="userMenu"
+      aria-label="User menu"
+      class="ml-2 !h-12 !w-12"
+    >
+      @if (hasAvatar() && userProfile().avatarUrl; as url) {
+        <img [src]="url" [alt]="userProfile().name" class="h-12 w-12 rounded-full object-cover" />
+      } @else {
+        <div
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white text-sm font-medium"
+        >
+          {{ userProfile().initials }}
+        </div>
+      }
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <div class="flex items-center gap-3 px-4 py-3">
+        @if (hasAvatar() && userProfile().avatarUrl; as url) {
+          <img [src]="url" [alt]="userProfile().name" class="h-10 w-10 rounded-full object-cover" />
+        }
+        <div
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white text-sm font-medium"
+        >
+          {{ userProfile().initials }}
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="text-sm font-medium">{{ userProfile().name }}</span>
+          @if (userProfile().email; as mail) {
+            <span class="text-xs text-gray-500">{{ mail }}</span>
+          }
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  }
 </mat-toolbar>

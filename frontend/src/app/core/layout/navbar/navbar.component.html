@@ -27,45 +27,38 @@
     </a>
   </nav>
 
-  @if (authService.isAuthenticated()) {
+  @if (isAuthenticated()) {
+    @let profile = userProfile();
     <button
       [matMenuTriggerFor]="userMenu"
-      aria-label="User menu"
       class="ml-2 h-12 w-12 flex items-center justify-center overflow-hidden rounded-full border-0 bg-transparent p-0 cursor-pointer"
     >
-      @if (hasAvatar() && userProfile().avatarUrl; as url) {
-        <img
-          [src]="url"
-          [alt]="userProfile().name"
-          class="h-full w-full rounded-full object-cover"
-        />
+      <span class="sr-only">User menu</span>
+      @if (profile.avatarUrl; as url) {
+        <img [src]="url" [alt]="profile.name" class="h-full w-full rounded-full object-cover" />
       } @else {
         <div
           class="flex h-full w-full items-center justify-center rounded-full bg-primary text-white text-sm font-medium"
         >
-          {{ userProfile().initials }}
+          {{ profile.initials }}
         </div>
       }
     </button>
 
     <mat-menu #userMenu="matMenu" class="user-menu-panel">
       <div class="flex items-center gap-1 px-4 py-2">
-        @if (hasAvatar() && userProfile().avatarUrl; as url) {
-          <img
-            [src]="url"
-            [alt]="userProfile().name"
-            class="!h-12 !w-12 rounded-full object-cover"
-          />
+        @if (profile.avatarUrl; as url) {
+          <img [src]="url" [alt]="profile.name" class="!h-12 !w-12 rounded-full object-cover" />
         } @else {
           <div
             class="flex !h-12 !w-12 items-center justify-center rounded-full bg-primary text-white text-sm font-medium"
           >
-            {{ userProfile().initials }}
+            {{ profile.initials }}
           </div>
         }
         <div class="flex flex-col leading-tight">
-          <span class="text-sm font-semibold text-gray-900">{{ userProfile().name }}</span>
-          @if (userProfile().email; as mail) {
+          <span class="text-sm font-semibold text-gray-900">{{ profile.name }}</span>
+          @if (profile.email; as mail) {
             <span class="text-sm font-medium text-gray-600">{{ mail }}</span>
           }
         </div>

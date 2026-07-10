@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use './styles/material-overlays';
 
 /* Global box-sizing reset: ensures width: 100% + padding never overflows. */
 *,

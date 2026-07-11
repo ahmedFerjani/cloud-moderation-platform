@@ -23,7 +23,14 @@ variable "account_id" {
   type        = string
 }
 
-variable "frontend_origins" {
+variable "cors_allowed_origins" {
   description = "List of allowed origins for S3 CORS"
   type        = list(string)
+  default     = []
+}
+
+variable "enable_lifecycle_cleanup" {
+  description = "Whether to enable lifecycle cleanup for the S3 bucket"
+  type        = bool
+  default     = false
 }

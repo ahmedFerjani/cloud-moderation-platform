@@ -39,6 +39,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  count  = var.enable_lifecycle_cleanup ? 1 : 0
   bucket = aws_s3_bucket.this.id
 
   rule {
@@ -53,22 +54,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
 
 resource "aws_s3_bucket_cors_configuration" "this" {
   bucket = aws_s3_bucket.this.id
+  count  = length(var.cors_allowed_origins) > 0 ? 1 : 0
 
   cors_rule {
-    allowed_origins = var.frontend_origins
-
-    allowed_methods = [
-      "POST",
-      "GET",
-      "HEAD"
-    ]
-
+    allowed_origins = var.cors_allowed_origins
+    allowed_methods = ["POST", "GET", "HEAD"]
     allowed_headers = ["*"]
-
-    expose_headers = [
-      "ETag"
-    ]
-
+    expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
 }

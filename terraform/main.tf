@@ -7,7 +7,8 @@ module "content_bucket" {
   purpose     = "uploads"
   region      = local.region
 
-  frontend_origins = var.s3_frontend_origins
+  cors_allowed_origins     = var.s3_frontend_origins
+  enable_lifecycle_cleanup = true
 }
 
 module "moderation_table" {
@@ -137,4 +138,16 @@ module "cognito" {
 
   callback_urls = var.callback_urls
   logout_urls   = var.logout_urls
+}
+
+module "frontend_bucket" {
+  source = "./modules/s3"
+
+  account_id  = local.account_id
+  name_prefix = local.name_prefix
+  environment = var.environment
+  purpose     = "static-site"
+  region      = local.region
+
+  enable_lifecycle_cleanup = false
 }

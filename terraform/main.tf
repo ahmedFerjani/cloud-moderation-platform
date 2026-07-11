@@ -151,3 +151,9 @@ module "frontend_bucket" {
 
   enable_lifecycle_cleanup = false
 }
+
+module "cloudfront" {
+  source = "./modules/cloudfront"
+
+  name_prefix = local.name_prefix
+}

@@ -156,4 +156,5 @@ module "cloudfront" {
   source = "./modules/cloudfront"
 
   name_prefix = local.name_prefix
+  s3_bucket_regional_domain_name = module.frontend_bucket.bucket_regional_domain_name
 }

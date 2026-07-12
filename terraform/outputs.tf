@@ -18,3 +18,7 @@ output "cognito_login_url" {
   description = "Cognito login URL"
   value       = "${module.cognito.hosted_ui_url}/login?client_id=${module.cognito.client_id}&response_type=code&scope=email+openid+profile&redirect_uri=${var.callback_urls[0]}"
 }
+
+output "frontend_bucket_regional_domain_name" {
+  value = module.frontend_bucket.bucket_regional_domain_name
+}

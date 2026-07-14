@@ -11,12 +11,26 @@ resource "aws_cloudfront_distribution" "this" {
   comment             = "${var.name_prefix} frontend distribution"
   default_root_object = "index.html"
 
+  # --- Origins ---
   origin {
     domain_name              = var.s3_bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.this.id
     origin_id                = local.frontend_origin_id
   }
 
+  origin {
+    domain_name = var.api_gateway_domain_name
+    origin_id   = local.api_origin_id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
+  # --- Cache behaviors ---
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
@@ -26,6 +40,18 @@ resource "aws_cloudfront_distribution" "this" {
     cache_policy_id        = data.aws_cloudfront_cache_policy.caching_optimized.id
   }
 
+  ordered_cache_behavior {
+    path_pattern             = "/api/*"
+    target_origin_id         = local.api_origin_id
+    viewer_protocol_policy   = "redirect-to-https"
+    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods           = ["GET", "HEAD"]
+    compress                 = true
+    cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+  }
+
+  # --- SPA routing fallback ---
   custom_error_response {
     error_code            = 403
     response_code         = 200
@@ -40,6 +66,7 @@ resource "aws_cloudfront_distribution" "this" {
     error_caching_min_ttl = 300
   }
 
+  # --- Global settings ---
   restrictions {
     geo_restriction {
       restriction_type = "none"

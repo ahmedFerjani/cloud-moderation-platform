@@ -17,3 +17,8 @@ variable "s3_bucket_arn" {
   description = "The ARN of the S3 bucket to be used as the origin for the CloudFront distribution"
   type        = string
 }
+
+variable "api_gateway_domain_name" {
+  description = "The domain name of the API Gateway to be used as the origin for the CloudFront distribution"
+  type        = string
+}

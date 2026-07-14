@@ -160,4 +160,6 @@ module "cloudfront" {
   s3_bucket_regional_domain_name = module.frontend_bucket.bucket_regional_domain_name
   s3_bucket_id                   = module.frontend_bucket.bucket_id
   s3_bucket_arn                  = module.frontend_bucket.bucket_arn
+
+  api_gateway_domain_name = module.api_gateway.api_domain_name
 }

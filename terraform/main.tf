@@ -157,6 +157,10 @@ module "waf" {
 
   name_prefix = local.name_prefix
   rate_limit  = var.waf_rate_limit
+
+  providers = {
+    aws = aws.us_east_1
+  }
 }
 
 module "cloudfront" {

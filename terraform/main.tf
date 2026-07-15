@@ -152,14 +152,22 @@ module "frontend_bucket" {
   enable_lifecycle_cleanup = false
 }
 
+module "waf" {
+  source = "./modules/waf"
+
+  name_prefix = local.name_prefix
+  rate_limit  = var.waf_rate_limit
+}
+
 module "cloudfront" {
   source = "./modules/cloudfront"
 
   name_prefix = local.name_prefix
 
+  web_acl_arn = module.waf.web_acl_arn
+
   s3_bucket_regional_domain_name = module.frontend_bucket.bucket_regional_domain_name
   s3_bucket_id                   = module.frontend_bucket.bucket_id
   s3_bucket_arn                  = module.frontend_bucket.bucket_arn
-
-  api_gateway_domain_name = module.api_gateway.api_domain_name
+  api_gateway_domain_name        = module.api_gateway.api_domain_name
 }

@@ -35,3 +35,9 @@ variable "logout_urls" {
   description = "List of allowed logout URLs for the Cognito app client"
   type        = list(string)
 }
+
+variable "waf_rate_limit" {
+  description = "Max requests per 5-minute window per IP before blocking"
+  type        = number
+  default     = 2000
+}

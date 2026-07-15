@@ -22,3 +22,8 @@ variable "api_gateway_domain_name" {
   description = "The domain name of the API Gateway to be used as the origin for the CloudFront distribution"
   type        = string
 }
+
+variable "web_acl_arn" {
+  description = "ARN of the WAF Web ACL to associate with this distribution"
+  type        = string
+}

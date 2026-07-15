@@ -10,6 +10,7 @@ resource "aws_cloudfront_distribution" "this" {
   enabled             = true
   comment             = "${var.name_prefix} frontend distribution"
   default_root_object = "index.html"
+  web_acl_id          = var.web_acl_arn
 
   # --- Origins ---
   origin {

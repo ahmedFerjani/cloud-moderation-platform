@@ -8,7 +8,10 @@ variable "sns_topic_arn" {
   description = "SNS topic ARN to notify when an alarm enters ALARM state"
 }
 
-variable "lambda_function_names" {
-  type        = map(string)
-  description = "Map of Lambda function names to monitor"
+variable "lambdas" {
+  type = map(object({
+    function_name = string
+    timeout       = number
+  }))
+  description = "Map of Lambda functions to monitor"
 }

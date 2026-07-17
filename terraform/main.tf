@@ -179,12 +179,21 @@ module "cloudfront" {
 module "cloudwatch_alarms" {
   source = "./modules/cloudwatch-alarms"
 
-  name_prefix = local.name_prefix
+  name_prefix   = local.name_prefix
   sns_topic_arn = module.sns.topic_arn
 
-  lambda_function_names = {
-    api-lambda         = module.api_lambda.lambda_name
-    orchestrator-lambda = module.orchestrator_lambda.lambda_name
-    dlq-handler-lambda  = module.dlq_handler_lambda.lambda_name
+  lambdas = {
+    api-lambda = {
+      function_name = module.api_lambda.lambda_name
+      timeout       = module.api_lambda.timeout
+    }
+    orchestrator-lambda = {
+      function_name = module.orchestrator_lambda.lambda_name
+      timeout       = module.orchestrator_lambda.timeout
+    }
+    dlq-handler-lambda = {
+      function_name = module.dlq_handler_lambda.lambda_name
+      timeout       = module.dlq_handler_lambda.timeout
+    }
   }
 }

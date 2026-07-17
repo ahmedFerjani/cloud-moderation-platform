@@ -17,3 +17,8 @@ output "lambda_name" {
   description = "Name of the DLQ handler Lambda"
   value       = aws_lambda_function.this.function_name
 }
+
+output "timeout" {
+  description = "Timeout of the DLQ handler Lambda"
+  value       = aws_lambda_function.this.timeout
+}

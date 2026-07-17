@@ -15,3 +15,8 @@ variable "lambdas" {
   }))
   description = "Map of Lambda functions to monitor"
 }
+
+variable "dlq_name" {
+  type        = string
+  description = "Name of the dead-letter queue to monitor"
+}

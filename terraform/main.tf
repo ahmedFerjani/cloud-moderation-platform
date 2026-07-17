@@ -182,6 +182,7 @@ module "cloudwatch_alarms" {
   name_prefix   = local.name_prefix
   sns_topic_arn = module.sns.topic_arn
 
+  dlq_name = module.sqs.dlq_name
   lambdas = {
     api-lambda = {
       function_name = module.api_lambda.lambda_name

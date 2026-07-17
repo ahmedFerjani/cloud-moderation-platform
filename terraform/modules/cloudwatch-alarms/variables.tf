@@ -20,3 +20,8 @@ variable "dlq_name" {
   type        = string
   description = "Name of the dead-letter queue to monitor"
 }
+
+variable "api_gateway_id" {
+  type        = string
+  description = "API Gateway ID to monitor"
+}

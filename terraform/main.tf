@@ -182,7 +182,6 @@ module "cloudwatch_alarms" {
   name_prefix   = local.name_prefix
   sns_topic_arn = module.sns.topic_arn
 
-  dlq_name = module.sqs.dlq_name
   lambdas = {
     api-lambda = {
       function_name = module.api_lambda.lambda_name
@@ -197,4 +196,7 @@ module "cloudwatch_alarms" {
       timeout       = module.dlq_handler_lambda.timeout
     }
   }
+
+  dlq_name       = module.sqs.dlq_name
+  api_gateway_id = module.api_gateway.api_id
 }

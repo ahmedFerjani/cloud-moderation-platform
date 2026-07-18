@@ -199,3 +199,9 @@ module "cloudwatch" {
   dlq_name       = module.sqs.dlq_name
   api_gateway_id = module.api_gateway.api_id
 }
+
+module "websocket" {
+  source = "./modules/websocket"
+
+  name_prefix = local.name_prefix
+}

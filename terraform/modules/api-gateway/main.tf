@@ -5,7 +5,7 @@ resource "aws_apigatewayv2_api" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/apigateway/${var.name_prefix}"
+  name              = "/aws/apigateway/${aws_apigatewayv2_api.this.name}"
   retention_in_days = 30
 }
 

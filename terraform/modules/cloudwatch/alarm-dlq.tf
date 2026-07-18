@@ -34,7 +34,7 @@ resource "aws_cloudwatch_metric_alarm" "dlq_oldest_message_age" {
   datapoints_to_alarm = 1
   statistic           = "Maximum"
   comparison_operator = "GreaterThanThreshold"
-  threshold           = 3600  # 1 hour
+  threshold           = 3600 # 1 hour
   treat_missing_data  = "notBreaching"
 
   alarm_actions = [var.sns_topic_arn]

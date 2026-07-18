@@ -176,8 +176,8 @@ module "cloudfront" {
   api_gateway_domain_name        = module.api_gateway.api_domain_name
 }
 
-module "cloudwatch_alarms" {
-  source = "./modules/cloudwatch-alarms"
+module "cloudwatch" {
+  source = "./modules/cloudwatch"
 
   name_prefix   = local.name_prefix
   sns_topic_arn = module.sns.topic_arn

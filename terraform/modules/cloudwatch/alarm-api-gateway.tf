@@ -32,7 +32,7 @@ resource "aws_cloudwatch_metric_alarm" "api_latency" {
   period              = 300
   evaluation_periods  = 1
   datapoints_to_alarm = 1
-  statistic  = "Maximum"
+  statistic           = "Maximum"
   comparison_operator = "GreaterThanThreshold"
   threshold           = 3000 # 3 seconds
   treat_missing_data  = "notBreaching"

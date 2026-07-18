@@ -15,7 +15,6 @@ module "moderation_table" {
   source = "./modules/dynamodb"
 
   name_prefix = local.name_prefix
-  purpose     = "results"
 }
 
 module "sns" {

@@ -204,4 +204,7 @@ module "websocket" {
   source = "./modules/websocket"
 
   name_prefix = local.name_prefix
+  environment = var.environment
+
+  depends_on = [aws_api_gateway_account.this]
 }

@@ -1,7 +1,7 @@
 resource "aws_apigatewayv2_api" "this" {
   name          = "${var.name_prefix}-api"
   protocol_type = "HTTP"
-  description   = "Content moderation API"
+  description   = "Content moderation HTTP API"
 }
 
 resource "aws_cloudwatch_log_group" "this" {

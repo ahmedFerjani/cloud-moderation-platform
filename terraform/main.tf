@@ -206,5 +206,12 @@ module "websocket" {
   name_prefix = local.name_prefix
   environment = var.environment
 
-  depends_on = [aws_api_gateway_account.this]
+  websocket_connect_lambda_zip_path    = "${local.packages_dir}/websocket-connect.zip"
+  websocket_disconnect_lambda_zip_path = "${local.packages_dir}/websocket-disconnect.zip"
+  serverless_utils_layer_arn           = module.lambda-layers.serverless_utils_layer_arn
+
+  lambda_assume_role_json    = local.lambda_assume_role_json
+  lambda_basic_execution_arn = local.lambda_basic_execution_arn
+
+  depends_on            = [aws_api_gateway_account.this]
 }

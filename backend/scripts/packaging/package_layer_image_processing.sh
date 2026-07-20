@@ -1,7 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-cd "$(dirname "$0")/.."  # cd to backend/
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+cd "$PROJECT_ROOT"
 
 OUTPUT="packages/image-processing.zip"
 REQUIREMENTS="layers/image_processing/requirements.txt"
@@ -17,7 +20,7 @@ mkdir -p "$PYTHON_DIR"
 # install into python/ subfolder (required by Lambda layer structure)
 pip install -r "$REQUIREMENTS" \
   -t "$PYTHON_DIR" \
-  --platform manylinux2014_aarch64 \
+  --platform manylinux_2_28_aarch64 \
   --only-binary=:all: \
   --python-version 3.14 \
   --upgrade

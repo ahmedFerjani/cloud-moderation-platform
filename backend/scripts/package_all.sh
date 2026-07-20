@@ -13,5 +13,8 @@ bash package_lambda_api.sh
 bash package_lambda_orchestrator.sh
 bash package_lambda_dlq_handler.sh
 
+bash package_websocket_connect.sh
+bash package_websocket_disconnect.sh
+
 echo ""
 echo "All packages complete."

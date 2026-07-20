@@ -28,6 +28,14 @@
       "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
+      "root": "backend/lambdas/websocket/connect",
+      "extraPaths": ["backend/layers/serverless_utils/python"]
+    },
+    {
+      "root": "backend/lambdas/websocket/disconnect",
+      "extraPaths": ["backend/layers/serverless_utils/python"]
+    },
+    {
       "root": "backend/tests",
       "extraPaths": [
         "backend/tests",

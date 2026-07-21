@@ -1,6 +1,7 @@
 import json
 from common.exceptions import APPError
 from common.responses import api_response
+from context import get_http_method, get_path
 from services import (
     generate_upload_url,
     get_moderation_result,
@@ -10,8 +11,8 @@ from validation import parse_last_evaluated_key, parse_limit
 
 
 def route_request(event):
-    method = event["requestContext"]["http"]["method"]
-    path = event["rawPath"]
+    method = get_http_method(event)
+    path = get_path(event)
 
     # GET /health
     if method == "GET" and path == "/health":

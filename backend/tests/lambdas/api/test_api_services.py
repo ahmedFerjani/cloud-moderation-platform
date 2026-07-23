@@ -9,6 +9,7 @@ from _api_test_setup import api_services, api_validation
 # Verifies upload URL generation returns stable response shape and object naming conventions.
 @patch.object(api_services, "log")
 def test_generate_upload_url_success(_mock_log: MagicMock) -> None:
+    user_id = "user-123"
     with (
         patch.object(api_services.uuid, "uuid4", return_value="id-123"),
         patch.object(api_services.s3, "generate_presigned_post") as mock_post,
@@ -17,13 +18,13 @@ def test_generate_upload_url_success(_mock_log: MagicMock) -> None:
             "url": "https://example.com/upload",
             "fields": {"Content-Type": "image/jpeg"},
         }
-        response = api_services.generate_upload_url({"content_type": "image/jpeg"})
+        response = api_services.generate_upload_url({"content_type": "image/jpeg"}, user_id)
 
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
     assert body["count"] == 1
     assert body["uploads"][0]["image_id"] == "id-123"
-    assert body["uploads"][0]["object_key"] == "uploads/id-123.jpg"
+    assert body["uploads"][0]["object_key"] == "uploads/user-123/id-123.jpg"
     assert body["expires_in"] == api_services.UPLOAD_URL_EXPIRES_IN_SECONDS
     assert body["max_upload_size_bytes"] == api_services.MAX_UPLOAD_FILE_SIZE_BYTES
     mock_post.assert_called_once()
@@ -32,6 +33,7 @@ def test_generate_upload_url_success(_mock_log: MagicMock) -> None:
 # Verifies one presigned upload URL generation per content type.
 @patch.object(api_services, "log")
 def test_generate_upload_url_batch_success(_mock_log: MagicMock) -> None:
+    user_id = "user-123"
     with (
         patch.object(api_services.uuid, "uuid4", side_effect=["id-1", "id-2"]),
         patch.object(api_services.s3, "generate_presigned_post") as mock_post,
@@ -40,7 +42,9 @@ def test_generate_upload_url_batch_success(_mock_log: MagicMock) -> None:
             "url": "https://example.com/upload",
             "fields": {"Content-Type": "image/jpeg"},
         }
-        response = api_services.generate_upload_url({"content_type": ["image/jpeg", "image/png"]})
+        response = api_services.generate_upload_url(
+            {"content_type": ["image/jpeg", "image/png"]}, user_id
+        )
 
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
@@ -55,6 +59,7 @@ def test_generate_upload_url_batch_success(_mock_log: MagicMock) -> None:
 @patch.object(api_services, "log")
 def test_generate_upload_url_accepts_max_files(_mock_log: MagicMock) -> None:
     max_files = api_validation.MAX_UPLOAD_FILES
+    user_id = "user-123"
     content_types = ["image/jpeg"] * max_files
 
     with (
@@ -69,7 +74,7 @@ def test_generate_upload_url_accepts_max_files(_mock_log: MagicMock) -> None:
             "url": "https://example.com/upload",
             "fields": {"Content-Type": "image/jpeg"},
         }
-        response = api_services.generate_upload_url({"content_type": content_types})
+        response = api_services.generate_upload_url({"content_type": content_types}, user_id)
 
     body = json.loads(response["body"])
     assert response["statusCode"] == 200

@@ -21,24 +21,26 @@ def test_get_health_route_returns_ok(api_event_factory) -> None:
 # Verifies POST upload route parses body JSON and forwards payload to upload generation service.
 def test_post_generate_upload_route_uses_body(api_event_factory) -> None:
     event = api_event_factory("api-uploads.json")
+    user_id = event["requestContext"]["authorizer"]["jwt"]["claims"]["sub"]
 
     with patch.object(api_router, "generate_upload_url", return_value={"ok": True}) as mock_fn:
         result = api_router.route_request(event)
 
     assert result == {"ok": True}
-    mock_fn.assert_called_once_with({"content_type": "image/jpeg"})
+    mock_fn.assert_called_once_with({"content_type": "image/jpeg"}, user_id)
 
 
 # Verifies POST upload route forwards list-form content_type payloads unchanged.
 def test_post_generate_upload_route_uses_list_content_type(api_event_factory) -> None:
     event = api_event_factory("api-uploads.json")
     event["body"] = json.dumps({"content_type": ["image/jpeg", "image/png"]})
+    user_id = event["requestContext"]["authorizer"]["jwt"]["claims"]["sub"]
 
     with patch.object(api_router, "generate_upload_url", return_value={"ok": True}) as mock_fn:
         result = api_router.route_request(event)
 
     assert result == {"ok": True}
-    mock_fn.assert_called_once_with({"content_type": ["image/jpeg", "image/png"]})
+    mock_fn.assert_called_once_with({"content_type": ["image/jpeg", "image/png"]}, user_id)
 
 
 # Verifies list route parses limit and forwards the normalized value to service layer.

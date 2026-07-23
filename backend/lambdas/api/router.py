@@ -1,7 +1,7 @@
 import json
 from common.exceptions import APPError
 from common.responses import api_response
-from context import get_http_method, get_path
+from context import get_cognito_jwt_sub, get_http_method, get_path
 from services import (
     generate_upload_url,
     get_moderation_result,
@@ -27,8 +27,9 @@ def route_request(event):
             raise APPError("MISSING_REQUEST_BODY", "Missing request body", 400)
 
         body = json.loads(event["body"])
+        user_id = get_cognito_jwt_sub(event)
 
-        return generate_upload_url(body)
+        return generate_upload_url(body, user_id)
 
     # GET /images/{id}
     if method == "GET" and path.startswith("/images/"):

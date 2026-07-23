@@ -18,11 +18,11 @@ dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(TABLE_NAME)  # type: ignore
 
 
-def generate_upload_url(body: dict) -> dict:
+def generate_upload_url(body: dict, user_id: str) -> dict:
 
     content_types = normalize_content_types(body)
 
-    uploads = [create_presigned_upload(content_type) for content_type in content_types]
+    uploads = [create_presigned_upload(content_type, user_id) for content_type in content_types]
 
     return api_response(
         200,
@@ -35,18 +35,18 @@ def generate_upload_url(body: dict) -> dict:
     )
 
 
-def create_presigned_upload(content_type: str) -> dict:
+def create_presigned_upload(content_type: str, user_id: str) -> dict:
     extension = "jpg" if content_type == "image/jpeg" else "png"
 
     image_id = str(uuid.uuid4())
-    object_key = f"uploads/{image_id}.{extension}"
+    object_key = f"uploads/{user_id}/{image_id}.{extension}"
 
     presigned_post = s3.generate_presigned_post(
         Bucket=BUCKET_NAME,
         Key=object_key,
         Fields={"Content-Type": content_type},
         Conditions=[
-            ["starts-with", "$key", "uploads/"],
+            ["starts-with", "$key", f"uploads/{user_id}/"],
             {"Content-Type": content_type},
             ["content-length-range", 1, MAX_UPLOAD_FILE_SIZE_BYTES],
         ],

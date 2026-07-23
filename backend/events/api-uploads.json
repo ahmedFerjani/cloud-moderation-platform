@@ -19,6 +19,13 @@
   "requestContext": {
     "accountId": "<redacted>",
     "apiId": "<redacted>",
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "<redacted-user-sub>"
+        }
+      }
+    },
     "domainName": "<redacted>",
     "domainPrefix": "<redacted>",
     "http": {

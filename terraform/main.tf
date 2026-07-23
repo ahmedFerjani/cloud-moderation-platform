@@ -152,6 +152,7 @@ module "frontend_bucket" {
 }
 
 module "waf" {
+  count  = var.enable_waf ? 1 : 0
   source = "./modules/waf"
 
   name_prefix = local.name_prefix
@@ -167,7 +168,7 @@ module "cloudfront" {
 
   name_prefix = local.name_prefix
 
-  web_acl_arn = module.waf.web_acl_arn
+  web_acl_arn = var.enable_waf ? module.waf.web_acl_arn : null
 
   s3_bucket_regional_domain_name = module.frontend_bucket.bucket_regional_domain_name
   s3_bucket_id                   = module.frontend_bucket.bucket_id
@@ -213,5 +214,5 @@ module "websocket" {
   lambda_assume_role_json    = local.lambda_assume_role_json
   lambda_basic_execution_arn = local.lambda_basic_execution_arn
 
-  depends_on            = [aws_api_gateway_account.this]
+  depends_on = [aws_api_gateway_account.this]
 }

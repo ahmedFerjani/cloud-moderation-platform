@@ -41,3 +41,9 @@ variable "waf_rate_limit" {
   type        = number
   default     = 2000
 }
+
+variable "enable_waf" {
+  description = "Enable AWS WAF for the API Gateway"
+  type        = bool
+  default     = false
+}

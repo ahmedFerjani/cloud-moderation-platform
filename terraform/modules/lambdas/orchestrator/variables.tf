@@ -63,3 +63,23 @@ variable "main_queue_arn" {
   description = "ARN of the main SQS queue"
   type        = string
 }
+
+variable "connections_table_arn" {
+  description = "ARN of the DynamoDB table for WebSocket connections"
+  type        = string
+}
+
+variable "connections_table_name" {
+  description = "Name of the WebSocket connections table"
+  type        = string
+}
+
+variable "websocket_execution_arn" {
+  description = "Execution ARN of the WebSocket API, for IAM permission scoping"
+  type        = string
+}
+
+variable "websocket_management_endpoint" {
+  description = "HTTPS endpoint for the API Gateway Management API, used by PostToConnection"
+  type        = string
+}

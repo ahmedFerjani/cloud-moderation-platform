@@ -40,9 +40,11 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
-      CAPTURE_SAMPLE_EVENTS = tostring(var.environment == "dev")
-      EXPECTED_BUCKET_OWNER = var.bucket_owner_id
-      TABLE_NAME            = var.moderation_table_name
+      CAPTURE_SAMPLE_EVENTS  = tostring(var.environment == "dev")
+      EXPECTED_BUCKET_OWNER  = var.bucket_owner_id
+      TABLE_NAME             = var.moderation_table_name
+      CONNECTIONS_TABLE_NAME = var.connections_table_name
+      WEBSOCKET_ENDPOINT_URL = var.websocket_management_endpoint
     }
   }
 

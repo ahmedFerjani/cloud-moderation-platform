@@ -42,4 +42,14 @@ data "aws_iam_policy_document" "orchestrator_lambda_policy" {
     ]
     resources = [var.main_queue_arn]
   }
+
+  statement {
+    actions   = ["dynamodb:Query"]
+    resources = ["${var.connections_table_arn}/index/userId-index"]
+  }
+
+  statement {
+    actions   = ["execute-api:ManageConnections"]
+    resources = ["${var.websocket_execution_arn}/*/POST/@connections/*"]
+  }
 }

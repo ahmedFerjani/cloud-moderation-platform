@@ -97,6 +97,11 @@ module "orchestrator_lambda" {
   moderation_table_arn  = module.moderation_table.table_arn
   moderation_table_name = module.moderation_table.table_name
 
+  connections_table_arn         = module.websocket.connections_table_arn
+  websocket_execution_arn       = module.websocket.websocket_execution_arn
+  connections_table_name        = module.websocket.connections_table_name
+  websocket_management_endpoint = module.websocket.websocket_management_endpoint
+
   main_queue_arn = module.sqs.main_queue_arn
 }
 

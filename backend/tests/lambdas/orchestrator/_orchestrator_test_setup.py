@@ -16,6 +16,10 @@ os.environ.setdefault("AWS_EC2_METADATA_DISABLED", "true")
 os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
 os.environ.setdefault("AWS_REGION", "us-east-1")
 os.environ.setdefault("TABLE_NAME", "test-table")
+os.environ.setdefault("CONNECTIONS_TABLE_NAME", "test-connections-table")
+os.environ.setdefault(
+    "WEBSOCKET_ENDPOINT_URL", "https://test-endpoint.execute-api.us-east-1.amazonaws.com/test"
+)
 
 
 def orchestrator_runtime_event() -> dict:

@@ -26,6 +26,10 @@ os.environ.setdefault("AWS_REGION", "us-east-1")
 os.environ.setdefault("BUCKET_NAME", "test-bucket")
 os.environ.setdefault("TABLE_NAME", "test-table")
 os.environ.setdefault("SNS_TOPIC_ARN", "arn:aws:sns:us-east-1:123456789012:test-topic")
+os.environ.setdefault("CONNECTIONS_TABLE_NAME", "test-connections-table")
+os.environ.setdefault(
+    "WEBSOCKET_ENDPOINT_URL", "https://test-endpoint.execute-api.us-east-1.amazonaws.com/test"
+)
 
 
 # Reorders a path to the front so implicit imports resolve to the active lambda stack.

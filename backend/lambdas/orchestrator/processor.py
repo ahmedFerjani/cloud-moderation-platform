@@ -9,9 +9,11 @@ from services import (
     extract_text_from_image,
     download_image,
     extract_image_id_from_s3_key,
+    extract_user_id_from_s3_key,
     store_moderation_result,
     generate_image_hash,
     find_existing_image,
+    notify_user,
 )
 from validation import validate_image, validate_upload_size
 
@@ -36,6 +38,7 @@ def _build_context(bucket_name, object_key):
         "bucket_name": bucket_name,
         "object_key": object_key,
         "image_id": extract_image_id_from_s3_key(object_key),
+        "user_id": extract_user_id_from_s3_key(object_key),
     }
 
 
@@ -154,6 +157,15 @@ def _process_single_record(s3_record):
 
         log("INFO", "DynamoDB stored", ctx)
 
+        notify_user(
+            ctx["user_id"],
+            {
+                "type": "moderation_result",
+                "status": STATUS_SUCCESS,
+                "imageId": ctx["image_id"],
+            },
+        )
+
         return STATUS_SUCCESS
 
     except APPError as e:
@@ -166,6 +178,16 @@ def _process_single_record(s3_record):
             {
                 **ctx,
                 "code": e.code,
+            },
+        )
+
+        notify_user(
+            ctx["user_id"],
+            {
+                "type": "moderation_result",
+                "status": STATUS_REJECTED,
+                "imageId": ctx["image_id"],
+                "reason": e.message,
             },
         )
 

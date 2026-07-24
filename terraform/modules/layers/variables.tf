@@ -30,3 +30,14 @@ variable "image_processing_compatible_architectures" {
   type        = list(string)
   default     = ["arm64"]
 }
+
+variable "jwt_auth_zip_path" {
+  description = "Path to the JWT Auth zip file"
+  type        = string
+}
+
+variable "jwt_auth_compatible_architectures" {
+  description = "Compatible architectures for the JWT Auth Lambda layer"
+  type        = list(string)
+  default     = ["arm64"]
+}

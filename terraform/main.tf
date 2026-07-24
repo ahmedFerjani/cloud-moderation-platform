@@ -39,6 +39,7 @@ module "lambda-layers" {
 
   serverless_utils_zip_path = "${local.packages_dir}/serverless-utils.zip"
   image_processing_zip_path = "${local.packages_dir}/image-processing.zip"
+  jwt_auth_zip_path         = "${local.packages_dir}/jwt-auth.zip"
 }
 
 module "api_lambda" {

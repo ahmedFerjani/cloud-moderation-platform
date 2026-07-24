@@ -23,3 +23,16 @@ resource "aws_lambda_layer_version" "image_processing" {
 
   license_info = "HPND"
 }
+
+resource "aws_lambda_layer_version" "jwt_auth" {
+  layer_name  = "${var.name_prefix}-jwt-auth"
+  description = "JWT authentication dependencies layer"
+
+  filename         = var.jwt_auth_zip_path
+  source_code_hash = filebase64sha256(var.jwt_auth_zip_path)
+
+  compatible_runtimes      = var.runtime
+  compatible_architectures = var.jwt_auth_compatible_architectures
+
+  license_info = "MIT"
+}

@@ -1,5 +1,6 @@
 import json
 import os
+from urllib.parse import urlparse
 import urllib.request
 from jose import jwt
 
@@ -15,9 +16,16 @@ _jwks_cache = None
 
 def _get_jwks():
     global _jwks_cache
+
     if _jwks_cache is None:
-        with urllib.request.urlopen(JWKS_URL) as response:
+        parsed = urlparse(JWKS_URL)
+
+        if parsed.scheme != "https":
+            raise ValueError("JWKS URL must use HTTPS")
+
+        with urllib.request.urlopen(JWKS_URL, timeout=5) as response:
             _jwks_cache = json.loads(response.read())["keys"]
+
     return _jwks_cache
 
 

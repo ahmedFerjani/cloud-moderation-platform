@@ -20,6 +20,7 @@ bash "$PACKAGING_DIR/package_lambda_dlq_handler.sh"
 
 bash "$PACKAGING_DIR/package_websocket_connect.sh"
 bash "$PACKAGING_DIR/package_websocket_disconnect.sh"
+bash "$PACKAGING_DIR/package_websocket_authorizer.sh"
 
 echo ""
 echo "All packages complete."

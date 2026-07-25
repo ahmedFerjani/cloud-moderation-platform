@@ -36,6 +36,10 @@
       "extraPaths": ["backend/layers/serverless_utils/python"]
     },
     {
+      "root": "backend/lambdas/websocket/authorizer",
+      "extraPaths": ["backend/layers/serverless_utils/python"]
+    },
+    {
       "root": "backend/tests",
       "extraPaths": [
         "backend/tests",

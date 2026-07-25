@@ -75,12 +75,10 @@ jobs:
 
   backend-security:
     name: Security Checks
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     permissions:
-      actions: read
       contents: read
-      security-events: write
 
     steps:
       - name: Checkout repository
@@ -103,14 +101,16 @@ jobs:
       - name: Install dependencies
         run: uv pip install --system -r backend/requirements-ci-security.txt
 
-      - name: Generate pinned lockfile for vulnerability scan
-        run: uv pip compile backend/requirements-ci-tests.txt --output-file backend/requirements-ci-tests-pinned.txt
+      - name: Generate hashed requirements lockfile for audit
+        run: |
+          mkdir -p backend/test-reports/security
+          uv pip compile \
+            --generate-hashes \
+            --output-file backend/test-reports/security/requirements-ci-tests-hashed.txt \
+            backend/requirements-ci-tests.txt
 
       - name: Run dependency vulnerability scan
-        uses: google/osv-scanner-action/osv-scanner-action@v2.3.8
-        with:
-          scan-args: |-
-            --lockfile=backend/requirements-ci-tests-pinned.txt
+        run: pip-audit -r backend/test-reports/security/requirements-ci-tests-hashed.txt
 
       - name: Run static security scan
         run: |

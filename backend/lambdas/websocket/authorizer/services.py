@@ -23,7 +23,7 @@ def _get_jwks():
         if parsed.scheme != "https":
             raise ValueError("JWKS URL must use HTTPS")
 
-        with urllib.request.urlopen(JWKS_URL, timeout=5) as response:
+        with urllib.request.urlopen(JWKS_URL, timeout=5) as response:  # nosec B310
             _jwks_cache = json.loads(response.read())["keys"]
 
     return _jwks_cache

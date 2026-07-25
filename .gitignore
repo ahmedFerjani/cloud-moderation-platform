@@ -50,11 +50,6 @@ crash.log
 *.tfvars.json
 
 ############################################
-# CI-generated lockfiles (ephemeral, not source-controlled)
-############################################
-backend/requirements-ci-tests-pinned.txt
-
-############################################
 # AWS / Serverless artifacts
 ############################################
 .aws-sam/

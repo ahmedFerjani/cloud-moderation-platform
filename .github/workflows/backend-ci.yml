@@ -104,13 +104,13 @@ jobs:
         run: uv pip install --system -r backend/requirements-ci-security.txt
 
       - name: Generate pinned lockfile for vulnerability scan
-        run: uv pip compile backend/requirements-ci-tests.txt --output-file /tmp/requirements-ci-tests-pinned.txt
+        run: uv pip compile backend/requirements-ci-tests.txt --output-file backend/requirements-ci-tests-pinned.txt
 
       - name: Run dependency vulnerability scan
         uses: google/osv-scanner-action/osv-scanner-action@v2.3.8
         with:
           scan-args: |-
-            --lockfile=/tmp/requirements-ci-tests-pinned.txt
+            --lockfile=backend/requirements-ci-tests-pinned.txt
 
       - name: Run static security scan
         run: |

@@ -2,6 +2,7 @@ import http.client
 import json
 import os
 from urllib.parse import ParseResult, urlparse
+
 from common.exceptions import APPError
 from jose import jwt
 from jose.exceptions import JWTError
@@ -129,7 +130,7 @@ def verify_token(token: str) -> dict:
     claims = _decode_verified_claims(token)
 
     token_use = claims.get("token_use")
-    if token_use != "access":
+    if token_use != "access":  # nosec B105 - Cognito token_use claim value, not a secret
         raise APPError("INVALID_TOKEN_USE", "Not an access token", 401)
 
     client_id = claims.get("client_id")

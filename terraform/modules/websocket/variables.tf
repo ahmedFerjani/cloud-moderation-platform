@@ -24,6 +24,11 @@ variable "serverless_utils_layer_arn" {
   type        = string
 }
 
+variable "jwt_auth_layer_arn" {
+  description = "ARN of the JWT Auth layer"
+  type        = string
+}
+
 variable "environment" {
   description = "Deployment environment"
   type        = string
@@ -36,5 +41,20 @@ variable "lambda_assume_role_json" {
 
 variable "lambda_basic_execution_arn" {
   description = "ARN of the AWS managed policy for basic Lambda execution"
+  type        = string
+}
+
+variable "websocket_authorizer_lambda_zip_path" {
+  description = "Path to the WebSocket Authorizer Lambda zip file"
+  type        = string
+}
+
+variable "cognito_user_pool_id" {
+  description = "Cognito User Pool ID for JWT validation"
+  type        = string
+}
+
+variable "cognito_client_id" {
+  description = "Cognito App Client ID for JWT validation"
   type        = string
 }

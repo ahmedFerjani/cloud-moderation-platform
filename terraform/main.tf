@@ -215,10 +215,15 @@ module "websocket" {
 
   websocket_connect_lambda_zip_path    = "${local.packages_dir}/websocket-connect.zip"
   websocket_disconnect_lambda_zip_path = "${local.packages_dir}/websocket-disconnect.zip"
+  websocket_authorizer_lambda_zip_path = "${local.packages_dir}/websocket-authorizer.zip"
   serverless_utils_layer_arn           = module.lambda-layers.serverless_utils_layer_arn
+  jwt_auth_layer_arn                   = module.lambda-layers.jwt_auth_layer_arn
 
   lambda_assume_role_json    = local.lambda_assume_role_json
   lambda_basic_execution_arn = local.lambda_basic_execution_arn
+
+  cognito_user_pool_id  = module.cognito.user_pool_id
+  cognito_client_id = module.cognito.client_id
 
   depends_on = [aws_api_gateway_account.this]
 }

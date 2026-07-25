@@ -37,7 +37,7 @@ resource "aws_lambda_function" "connect" {
 
   environment {
     variables = {
-      CAPTURE_SAMPLE_EVENTS = tostring(var.environment == "dev")
+      CAPTURE_SAMPLE_EVENTS  = tostring(var.environment == "dev")
       CONNECTIONS_TABLE_NAME = aws_dynamodb_table.this.name
     }
   }
@@ -64,7 +64,9 @@ resource "aws_lambda_permission" "allow_connect_invoke" {
 }
 
 resource "aws_apigatewayv2_route" "connect" {
-  api_id    = aws_apigatewayv2_api.this.id
-  route_key = "$connect"
-  target    = "integrations/${aws_apigatewayv2_integration.connect.id}"
+  api_id             = aws_apigatewayv2_api.this.id
+  route_key          = "$connect"
+  target             = "integrations/${aws_apigatewayv2_integration.connect.id}"
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }

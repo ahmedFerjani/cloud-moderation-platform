@@ -7,3 +7,8 @@ output "image_processing_layer_arn" {
   description = "ARN of the Image Processing Lambda layer"
   value       = aws_lambda_layer_version.image_processing.arn
 }
+
+output "jwt_auth_layer_arn" {
+  description = "ARN of the JWT Auth Lambda layer"
+  value       = aws_lambda_layer_version.jwt_auth.arn
+}

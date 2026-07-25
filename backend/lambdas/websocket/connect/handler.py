@@ -3,7 +3,7 @@ import json
 from common.logger import log
 from common.event_capture import capture_sample_event
 from common.middleware import api_exception_handler
-from service import save_connection
+from services import save_connection
 
 
 @api_exception_handler

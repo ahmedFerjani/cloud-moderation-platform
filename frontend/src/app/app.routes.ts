@@ -1,19 +1,12 @@
-import { authGuard } from './core/auth/auth.guard';
+import { autoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
 import { ShellComponent } from './core/layout/shell/shell.component';
 import type { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: 'callback',
-    loadComponent: () =>
-      import('./core/auth/oidc-callback/oidc-callback.component').then(
-        (m) => m.OidcCallbackComponent,
-      ),
-  },
-  {
     path: '',
     component: ShellComponent,
-    canActivate: [authGuard],
+    canActivate: [autoLoginPartialRoutesGuard],
     children: [
       {
         path: '',

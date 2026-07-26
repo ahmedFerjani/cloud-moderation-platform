@@ -50,7 +50,15 @@ export class AuthService {
     this.oidcSecurityService.authorize();
   }
 
+  /**
+   * `logoffLocal()` clears the stored ID token so `logoff()` won't append
+   * `id_token_hint`. It then relies on the `customParamsEndSessionRequest`
+   * config (`client_id` + `logout_uri`) — the params Cognito's hosted UI
+   * logout endpoint actually expects
+   */
   logout(): Observable<unknown> {
+    this.oidcSecurityService.logoffLocal();
+
     return this.oidcSecurityService.logoff();
   }
 

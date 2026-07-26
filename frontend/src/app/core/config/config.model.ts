@@ -7,6 +7,9 @@ export interface AppConfig {
     clientId: string;
     scope: string;
     responseType: string;
-    postLogoutRedirectUri: string;
+    customParamsEndSessionRequest: {
+      client_id: string;
+      logout_uri: string;
+    };
   };
 }

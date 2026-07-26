@@ -7,6 +7,9 @@
     "clientId": "<client-id>",
     "scope": "openid email profile",
     "responseType": "code",
-    "logoutUrl": "<app-base-url>"
+    "customParamsEndSessionRequest": {
+      "client_id": "<client-id>",
+      "logout_uri": "<app-base-url>"
+    }
   }
 }

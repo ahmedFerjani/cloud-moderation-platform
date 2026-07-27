@@ -27,3 +27,8 @@ output "cloudfront_domain_name" {
   description = "CloudFront distribution domain name for the frontend"
   value       = module.cloudfront.distribution_domain_name
 }
+
+output "websocket_api_domain_name" {
+  description = "WebSocket API Gateway domain name without scheme (for use as a CloudFront origin)"
+  value       = module.websocket.websocket_api_domain_name
+}

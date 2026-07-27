@@ -17,3 +17,8 @@ output "websocket_management_endpoint" {
   description = "HTTPS endpoint for the API Gateway Management API, used by PostToConnection"
   value       = replace(aws_apigatewayv2_stage.this.invoke_url, "wss://", "https://")
 }
+
+output "websocket_api_domain_name" {
+  description = "WebSocket API Gateway domain name without scheme (for use as a CloudFront origin)"
+  value       = trimprefix(aws_apigatewayv2_api.this.api_endpoint, "wss://")
+}

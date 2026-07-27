@@ -180,6 +180,7 @@ module "cloudfront" {
   s3_bucket_id                   = module.frontend_bucket.bucket_id
   s3_bucket_arn                  = module.frontend_bucket.bucket_arn
   api_gateway_domain_name        = module.api_gateway.api_domain_name
+  websocket_api_domain_name      = module.websocket.websocket_api_domain_name
 }
 
 module "cloudwatch" {
@@ -222,8 +223,8 @@ module "websocket" {
   lambda_assume_role_json    = local.lambda_assume_role_json
   lambda_basic_execution_arn = local.lambda_basic_execution_arn
 
-  cognito_user_pool_id  = module.cognito.user_pool_id
-  cognito_client_id = module.cognito.client_id
+  cognito_user_pool_id = module.cognito.user_pool_id
+  cognito_client_id    = module.cognito.client_id
 
   depends_on = [aws_api_gateway_account.this]
 }

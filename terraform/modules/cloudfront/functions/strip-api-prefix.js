@@ -1,6 +1,6 @@
 /**
  * Strips the /api prefix from incoming request URIs before
- * forwarding to the API Gateway origin.
+ * forwarding to the API Gateway origin
  * @param {Object} event - CloudFront Function viewer-request event
  * @param {Object} event.request - The incoming request object
  * @param {string} event.request.uri - The request URI to rewrite

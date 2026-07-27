@@ -19,7 +19,12 @@ variable "s3_bucket_arn" {
 }
 
 variable "api_gateway_domain_name" {
-  description = "The domain name of the API Gateway to be used as the origin for the CloudFront distribution"
+  description = "The domain name of the HTTP API Gateway to be used as the origin for the CloudFront distribution"
+  type        = string
+}
+
+variable "websocket_api_domain_name" {
+  description = "The domain name of the WebSocket API Gateway to be used as the origin for the CloudFront distribution"
   type        = string
 }
 

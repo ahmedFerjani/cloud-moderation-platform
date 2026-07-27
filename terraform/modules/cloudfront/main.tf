@@ -31,6 +31,18 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
+  origin {
+    domain_name = var.websocket_api_domain_name
+    origin_id   = local.ws_origin_id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
   # --- Cache behaviors ---
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
@@ -59,6 +71,22 @@ resource "aws_cloudfront_distribution" "this" {
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.strip_api_prefix.arn
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern             = "/ws*"
+    target_origin_id         = local.ws_origin_id
+    viewer_protocol_policy   = "redirect-to-https"
+    allowed_methods          = ["GET", "HEAD"]
+    cached_methods           = ["GET", "HEAD"]
+    compress                 = true
+    cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.strip_ws_prefix.arn
     }
   }
 

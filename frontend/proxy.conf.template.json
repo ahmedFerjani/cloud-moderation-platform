@@ -7,5 +7,15 @@
       "^/api": ""
     },
     "logLevel": "debug"
+  },
+  "/ws": {
+    "target": "https://<aws_websocket_api_domain>",
+    "ws": true,
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/ws": "/$default"
+    },
+    "logLevel": "debug"
   }
 }

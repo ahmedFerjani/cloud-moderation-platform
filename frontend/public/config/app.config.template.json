@@ -1,5 +1,6 @@
 {
   "apiUrl": "/api",
+  "websocketUrl": "/ws",
 
   "cognito": {
     "authority": "https://cognito-idp.<region>.amazonaws.com/<user-pool-id>",

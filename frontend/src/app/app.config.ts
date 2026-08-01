@@ -7,7 +7,7 @@ import {
 import { type ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { initConfig, initIcons, provideOidcAuth } from './core/bootstrap';
+import { initConfig, initIcons, initWebSocket, provideOidcAuth } from './core/bootstrap';
 import { accessTokenInterceptor } from './core/http/interceptors/access-token.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -17,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAppInitializer(initConfig),
     provideEnvironmentInitializer(initIcons),
+    provideEnvironmentInitializer(initWebSocket),
     provideOidcAuth,
   ],
 };

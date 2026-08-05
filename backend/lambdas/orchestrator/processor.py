@@ -147,7 +147,7 @@ def _process_single_record(s3_record):
 
         extracted_text, text_insights = _extract_text_and_insights(bucket_name, object_key, ctx)
 
-        store_moderation_result(
+        moderation_status = store_moderation_result(
             moderation_labels,
             object_key,
             image_hash,
@@ -163,6 +163,7 @@ def _process_single_record(s3_record):
                 "type": "moderation_result",
                 "status": STATUS_SUCCESS,
                 "imageId": ctx["image_id"],
+                "moderationStatus": moderation_status,
             },
         )
 

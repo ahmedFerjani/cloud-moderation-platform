@@ -43,6 +43,8 @@ def store_moderation_result(
 
     table.put_item(Item=item)
 
+    return status
+
 
 def find_existing_image(image_hash: str):
 

@@ -63,6 +63,17 @@ def _handle_existing_item(existing_item, bucket_name, object_key, ctx):
             },
         )
 
+        notify_user(
+            ctx["user_id"],
+            {
+                "type": "moderation_result",
+                "status": STATUS_DUPLICATE,
+                "imageId": ctx["image_id"],
+                "fileName": ctx.get("file_name", ctx["image_id"]),
+                "moderationStatus": existing_item.get("status"),
+            },
+        )
+
         return True
 
     existing_s3_key = existing_item.get("s3_key")

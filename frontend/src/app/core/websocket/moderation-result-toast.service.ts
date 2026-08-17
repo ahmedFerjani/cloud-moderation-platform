@@ -1,5 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { MODERATION_RESULT_STATUSES, MODERATION_STATUSES } from './websocket.model';
 import { WebSocketService } from './websocket.service';
 
 /**
@@ -15,12 +16,17 @@ export class ModerationResultToastService {
     this.webSocketService.messages$.subscribe((message) => {
       const label = message.fileName ?? message.imageId;
 
-      if (message.status === 'success') {
-        if (message.moderationStatus === 'unsafe') {
+      if (message.status === MODERATION_RESULT_STATUSES.SUCCESS) {
+        if (message.moderationStatus === MODERATION_STATUSES.UNSAFE) {
           this.toastr.warning(`Image ${label} was flagged as unsafe.`, 'Moderation Result');
         } else {
           this.toastr.success(`Image ${label} passed moderation.`, 'Moderation Result');
         }
+      } else if (message.status === MODERATION_RESULT_STATUSES.DUPLICATE) {
+        this.toastr.info(
+          `Image ${label} is a duplicate. Existing result: ${message.moderationStatus}.`,
+          'Moderation Result',
+        );
       } else {
         this.toastr.error(message.reason ?? `Image ${label} was rejected.`, 'Moderation Result');
       }

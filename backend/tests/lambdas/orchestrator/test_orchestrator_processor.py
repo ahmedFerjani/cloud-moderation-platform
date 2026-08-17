@@ -24,6 +24,7 @@ def test_duplicate_image_skips_processing() -> None:
             "find_existing_image",
             return_value={"status": "safe", "image_id": "img-existing"},
         ),
+        patch.object(orchestrator_processor, "notify_user") as mock_notify,
         patch.object(orchestrator_processor, "delete_uploaded_image") as mock_delete,
         patch.object(orchestrator_processor, "validate_image") as mock_validate,
         patch.object(orchestrator_processor, "detect_moderation_labels") as mock_labels,
@@ -39,6 +40,16 @@ def test_duplicate_image_skips_processing() -> None:
     mock_textract.assert_not_called()
     mock_comprehend.assert_not_called()
     mock_store.assert_not_called()
+    mock_notify.assert_called_once_with(
+        None,
+        {
+            "type": "moderation_result",
+            "status": "duplicate",
+            "imageId": "sample-image",
+            "fileName": "sample-image",
+            "moderationStatus": "safe",
+        },
+    )
 
 
 # Verifies business validation errors trigger cleanup by deleting the uploaded object.

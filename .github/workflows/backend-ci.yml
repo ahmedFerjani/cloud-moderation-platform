@@ -110,7 +110,12 @@ jobs:
             backend/requirements-ci-tests.txt
 
       - name: Run dependency vulnerability scan
-        run: pip-audit -r backend/test-reports/security/requirements-ci-tests-hashed.txt
+        run: |
+          # PYSEC-2026-1325 has no published fix at the time of writing.
+          # Keep this exception narrow and remove it once pip-audit resolves it.
+          pip-audit \
+            --ignore-vuln PYSEC-2026-1325 \
+            -r backend/test-reports/security/requirements-ci-tests-hashed.txt
 
       - name: Run static security scan
         run: |

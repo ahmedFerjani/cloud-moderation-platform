@@ -1,10 +1,10 @@
 resource "aws_dynamodb_table" "this" {
   name         = lower("${var.name_prefix}-results")
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "imageId"
+  hash_key     = "image_id"
 
   attribute {
-    name = "imageId"
+    name = "image_id"
     type = "S"
   }
 
@@ -24,10 +24,10 @@ resource "aws_dynamodb_table" "this" {
 
 resource "aws_dynamodb_global_secondary_index" "this" {
   table_name = aws_dynamodb_table.this.name
-  index_name = "imageHash-index"
+  index_name = "image_hash_index"
 
   key_schema {
-    attribute_name = "imageHash"
+    attribute_name = "image_hash"
     attribute_type = "S"
     key_type       = "HASH"
   }

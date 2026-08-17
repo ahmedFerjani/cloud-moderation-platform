@@ -26,7 +26,7 @@ def store_moderation_result(
     status = "unsafe" if unsafe_detected else "safe"
 
     item = {
-        "imageId": image_id,
+        "image_id": image_id,
         "image_hash": image_hash,
         "s3_key": object_key,
         "timestamp": datetime.now().isoformat(),
@@ -49,8 +49,8 @@ def store_moderation_result(
 def find_existing_image(image_hash: str):
 
     dynamodb_response = table.query(
-        IndexName="imageHash-index",
-        KeyConditionExpression=Key("imageHash").eq(image_hash),
+        IndexName="image_hash_index",
+        KeyConditionExpression=Key("image_hash").eq(image_hash),
         Limit=1,
     )
 

@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "orchestrator_lambda_policy" {
   }
 
   statement {
-    actions   = ["s3:GetObject"]
+    actions   = ["s3:GetObject", "s3:DeleteObject"]
     resources = ["${var.content_bucket_arn}/uploads/*"]
   }
 
@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "orchestrator_lambda_policy" {
 
   statement {
     actions   = ["dynamodb:Query"]
-    resources = ["${var.moderation_table_arn}/index/imageHash-index"]
+    resources = ["${var.moderation_table_arn}/index/image_hash_index"]
   }
 
   statement {

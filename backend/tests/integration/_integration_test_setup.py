@@ -16,9 +16,22 @@ COMMON_PATH = BACKEND_ROOT / "layers" / "serverless_utils" / "python"
 API_PATH = BACKEND_ROOT / "lambdas" / "api"
 ORCHESTRATOR_PATH = BACKEND_ROOT / "lambdas" / "orchestrator"
 DLQ_PATH = BACKEND_ROOT / "lambdas" / "dlq_handler"
+WEBSOCKET_AUTHORIZER_PATH = BACKEND_ROOT / "lambdas" / "websocket" / "authorizer"
+WEBSOCKET_CONNECT_PATH = BACKEND_ROOT / "lambdas" / "websocket" / "connect"
+WEBSOCKET_DISCONNECT_PATH = BACKEND_ROOT / "lambdas" / "websocket" / "disconnect"
 EVENTS_PATH = BACKEND_ROOT / "events"
 
-ensure_sys_path((DLQ_PATH, ORCHESTRATOR_PATH, API_PATH, COMMON_PATH))
+ensure_sys_path(
+    (
+        WEBSOCKET_DISCONNECT_PATH,
+        WEBSOCKET_CONNECT_PATH,
+        WEBSOCKET_AUTHORIZER_PATH,
+        DLQ_PATH,
+        ORCHESTRATOR_PATH,
+        API_PATH,
+        COMMON_PATH,
+    )
+)
 
 os.environ.setdefault("AWS_EC2_METADATA_DISABLED", "true")
 os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
@@ -27,6 +40,8 @@ os.environ.setdefault("BUCKET_NAME", "test-bucket")
 os.environ.setdefault("TABLE_NAME", "test-table")
 os.environ.setdefault("SNS_TOPIC_ARN", "arn:aws:sns:us-east-1:123456789012:test-topic")
 os.environ.setdefault("CONNECTIONS_TABLE_NAME", "test-connections-table")
+os.environ.setdefault("USER_POOL_ID", "us-east-1_example")
+os.environ.setdefault("APP_CLIENT_ID", "app-client-123")
 os.environ.setdefault(
     "WEBSOCKET_ENDPOINT_URL", "https://test-endpoint.execute-api.us-east-1.amazonaws.com/test"
 )
@@ -88,6 +103,54 @@ def load_dlq_stack():
     return dlq_services, dlq_processor, dlq_handler
 
 
+# Loads WebSocket authorizer modules as an isolated stack with correct import wiring.
+def load_websocket_authorizer_stack():
+    prioritize_sys_path(WEBSOCKET_AUTHORIZER_PATH)
+    authorizer_services = load_module(
+        "integration_websocket_authorizer_services",
+        WEBSOCKET_AUTHORIZER_PATH / "services.py",
+        clear_modules=("services",),
+    )
+    sys.modules["services"] = authorizer_services
+    authorizer_handler = load_module(
+        "integration_websocket_authorizer_handler",
+        WEBSOCKET_AUTHORIZER_PATH / "handler.py",
+    )
+    return authorizer_services, authorizer_handler
+
+
+# Loads WebSocket connect modules as an isolated stack with correct import wiring.
+def load_websocket_connect_stack():
+    prioritize_sys_path(WEBSOCKET_CONNECT_PATH)
+    connect_services = load_module(
+        "integration_websocket_connect_services",
+        WEBSOCKET_CONNECT_PATH / "services.py",
+        clear_modules=("services",),
+    )
+    sys.modules["services"] = connect_services
+    connect_handler = load_module(
+        "integration_websocket_connect_handler",
+        WEBSOCKET_CONNECT_PATH / "handler.py",
+    )
+    return connect_services, connect_handler
+
+
+# Loads WebSocket disconnect modules as an isolated stack with correct import wiring.
+def load_websocket_disconnect_stack():
+    prioritize_sys_path(WEBSOCKET_DISCONNECT_PATH)
+    disconnect_services = load_module(
+        "integration_websocket_disconnect_services",
+        WEBSOCKET_DISCONNECT_PATH / "services.py",
+        clear_modules=("services",),
+    )
+    sys.modules["services"] = disconnect_services
+    disconnect_handler = load_module(
+        "integration_websocket_disconnect_handler",
+        WEBSOCKET_DISCONNECT_PATH / "handler.py",
+    )
+    return disconnect_services, disconnect_handler
+
+
 # Produces API Gateway-like runtime events by serializing fixture request bodies.
 def api_runtime_event(name: str) -> dict:
     event = load_event(EVENTS_PATH, name)
@@ -117,6 +180,35 @@ def dlq_runtime_event(error: str = "moved_to_dlq", image_hash: str | None = None
             if image_hash is not None:
                 message["image_hash"] = image_hash
             record["body"] = json.dumps(message)
+    return event
+
+
+# Produces WebSocket custom-authorizer events with optional connection token override.
+def websocket_authorizer_runtime_event(token: str | None) -> dict:
+    event = load_event(EVENTS_PATH, "websocket-authorizer-event.json")
+
+    if token is None:
+        event["queryStringParameters"] = None
+    else:
+        query_parameters = event.get("queryStringParameters") or {}
+        query_parameters["token"] = token
+        event["queryStringParameters"] = query_parameters
+
+    return event
+
+
+# Produces WebSocket $connect runtime events with optional connection and user overrides.
+def websocket_connect_runtime_event(connection_id: str, user_id: str) -> dict:
+    event = load_event(EVENTS_PATH, "websocket-connect-event.json")
+    event["requestContext"]["connectionId"] = connection_id
+    event["requestContext"]["authorizer"]["user_id"] = user_id
+    return event
+
+
+# Produces WebSocket $disconnect runtime events for a known connection ID.
+def websocket_disconnect_runtime_event(connection_id: str) -> dict:
+    event = load_event(EVENTS_PATH, "websocket-disconnect-event.json")
+    event["requestContext"]["connectionId"] = connection_id
     return event
 
 
@@ -243,6 +335,7 @@ class FakeTable:
         self.items = items or []
         self.existing_item = existing_item
         self.put_items: list[dict] = []
+        self.deleted_keys: list[dict] = []
 
     def get_item(self, Key: dict):
         item = next((item for item in self.items if item["image_id"] == Key["image_id"]), None)
@@ -257,3 +350,6 @@ class FakeTable:
 
     def put_item(self, Item: dict):
         self.put_items.append(Item)
+
+    def delete_item(self, Key: dict):
+        self.deleted_keys.append(Key)

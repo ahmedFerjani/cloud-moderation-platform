@@ -144,3 +144,32 @@ def test_dlq_fixture_matches_processor_contract() -> None:
     assert inner_record["eventSource"] == "aws:s3"
     assert "attributes" in outer_record
     assert "ApproximateReceiveCount" in outer_record["attributes"]
+
+
+# Verifies websocket authorizer fixture keeps normalized identifiers and request metadata.
+def test_websocket_authorizer_fixture_is_normalized() -> None:
+    payload = _load_fixture("websocket-authorizer-event.json")
+
+    assert payload["methodArn"] == (
+        "arn:aws:execute-api:us-east-1:<redacted>:<normalized-resource>/test/$connect"
+    )
+    assert payload["queryStringParameters"]["token"] == "sample-token"
+    assert payload["headers"]["host"] == "<redacted>"
+    assert payload["requestContext"]["identity"]["sourceIp"] == "<redacted>"
+
+
+# Verifies websocket connect fixture matches connect handler contract.
+def test_websocket_connect_fixture_matches_contract() -> None:
+    payload = _load_fixture("websocket-connect-event.json")
+
+    assert payload["requestContext"]["routeKey"] == "$connect"
+    assert payload["requestContext"]["connectionId"] == "conn-sample"
+    assert payload["requestContext"]["authorizer"]["user_id"] == "sample-user"
+
+
+# Verifies websocket disconnect fixture matches disconnect handler contract.
+def test_websocket_disconnect_fixture_matches_contract() -> None:
+    payload = _load_fixture("websocket-disconnect-event.json")
+
+    assert payload["requestContext"]["routeKey"] == "$disconnect"
+    assert payload["requestContext"]["connectionId"] == "conn-sample"

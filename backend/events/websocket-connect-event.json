@@ -1,0 +1,24 @@
+{
+  "requestContext": {
+    "routeKey": "$connect",
+    "eventType": "CONNECT",
+    "extendedRequestId": "<redacted>",
+    "requestTime": "<redacted>",
+    "messageDirection": "IN",
+    "stage": "test",
+    "connectedAt": 1700000000000,
+    "requestTimeEpoch": 1700000000000,
+    "identity": {
+      "sourceIp": "<redacted>",
+      "userAgent": "<redacted>"
+    },
+    "requestId": "<redacted>",
+    "domainName": "<redacted>",
+    "connectionId": "conn-sample",
+    "apiId": "<normalized-resource>",
+    "authorizer": {
+      "user_id": "sample-user"
+    }
+  },
+  "isBase64Encoded": false
+}

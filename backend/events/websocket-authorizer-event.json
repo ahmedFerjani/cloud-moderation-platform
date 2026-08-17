@@ -1,0 +1,36 @@
+{
+  "type": "REQUEST",
+  "methodArn": "arn:aws:execute-api:us-east-1:<redacted>:<normalized-resource>/test/$connect",
+  "routeArn": "arn:aws:execute-api:us-east-1:<redacted>:<normalized-resource>/test/$connect",
+  "identitySource": ["$request.querystring.token"],
+  "routeKey": "$connect",
+  "rawPath": "/$connect",
+  "rawQueryString": "token=<redacted>",
+  "headers": {
+    "host": "<redacted>",
+    "user-agent": "<redacted>",
+    "x-forwarded-for": "<redacted>",
+    "x-forwarded-proto": "https"
+  },
+  "queryStringParameters": {
+    "token": "sample-token"
+  },
+  "requestContext": {
+    "routeKey": "$connect",
+    "eventType": "CONNECT",
+    "extendedRequestId": "<redacted>",
+    "requestTime": "<redacted>",
+    "messageDirection": "IN",
+    "stage": "test",
+    "connectedAt": 1700000000000,
+    "requestTimeEpoch": 1700000000000,
+    "identity": {
+      "sourceIp": "<redacted>",
+      "userAgent": "<redacted>"
+    },
+    "requestId": "<redacted>",
+    "domainName": "<redacted>",
+    "connectionId": "conn-sample",
+    "apiId": "<normalized-resource>"
+  }
+}

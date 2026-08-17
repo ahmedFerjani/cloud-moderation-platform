@@ -1,0 +1,21 @@
+{
+  "requestContext": {
+    "routeKey": "$disconnect",
+    "eventType": "DISCONNECT",
+    "extendedRequestId": "<redacted>",
+    "requestTime": "<redacted>",
+    "messageDirection": "IN",
+    "stage": "test",
+    "connectedAt": 1700000000000,
+    "requestTimeEpoch": 1700000001234,
+    "identity": {
+      "sourceIp": "<redacted>",
+      "userAgent": "<redacted>"
+    },
+    "requestId": "<redacted>",
+    "domainName": "<redacted>",
+    "connectionId": "conn-sample",
+    "apiId": "<normalized-resource>"
+  },
+  "isBase64Encoded": false
+}

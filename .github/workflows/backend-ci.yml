@@ -148,14 +148,11 @@ jobs:
           pytest \
             --override-ini="addopts=-ra --strict-config" \
             --cov=backend/lambdas \
-            --cov=backend/layers/serverless_utils/python/common \
             --cov-report=term-missing \
             --cov-report=xml:backend/test-reports/unit/coverage.xml \
             --cov-fail-under=80 \
             backend/tests/events \
-            backend/tests/lambdas/api \
-            backend/tests/lambdas/orchestrator \
-            backend/tests/lambdas/dlq_handler \
+            backend/tests/lambdas \
             --junitxml=backend/test-reports/unit/junit.xml
 
       - name: Publish unit test report
@@ -202,7 +199,11 @@ jobs:
         run: uv pip install --system -r backend/requirements-ci-tests.txt
 
       - name: Run backend integration tests
-        run: pytest --override-ini="addopts=-ra --strict-config" backend/tests/integration --junitxml=backend/test-reports/integration/junit.xml
+        run: |
+          pytest \
+            --override-ini="addopts=-ra --strict-config" \
+            backend/tests/integration \
+            --junitxml=backend/test-reports/integration/junit.xml
 
       - name: Publish integration test report
         if: always()

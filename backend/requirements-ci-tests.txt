@@ -2,6 +2,7 @@
 boto3==1.43.18
 # Keep this Pillow version in sync with backend/layers/image_processing/requirements.txt
 Pillow==12.3.0
+python-jose[cryptography]==3.5.0
 pytest==9.0.3
 pytest-cov==6.2.1
 # Pinned to avoid known vulnerabilities detected by OSV in transitive resolution.

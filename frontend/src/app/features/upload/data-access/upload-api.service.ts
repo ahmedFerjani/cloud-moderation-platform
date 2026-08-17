@@ -5,6 +5,7 @@ import type { Observable } from 'rxjs';
 
 interface GenerateUploadUrlsRequest {
   content_type: string[];
+  file_name: string[];
 }
 
 export interface PresignedUploadPost {
@@ -30,9 +31,10 @@ export class UploadApiService {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/$/, '');
 
-  generateUploadUrls(contentTypes: string[]): Observable<GenerateUploadUrlsResponse> {
+  generateUploadUrls(files: File[]): Observable<GenerateUploadUrlsResponse> {
     const payload: GenerateUploadUrlsRequest = {
-      content_type: contentTypes,
+      content_type: files.map((file) => file.type),
+      file_name: files.map((file) => file.name),
     };
 
     return this.http.post<GenerateUploadUrlsResponse>(`${this.apiBaseUrl}/uploads`, payload);

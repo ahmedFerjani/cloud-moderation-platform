@@ -6,13 +6,13 @@ s3 = boto3.client("s3")
 EXPECTED_BUCKET_OWNER = os.getenv("EXPECTED_BUCKET_OWNER")
 
 
-def download_image(bucket_name: str, object_key: str) -> bytes:
+def download_image(bucket_name: str, object_key: str) -> tuple[bytes, dict[str, str]]:
 
     s3_response = s3.get_object(
         Bucket=bucket_name, Key=object_key, ExpectedBucketOwner=EXPECTED_BUCKET_OWNER
     )
 
-    return s3_response["Body"].read()
+    return s3_response["Body"].read(), s3_response.get("Metadata", {})
 
 
 def delete_uploaded_image(bucket_name: str, object_key: str):

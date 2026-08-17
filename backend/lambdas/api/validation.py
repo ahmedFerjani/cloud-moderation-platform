@@ -1,7 +1,11 @@
 import json
+import os
+from urllib.parse import quote
 
 from common.exceptions import APPError
 from constants import ALLOWED_CONTENT_TYPES, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MAX_UPLOAD_FILES
+
+FILE_NAME_MAX_LENGTH = 255
 
 
 def normalize_content_types(body: dict) -> list[str]:
@@ -43,6 +47,29 @@ def normalize_content_types(body: dict) -> list[str]:
             raise APPError("UNSUPPORTED_CONTENT_TYPE", "Unsupported content type", 415)
 
     return content_types
+
+
+def normalize_file_names(body: dict, expected_count: int) -> list[str | None]:
+    file_names = body.get("file_name")
+    if not isinstance(file_names, list):
+        file_names = []
+
+    normalized: list[str | None] = []
+
+    for i in range(expected_count):
+        name = file_names[i] if i < len(file_names) else None
+
+        # os.path.basename strips any directory component; percent-encoding
+        # then makes it a safe, header-injection-free ASCII string once
+        # stored as S3 object metadata (also preserves non-ASCII names).
+        if isinstance(name, str) and name.strip():
+            name = quote(os.path.basename(name.strip())[:FILE_NAME_MAX_LENGTH], safe="")
+        else:
+            name = None
+
+        normalized.append(name)
+
+    return normalized
 
 
 def parse_limit(params: dict) -> int:

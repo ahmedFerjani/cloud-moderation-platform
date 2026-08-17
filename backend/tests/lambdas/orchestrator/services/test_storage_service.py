@@ -6,13 +6,18 @@ from _orchestrator_test_setup import orchestrator_services
 storage_service = orchestrator_services.storage_service
 
 
-# Verifies image download reads bytes from the S3 object body stream.
+# Verifies image download reads bytes and metadata from the S3 object response.
 def test_download_image_reads_s3_body() -> None:
     body = SimpleNamespace(read=lambda: b"img-bytes")
-    with patch.object(storage_service.s3, "get_object", return_value={"Body": body}) as mock_get:
-        result = storage_service.download_image("bucket", "uploads/a.jpg")
+    with patch.object(
+        storage_service.s3,
+        "get_object",
+        return_value={"Body": body, "Metadata": {"original-filename": "cat.jpg"}},
+    ) as mock_get:
+        result, metadata = storage_service.download_image("bucket", "uploads/a.jpg")
 
     assert result == b"img-bytes"
+    assert metadata == {"original-filename": "cat.jpg"}
     mock_get.assert_called_once_with(
         Bucket="bucket",
         Key="uploads/a.jpg",

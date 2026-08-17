@@ -17,7 +17,7 @@ def test_duplicate_image_skips_processing() -> None:
     event = orchestrator_runtime_event()
 
     with (
-        patch.object(orchestrator_processor, "download_image", return_value=b"img"),
+        patch.object(orchestrator_processor, "download_image", return_value=(b"img", {})),
         patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"),
         patch.object(
             orchestrator_processor,
@@ -64,7 +64,7 @@ def test_success_path_stores_and_notifies() -> None:
 
     with (
         patch.object(orchestrator_processor, "validate_upload_size"),
-        patch.object(orchestrator_processor, "download_image", return_value=b"img"),
+        patch.object(orchestrator_processor, "download_image", return_value=(b"img", {})),
         patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"),
         patch.object(orchestrator_processor, "find_existing_image", return_value=None),
         patch.object(orchestrator_processor, "validate_image", return_value="jpeg"),
@@ -100,7 +100,7 @@ def test_existing_failed_item_does_not_skip_processing() -> None:
 
     with (
         patch.object(orchestrator_processor, "validate_upload_size"),
-        patch.object(orchestrator_processor, "download_image", return_value=b"img"),
+        patch.object(orchestrator_processor, "download_image", return_value=(b"img", {})),
         patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"),
         patch.object(
             orchestrator_processor,
@@ -131,7 +131,7 @@ def test_existing_failed_item_without_s3_key_continues_without_deletion() -> Non
 
     with (
         patch.object(orchestrator_processor, "validate_upload_size"),
-        patch.object(orchestrator_processor, "download_image", return_value=b"img"),
+        patch.object(orchestrator_processor, "download_image", return_value=(b"img", {})),
         patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"),
         patch.object(
             orchestrator_processor,
@@ -161,7 +161,7 @@ def test_batch_end_log_includes_total_and_status_counters() -> None:
 
     with (
         patch.object(orchestrator_processor, "validate_upload_size"),
-        patch.object(orchestrator_processor, "download_image", return_value=b"img"),
+        patch.object(orchestrator_processor, "download_image", return_value=(b"img", {})),
         patch.object(orchestrator_processor, "generate_image_hash", return_value="hash-1"),
         patch.object(orchestrator_processor, "find_existing_image", return_value=None),
         patch.object(orchestrator_processor, "validate_image", return_value="jpeg"),

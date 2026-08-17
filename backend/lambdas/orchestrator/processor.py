@@ -1,4 +1,5 @@
 import json
+from urllib.parse import unquote
 
 from common.logger import log
 from common.exceptions import APPError
@@ -34,10 +35,12 @@ def _extract_s3_records(event):
 
 def _build_context(bucket_name, object_key):
 
+    image_id = extract_image_id_from_s3_key(object_key)
+
     return {
         "bucket_name": bucket_name,
         "object_key": object_key,
-        "image_id": extract_image_id_from_s3_key(object_key),
+        "image_id": image_id,
         "user_id": extract_user_id_from_s3_key(object_key),
     }
 
@@ -120,7 +123,10 @@ def _process_single_record(s3_record):
         object_size = int(s3_record["s3"]["object"].get("size") or 0)
         validate_upload_size(object_size)
 
-        image_data = download_image(bucket_name, object_key)
+        image_data, image_metadata = download_image(bucket_name, object_key)
+
+        original_file_name = image_metadata.get("original-filename")
+        ctx["file_name"] = unquote(original_file_name) if original_file_name else ctx["image_id"]
 
         log("INFO", "Image downloaded", {**ctx, "object_size": object_size})
 
@@ -163,6 +169,7 @@ def _process_single_record(s3_record):
                 "type": "moderation_result",
                 "status": STATUS_SUCCESS,
                 "imageId": ctx["image_id"],
+                "fileName": ctx.get("file_name", ctx["image_id"]),
                 "moderationStatus": moderation_status,
             },
         )
@@ -188,6 +195,7 @@ def _process_single_record(s3_record):
                 "type": "moderation_result",
                 "status": STATUS_REJECTED,
                 "imageId": ctx["image_id"],
+                "fileName": ctx.get("file_name", ctx["image_id"]),
                 "reason": e.message,
             },
         )

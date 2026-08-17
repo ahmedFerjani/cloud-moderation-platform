@@ -8,7 +8,7 @@ from constants import (
     MAX_UPLOAD_FILE_SIZE_BYTES,
     UPLOAD_URL_EXPIRES_IN_SECONDS,
 )
-from validation import normalize_content_types
+from validation import normalize_content_types, normalize_file_names
 
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 TABLE_NAME = os.environ["TABLE_NAME"]
@@ -21,8 +21,12 @@ table = dynamodb.Table(TABLE_NAME)  # type: ignore
 def generate_upload_url(body: dict, user_id: str) -> dict:
 
     content_types = normalize_content_types(body)
+    file_names = normalize_file_names(body, len(content_types))
 
-    uploads = [create_presigned_upload(content_type, user_id) for content_type in content_types]
+    uploads = [
+        create_presigned_upload(content_type, user_id, file_name)
+        for content_type, file_name in zip(content_types, file_names)
+    ]
 
     return api_response(
         200,
@@ -35,21 +39,28 @@ def generate_upload_url(body: dict, user_id: str) -> dict:
     )
 
 
-def create_presigned_upload(content_type: str, user_id: str) -> dict:
+def create_presigned_upload(content_type: str, user_id: str, file_name: str | None = None) -> dict:
     extension = "jpg" if content_type == "image/jpeg" else "png"
 
     image_id = str(uuid.uuid4())
     object_key = f"uploads/{user_id}/{image_id}.{extension}"
 
+    fields = {"Content-Type": content_type}
+    conditions = [
+        ["starts-with", "$key", f"uploads/{user_id}/"],
+        {"Content-Type": content_type},
+        ["content-length-range", 1, MAX_UPLOAD_FILE_SIZE_BYTES],
+    ]
+
+    if file_name:
+        fields["x-amz-meta-original-filename"] = file_name
+        conditions.append({"x-amz-meta-original-filename": file_name})
+
     presigned_post = s3.generate_presigned_post(
         Bucket=BUCKET_NAME,
         Key=object_key,
-        Fields={"Content-Type": content_type},
-        Conditions=[
-            ["starts-with", "$key", f"uploads/{user_id}/"],
-            {"Content-Type": content_type},
-            ["content-length-range", 1, MAX_UPLOAD_FILE_SIZE_BYTES],
-        ],
+        Fields=fields,
+        Conditions=conditions,
         ExpiresIn=UPLOAD_URL_EXPIRES_IN_SECONDS,
     )
 

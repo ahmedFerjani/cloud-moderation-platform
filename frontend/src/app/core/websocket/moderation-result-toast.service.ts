@@ -13,20 +13,16 @@ export class ModerationResultToastService {
 
   constructor() {
     this.webSocketService.messages$.subscribe((message) => {
+      const label = message.fileName ?? message.imageId;
+
       if (message.status === 'success') {
         if (message.moderationStatus === 'unsafe') {
-          this.toastr.warning(
-            `Image ${message.imageId} was flagged as unsafe.`,
-            'Moderation Result',
-          );
+          this.toastr.warning(`Image ${label} was flagged as unsafe.`, 'Moderation Result');
         } else {
-          this.toastr.success(`Image ${message.imageId} passed moderation.`, 'Moderation Result');
+          this.toastr.success(`Image ${label} passed moderation.`, 'Moderation Result');
         }
       } else {
-        this.toastr.error(
-          message.reason ?? `Image ${message.imageId} was rejected.`,
-          'Moderation Result',
-        );
+        this.toastr.error(message.reason ?? `Image ${label} was rejected.`, 'Moderation Result');
       }
     });
   }

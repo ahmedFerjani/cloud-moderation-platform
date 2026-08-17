@@ -26,7 +26,7 @@ export class UploadFacadeService {
 
     try {
       const response = await firstValueFrom<GenerateUploadUrlsResponse>(
-        this.uploadApiService.generateUploadUrls(files.map((file) => file.type)),
+        this.uploadApiService.generateUploadUrls(files),
       );
 
       if (response.uploads.length !== totalFiles) {

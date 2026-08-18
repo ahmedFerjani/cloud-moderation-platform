@@ -24,6 +24,13 @@ html {
   );
 }
 
+:root {
+  --app-success: #1b5e20;
+  --app-success-container: #e8f5e9;
+  --app-error: #b3261e;
+  --app-error-container: #f9dedc;
+}
+
 body {
   height: 100%;
   margin: 0;

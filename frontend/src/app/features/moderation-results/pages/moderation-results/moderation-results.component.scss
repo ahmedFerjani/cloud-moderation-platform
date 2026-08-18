@@ -1,9 +1,15 @@
 .status-chip--unsafe {
-  background-color: color-mix(in srgb, var(--mat-sys-error) 15%, transparent);
-  color: var(--mat-sys-error);
+  background-color: var(--app-error-container);
+  color: var(--app-error);
 }
 
 .status-chip--safe {
-  background-color: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
-  color: var(--mat-sys-primary);
+  background-color: var(--app-success-container);
+  color: var(--app-success);
+}
+
+.result-status-slot {
+  margin-left: auto;
+  justify-content: flex-end;
+  align-items: center;
 }

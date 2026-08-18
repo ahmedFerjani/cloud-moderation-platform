@@ -95,22 +95,19 @@
             @for (item of filteredItems(); track item.image_id) {
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
-                  <mat-panel-title class="min-w-0 flex-1">
-                    <div class="flex min-w-0 items-center gap-3 whitespace-nowrap">
-                      <span class="font-medium" [attr.title]="item.image_id">{{
-                        item.image_id
-                      }}</span>
-                      <span
-                        class="shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
-                        [class.status-chip--unsafe]="item.unsafe_detected"
-                        [class.status-chip--safe]="!item.unsafe_detected"
-                      >
-                        {{ item.status }}
-                      </span>
-                    </div>
+                  <mat-panel-title>
+                    <span class="truncate font-medium" [attr.title]="item.original_name">
+                      {{ item.original_name }}
+                    </span>
                   </mat-panel-title>
-                  <mat-panel-description class="ml-auto shrink-0 text-right text-xs text-muted">
-                    {{ item.timestamp | date: 'medium' }}
+                  <mat-panel-description class="result-status-slot">
+                    <span
+                      class="shrink-0 rounded-full px-2 py-0.5 text-sm font-semibold"
+                      [class.status-chip--unsafe]="item.unsafe_detected"
+                      [class.status-chip--safe]="!item.unsafe_detected"
+                    >
+                      {{ item.status }}
+                    </span>
                   </mat-panel-description>
                 </mat-expansion-panel-header>
 

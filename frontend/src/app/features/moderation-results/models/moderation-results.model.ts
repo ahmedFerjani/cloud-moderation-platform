@@ -14,6 +14,7 @@ export interface ModerationResultItem {
   image_hash: string;
   moderation_labels: ModerationLabel[];
   image_id: string;
+  original_name?: string;
   timestamp: string;
   status: ModerationStatus;
   s3_key: string;

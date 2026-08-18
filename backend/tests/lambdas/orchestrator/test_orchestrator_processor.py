@@ -101,6 +101,7 @@ def test_success_path_stores_and_notifies() -> None:
         "hash-1",
         "Sample extracted text",
         {"sentiment": "NEGATIVE"},
+        "sample-image",
     )
     mock_delete.assert_not_called()
 

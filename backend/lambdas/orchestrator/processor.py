@@ -170,6 +170,7 @@ def _process_single_record(s3_record):
             image_hash,
             extracted_text,
             text_insights,
+            ctx.get("file_name"),
         )
 
         log("INFO", "DynamoDB stored", ctx)

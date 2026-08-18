@@ -24,6 +24,7 @@ def test_store_moderation_result_status_safe_or_unsafe() -> None:
             "hash-3",
             extracted_text="Detected text",
             text_insights={"sentiment": "NEGATIVE"},
+            original_name="Vacation Photo.jpg",
         )
         third_item = mock_put.call_args.kwargs["Item"]
 
@@ -35,6 +36,7 @@ def test_store_moderation_result_status_safe_or_unsafe() -> None:
     assert "extracted_text" in third_item
     assert third_item["extracted_text"] == "Detected text"
     assert third_item["text_insights"]["sentiment"] == "NEGATIVE"
+    assert third_item["original_name"] == "Vacation Photo.jpg"
 
 
 # Verifies duplicate lookup returns None when no hash match exists.

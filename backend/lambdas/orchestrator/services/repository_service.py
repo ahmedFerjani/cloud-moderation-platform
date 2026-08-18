@@ -18,6 +18,7 @@ def store_moderation_result(
     image_hash: str,
     extracted_text: str | None = None,
     text_insights: dict | None = None,
+    original_name: str | None = None,
 ):
 
     image_id = extract_image_id_from_s3_key(object_key)
@@ -40,6 +41,9 @@ def store_moderation_result(
 
     if text_insights:
         item["text_insights"] = text_insights
+
+    if original_name:
+        item["original_name"] = original_name
 
     table.put_item(Item=item)
 

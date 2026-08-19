@@ -4,6 +4,30 @@ export interface ModerationLabel {
   Name: string;
 }
 
+export interface TextInsightToxicityLabel {
+  name: string;
+  score: number;
+}
+
+export interface TextInsightSentimentScores {
+  Mixed: number;
+  Neutral: number;
+  Positive: number;
+  Negative: number;
+}
+
+export interface TextInsights {
+  sentiment_scores: TextInsightSentimentScores;
+  toxicity_detected: boolean;
+  language_code: string;
+  pii_entities_count: number;
+  toxicity_labels: TextInsightToxicityLabel[];
+  max_toxicity_score: number;
+  analyzed_text_length: number;
+  sentiment: string;
+  pii_entity_types: string[];
+}
+
 export enum ModerationStatus {
   Safe = 'safe',
   Unsafe = 'unsafe',
@@ -18,6 +42,7 @@ export interface ModerationResultItem {
   timestamp: string;
   status: ModerationStatus;
   s3_key: string;
+  text_insights?: TextInsights | null;
 }
 
 export interface ModerationResultsResponse {

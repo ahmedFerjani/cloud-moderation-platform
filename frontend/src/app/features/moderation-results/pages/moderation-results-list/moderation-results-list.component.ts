@@ -1,36 +1,30 @@
-import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { ModerationResultListItemComponent } from '../../components/list/moderation-result-list-item/moderation-result-list-item.component';
+import {
+  ModerationResultsToolbarComponent,
+  type StatusFilterMode,
+} from '../../components/list/moderation-results-toolbar/moderation-results-toolbar.component';
 import { ModerationResultsApiService } from '../../data-access/moderation-results-api.service';
 import type {
   ModerationResultItem,
   ModerationResultsResponse,
-  TextInsights,
 } from '../../models/moderation-results.model';
 import type { OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-moderation-results-list',
   imports: [
-    DatePipe,
-    FormsModule,
     MatButtonModule,
-    MatButtonToggleModule,
     MatCardModule,
-    MatFormFieldModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
-    RouterLink,
+    ModerationResultListItemComponent,
+    ModerationResultsToolbarComponent,
   ],
   templateUrl: './moderation-results-list.component.html',
   styleUrl: './moderation-results-list.component.scss',
@@ -45,7 +39,6 @@ export class ModerationResultsListComponent implements OnInit {
   protected readonly isLoadingMore = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly items = signal<ModerationResultItem[]>([]);
-  protected readonly count = signal(0);
   protected readonly lastEvaluatedKey = signal<Record<string, string> | null>(null);
   protected readonly hasItems = computed(() => this.items().length > 0);
   protected readonly filteredItems = computed(() => {
@@ -96,21 +89,8 @@ export class ModerationResultsListComponent implements OnInit {
     await this.fetchResults('append');
   }
 
-  protected setStatusFilter(value: 'all' | 'safe' | 'unsafe'): void {
+  protected setStatusFilter(value: StatusFilterMode): void {
     this.selectedStatusFilter.set(value);
-  }
-
-  protected getTextInsights(item: ModerationResultItem): TextInsights | null {
-    const insights = item.text_insights;
-    return insights && insights.analyzed_text_length > 0 ? insights : null;
-  }
-
-  protected getTopModerationLabel(item: ModerationResultItem): string | null {
-    return item.moderation_labels[0]?.Name ?? null;
-  }
-
-  protected getSummaryS3Path(item: ModerationResultItem): string {
-    return item.s3_key;
   }
 
   private async fetchResults(mode: 'replace' | 'append'): Promise<void> {
@@ -131,11 +111,6 @@ export class ModerationResultsListComponent implements OnInit {
           isAppendMode ? this.lastEvaluatedKey() : undefined,
         ),
       );
-      if (isAppendMode) {
-        this.count.update((current) => current + response.count);
-      } else {
-        this.count.set(response.count);
-      }
       this.lastEvaluatedKey.set(response.last_evaluated_key);
 
       const mappedItems = this.mapItems(response.items);
@@ -150,7 +125,6 @@ export class ModerationResultsListComponent implements OnInit {
       } else {
         this.errorMessage.set('Unable to load moderation results right now. Please try again.');
         this.items.set([]);
-        this.count.set(0);
       }
     } finally {
       if (isAppendMode) {

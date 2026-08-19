@@ -1,0 +1,46 @@
+<div class="grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
+  <p class="m-0 text-sm text-muted md:justify-self-start">
+    <span class="font-semibold text-[color:var(--mat-sys-on-surface)]">{{ totalLoaded() }}</span>
+    loaded results
+  </p>
+
+  <mat-button-toggle-group
+    aria-label="Filter moderation results by status"
+    name="status-filter"
+    class="status-filter-toggle w-full max-w-md justify-self-center"
+    [hideSingleSelectionIndicator]="true"
+    [value]="selectedFilter()"
+    (change)="onFilterChange($event.value)"
+    [disabled]="isLoading()"
+  >
+    <mat-button-toggle value="all">All</mat-button-toggle>
+    <mat-button-toggle value="safe">Safe only</mat-button-toggle>
+    <mat-button-toggle value="unsafe">Unsafe only</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <div class="flex items-center gap-2 md:justify-self-end">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-32">
+      <mat-label>Per page</mat-label>
+      <mat-select
+        [ngModel]="limit()"
+        (ngModelChange)="onLimitChange($event)"
+        [disabled]="isLoading()"
+      >
+        @for (option of limitOptions(); track option) {
+          <mat-option [value]="option">{{ option }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      matIconButton
+      aria-label="Refresh moderation results"
+      (click)="onRefresh()"
+      [disabled]="isLoading()"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+</div>
+
+<p class="m-0 text-sm text-muted">{{ summaryText() }}</p>

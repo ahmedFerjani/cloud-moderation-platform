@@ -37,136 +37,22 @@
   } @else {
     <mat-card appearance="outlined">
       <mat-card-content class="grid gap-4 pt-4">
-        <div class="grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
-          <p class="m-0 text-sm text-muted md:justify-self-start">
-            <span class="font-semibold text-[color:var(--mat-sys-on-surface)]">{{
-              items().length
-            }}</span>
-            loaded results
-          </p>
-
-          <mat-button-toggle-group
-            aria-label="Filter moderation results by status"
-            name="status-filter"
-            class="status-filter-toggle w-full max-w-md justify-self-center"
-            [hideSingleSelectionIndicator]="true"
-            [value]="selectedStatusFilter()"
-            (change)="setStatusFilter($event.value)"
-            [disabled]="isLoading()"
-          >
-            <mat-button-toggle value="all">All</mat-button-toggle>
-            <mat-button-toggle value="safe">Safe only</mat-button-toggle>
-            <mat-button-toggle value="unsafe">Unsafe only</mat-button-toggle>
-          </mat-button-toggle-group>
-
-          <div class="flex items-center gap-2 md:justify-self-end">
-            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-32">
-              <mat-label>Per page</mat-label>
-              <mat-select
-                [ngModel]="limit()"
-                (ngModelChange)="onLimitChange($event)"
-                [disabled]="isLoading()"
-              >
-                @for (option of limitOptions; track option) {
-                  <mat-option [value]="option">{{ option }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
-            <button
-              matIconButton
-              aria-label="Refresh moderation results"
-              (click)="loadModerationResults()"
-              [disabled]="isLoading()"
-            >
-              <mat-icon>refresh</mat-icon>
-            </button>
-          </div>
-        </div>
-
-        <p class="m-0 text-sm text-muted">{{ filteredResultsSummary() }}</p>
+        <app-moderation-results-toolbar
+          [totalLoaded]="items().length"
+          [selectedFilter]="selectedStatusFilter()"
+          [limit]="limit()"
+          [limitOptions]="limitOptions"
+          [summaryText]="filteredResultsSummary()"
+          [isLoading]="isLoading()"
+          (filterChange)="setStatusFilter($event)"
+          (limitChange)="onLimitChange($event)"
+          (refreshRequested)="loadModerationResults()"
+        ></app-moderation-results-toolbar>
 
         @if (hasFilteredItems()) {
           <div class="mt-1 grid gap-3">
             @for (item of filteredItems(); track item.image_id) {
-              <article
-                class="result-card grid gap-3 rounded-2xl border-2 border-[var(--mat-sys-outline-variant)] p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
-                [class.result-card--unsafe]="item.unsafe_detected"
-                [class.result-card--safe]="!item.unsafe_detected"
-              >
-                <div class="grid gap-3">
-                  <div class="grid min-w-0 gap-2">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <h3
-                        class="m-0 min-w-0 truncate text-base font-semibold text-[color:var(--mat-sys-on-surface)]"
-                        [attr.title]="item.original_name || item.image_id"
-                      >
-                        {{ item.original_name || item.image_id }}
-                      </h3>
-                      <span
-                        class="shrink-0 rounded-full px-2 py-0.5 text-sm font-semibold"
-                        [class.status-chip--unsafe]="item.unsafe_detected"
-                        [class.status-chip--safe]="!item.unsafe_detected"
-                      >
-                        {{ item.status }}
-                      </span>
-                    </div>
-
-                    <div class="grid min-w-0 gap-1">
-                      <p class="result-meta-row m-0 text-xs text-muted">
-                        <mat-icon aria-hidden="true" class="text-sm">schedule</mat-icon>
-                        <span class="result-meta-label">Processed at</span>
-                        <span class="result-meta-value">{{ item.timestamp | date: 'medium' }}</span>
-                      </p>
-
-                      <p class="result-meta-row m-0 text-xs text-muted">
-                        <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>
-                        <span class="result-meta-label">S3 path</span>
-                        <span
-                          class="result-meta-value min-w-0 truncate font-mono"
-                          [attr.title]="item.s3_key"
-                        >
-                          {{ getSummaryS3Path(item) }}
-                        </span>
-                      </p>
-
-                      <p class="result-meta-row m-0 text-xs text-muted">
-                        <mat-icon aria-hidden="true" class="text-sm">policy</mat-icon>
-                        <span class="result-meta-label">Top label</span>
-                        <span class="result-meta-value">
-                          {{ getTopModerationLabel(item) || 'No moderation labels detected' }}
-                        </span>
-                      </p>
-
-                      <p class="result-meta-row m-0 text-xs text-muted">
-                        <mat-icon aria-hidden="true" class="text-sm">sentiment_neutral</mat-icon>
-                        <span class="result-meta-label">Sentiment</span>
-                        @if (getTextInsights(item); as insights) {
-                          <span class="result-meta-value">
-                            {{ insights.sentiment }}
-                            @if (insights.toxicity_detected) {
-                              <span class="text-error">, toxicity detected</span>
-                            }
-                          </span>
-                        } @else {
-                          <span class="result-meta-value">No text extracted</span>
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-end sm:self-center">
-                  <a
-                    mat-button
-                    [routerLink]="['/moderation-results', item.image_id]"
-                    [attr.aria-label]="'View details for ' + (item.original_name || item.image_id)"
-                  >
-                    View details
-                    <mat-icon aria-hidden="true" class="text-base">chevron_right</mat-icon>
-                  </a>
-                </div>
-              </article>
+              <app-moderation-result-list-item [item]="item"></app-moderation-result-list-item>
             }
           </div>
         } @else {

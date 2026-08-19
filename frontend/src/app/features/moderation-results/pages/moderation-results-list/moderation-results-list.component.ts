@@ -19,7 +19,7 @@ import type {
 import type { OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-moderation-results',
+  selector: 'app-moderation-results-list',
   imports: [
     DatePipe,
     FormsModule,
@@ -32,13 +32,13 @@ import type { OnInit } from '@angular/core';
     MatSelectModule,
     RouterLink,
   ],
-  templateUrl: './moderation-results.component.html',
-  styleUrl: './moderation-results.component.scss',
+  templateUrl: './moderation-results-list.component.html',
+  styleUrl: './moderation-results-list.component.scss',
 })
-export class ModerationResultsComponent implements OnInit {
+export class ModerationResultsListComponent implements OnInit {
   private readonly moderationResultsApiService = inject(ModerationResultsApiService);
 
-  protected readonly selectedStatuses = signal<('safe' | 'unsafe')[]>(['safe', 'unsafe']);
+  protected readonly selectedStatusFilter = signal<'all' | 'safe' | 'unsafe'>('all');
   protected readonly limit = signal(1);
   protected readonly limitOptions = [1, 2] as const;
   protected readonly isLoading = signal(true);
@@ -49,17 +49,34 @@ export class ModerationResultsComponent implements OnInit {
   protected readonly lastEvaluatedKey = signal<Record<string, string> | null>(null);
   protected readonly hasItems = computed(() => this.items().length > 0);
   protected readonly filteredItems = computed(() => {
-    const selectedStatuses = this.selectedStatuses();
-    if (selectedStatuses.length === 0 || selectedStatuses.length === 2) {
+    const statusFilter = this.selectedStatusFilter();
+    if (statusFilter === 'all') {
       return this.items();
     }
 
-    const includeSafe = selectedStatuses.includes('safe');
-    const includeUnsafe = selectedStatuses.includes('unsafe');
+    if (statusFilter === 'safe') {
+      return this.items().filter((item) => !item.unsafe_detected);
+    }
 
-    return this.items().filter((item) => (item.unsafe_detected ? includeUnsafe : includeSafe));
+    return this.items().filter((item) => item.unsafe_detected);
   });
   protected readonly hasFilteredItems = computed(() => this.filteredItems().length > 0);
+  protected readonly filteredResultsSummary = computed(() => {
+    const visibleCount = this.filteredItems().length;
+    const totalLoaded = this.items().length;
+    const mode = this.selectedStatusFilter();
+    const percent = totalLoaded > 0 ? Math.round((visibleCount / totalLoaded) * 100) : 0;
+
+    if (mode === 'safe') {
+      return `Showing ${visibleCount} safe results (${percent}% of loaded)`;
+    }
+
+    if (mode === 'unsafe') {
+      return `Showing ${visibleCount} unsafe results (${percent}% of loaded)`;
+    }
+
+    return `Showing ${visibleCount} total results (${percent}% of loaded)`;
+  });
   protected readonly hasMore = computed(() => this.lastEvaluatedKey() !== null);
 
   ngOnInit(): void {
@@ -79,14 +96,8 @@ export class ModerationResultsComponent implements OnInit {
     await this.fetchResults('append');
   }
 
-  protected toggleStatus(status: 'safe' | 'unsafe'): void {
-    const current = this.selectedStatuses();
-    if (current.includes(status)) {
-      this.selectedStatuses.set(current.filter((itemStatus) => itemStatus !== status));
-      return;
-    }
-
-    this.selectedStatuses.set([...current, status]);
+  protected setStatusFilter(value: 'all' | 'safe' | 'unsafe'): void {
+    this.selectedStatusFilter.set(value);
   }
 
   protected getTextInsights(item: ModerationResultItem): TextInsights | null {

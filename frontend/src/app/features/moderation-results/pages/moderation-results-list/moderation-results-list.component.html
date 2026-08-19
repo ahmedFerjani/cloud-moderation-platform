@@ -1,33 +1,7 @@
 <section class="page-section max-w-5xl">
-  <header class="flex items-center justify-between gap-3">
-    <div class="grid gap-1">
-      <h2 class="m-0 text-2xl font-semibold tracking-tight">Moderation Results</h2>
-      <p class="m-0 text-sm text-muted">Recent decisions from automated image moderation.</p>
-    </div>
-
-    <div class="flex items-center gap-3">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-32">
-        <mat-label>Per page</mat-label>
-        <mat-select
-          [ngModel]="limit()"
-          (ngModelChange)="onLimitChange($event)"
-          [disabled]="isLoading()"
-        >
-          @for (option of limitOptions; track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <button
-        matIconButton
-        aria-label="Refresh moderation results"
-        (click)="loadModerationResults()"
-        [disabled]="isLoading()"
-      >
-        <mat-icon>refresh</mat-icon>
-      </button>
-    </div>
+  <header class="grid gap-1">
+    <h2 class="m-0 text-2xl font-semibold tracking-tight">Moderation Results</h2>
+    <p class="m-0 text-sm text-muted">Recent decisions from automated image moderation.</p>
   </header>
 
   @if (isLoading()) {
@@ -62,39 +36,63 @@
     </mat-card>
   } @else {
     <mat-card appearance="outlined">
-      <mat-card-header>
-        <mat-card-title>{{ count() }} results</mat-card-title>
-      </mat-card-header>
+      <mat-card-content class="grid gap-4 pt-4">
+        <div class="grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
+          <p class="m-0 text-sm text-muted md:justify-self-start">
+            <span class="font-semibold text-[color:var(--mat-sys-on-surface)]">{{
+              items().length
+            }}</span>
+            loaded results
+          </p>
 
-      <mat-card-content class="grid gap-3 pt-2">
-        <mat-button-toggle-group
-          aria-label="Filter moderation results by status"
-          name="status-filter"
-          multiple
-          [hideMultipleSelectionIndicator]="true"
-          [disabled]="isLoading()"
-        >
-          <mat-button-toggle
-            value="safe"
-            [checked]="selectedStatuses().includes('safe')"
-            (change)="toggleStatus('safe')"
+          <mat-button-toggle-group
+            aria-label="Filter moderation results by status"
+            name="status-filter"
+            class="status-filter-toggle w-full max-w-md justify-self-center"
+            [hideSingleSelectionIndicator]="true"
+            [value]="selectedStatusFilter()"
+            (change)="setStatusFilter($event.value)"
+            [disabled]="isLoading()"
           >
-            Safe
-          </mat-button-toggle>
-          <mat-button-toggle
-            value="unsafe"
-            [checked]="selectedStatuses().includes('unsafe')"
-            (change)="toggleStatus('unsafe')"
-          >
-            Unsafe
-          </mat-button-toggle>
-        </mat-button-toggle-group>
+            <mat-button-toggle value="all">All</mat-button-toggle>
+            <mat-button-toggle value="safe">Safe only</mat-button-toggle>
+            <mat-button-toggle value="unsafe">Unsafe only</mat-button-toggle>
+          </mat-button-toggle-group>
+
+          <div class="flex items-center gap-2 md:justify-self-end">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-32">
+              <mat-label>Per page</mat-label>
+              <mat-select
+                [ngModel]="limit()"
+                (ngModelChange)="onLimitChange($event)"
+                [disabled]="isLoading()"
+              >
+                @for (option of limitOptions; track option) {
+                  <mat-option [value]="option">{{ option }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <button
+              matIconButton
+              aria-label="Refresh moderation results"
+              (click)="loadModerationResults()"
+              [disabled]="isLoading()"
+            >
+              <mat-icon>refresh</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <p class="m-0 text-sm text-muted">{{ filteredResultsSummary() }}</p>
 
         @if (hasFilteredItems()) {
-          <div class="grid gap-3">
+          <div class="mt-1 grid gap-3">
             @for (item of filteredItems(); track item.image_id) {
               <article
-                class="grid gap-3 rounded-2xl border border-[var(--mat-sys-outline-variant)] p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
+                class="result-card grid gap-3 rounded-2xl border-2 border-[var(--mat-sys-outline-variant)] p-4 sm:grid-cols-[minmax(0,1fr)_auto]"
+                [class.result-card--unsafe]="item.unsafe_detected"
+                [class.result-card--safe]="!item.unsafe_detected"
               >
                 <div class="grid gap-3">
                   <div class="grid min-w-0 gap-2">
@@ -115,13 +113,13 @@
                     </div>
 
                     <div class="grid min-w-0 gap-1">
-                      <p class="m-0 flex items-center gap-1.5 text-xs text-muted">
+                      <p class="result-meta-row m-0 text-xs text-muted">
                         <mat-icon aria-hidden="true" class="text-sm">schedule</mat-icon>
                         <span class="result-meta-label">Processed at</span>
                         <span class="result-meta-value">{{ item.timestamp | date: 'medium' }}</span>
                       </p>
 
-                      <p class="m-0 flex items-center gap-1.5 text-xs text-muted">
+                      <p class="result-meta-row m-0 text-xs text-muted">
                         <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>
                         <span class="result-meta-label">S3 path</span>
                         <span
@@ -132,7 +130,7 @@
                         </span>
                       </p>
 
-                      <p class="m-0 flex items-center gap-1.5 text-xs text-muted">
+                      <p class="result-meta-row m-0 text-xs text-muted">
                         <mat-icon aria-hidden="true" class="text-sm">policy</mat-icon>
                         <span class="result-meta-label">Top label</span>
                         <span class="result-meta-value">
@@ -140,14 +138,14 @@
                         </span>
                       </p>
 
-                      <p class="m-0 flex items-center gap-1.5 text-xs text-muted">
+                      <p class="result-meta-row m-0 text-xs text-muted">
                         <mat-icon aria-hidden="true" class="text-sm">sentiment_neutral</mat-icon>
                         <span class="result-meta-label">Sentiment</span>
                         @if (getTextInsights(item); as insights) {
                           <span class="result-meta-value">
                             {{ insights.sentiment }}
                             @if (insights.toxicity_detected) {
-                              <span class="list-inline-note">, toxicity detected</span>
+                              <span class="text-error">, toxicity detected</span>
                             }
                           </span>
                         } @else {
@@ -159,8 +157,13 @@
                 </div>
 
                 <div class="flex items-center justify-end sm:self-center">
-                  <a mat-stroked-button [routerLink]="['/moderation-results', item.image_id]">
+                  <a
+                    mat-button
+                    [routerLink]="['/moderation-results', item.image_id]"
+                    [attr.aria-label]="'View details for ' + (item.original_name || item.image_id)"
+                  >
                     View details
+                    <mat-icon aria-hidden="true" class="text-base">chevron_right</mat-icon>
                   </a>
                 </div>
               </article>
@@ -173,16 +176,14 @@
 
       @if (hasMore()) {
         <mat-card-actions class="justify-center">
-          <button
-            mat-stroked-button
-            type="button"
-            (click)="loadMore()"
-            [disabled]="isLoadingMore()"
-          >
+          <button mat-flat-button type="button" (click)="loadMore()" [disabled]="isLoadingMore()">
             @if (isLoadingMore()) {
               <mat-spinner diameter="18" class="inline-block"></mat-spinner>
             } @else {
-              Load more
+              <span class="inline-flex items-center gap-1">
+                <mat-icon aria-hidden="true" class="text-base">expand_more</mat-icon>
+                <span>Load more</span>
+              </span>
             }
           </button>
         </mat-card-actions>

@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import type { ModerationResultsResponse } from '../models/moderation-results.model';
+import type {
+  ModerationResultItem,
+  ModerationResultsResponse,
+} from '../models/moderation-results.model';
 import type { Observable } from 'rxjs';
 
 @Service()
@@ -19,5 +22,9 @@ export class ModerationResultsApiService {
     return this.http.get<ModerationResultsResponse>(`${this.apiBaseUrl}/images`, {
       params: queryParams,
     });
+  }
+
+  getModerationResult(imageId: string): Observable<ModerationResultItem> {
+    return this.http.get<ModerationResultItem>(`${this.apiBaseUrl}/images/${imageId}`);
   }
 }

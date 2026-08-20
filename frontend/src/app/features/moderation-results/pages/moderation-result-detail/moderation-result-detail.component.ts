@@ -42,6 +42,7 @@ type SentimentKey = 'positive' | 'neutral' | 'mixed' | 'negative';
   styleUrl: './moderation-result-detail.component.scss',
 })
 export class ModerationResultDetailComponent implements OnInit {
+  protected readonly toxicityDetectionThreshold = 0.7;
   private readonly moderationResultsApiService = inject(ModerationResultsApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly sentimentIconMap: Record<SentimentKey, string> = {

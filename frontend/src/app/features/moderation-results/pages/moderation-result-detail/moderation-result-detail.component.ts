@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -33,6 +34,7 @@ type SentimentKey = 'positive' | 'neutral' | 'mixed' | 'negative';
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     MatTreeModule,
     RouterLink,
   ],

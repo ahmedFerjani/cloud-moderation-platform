@@ -23,7 +23,8 @@ def store_moderation_result(
 
     image_id = extract_image_id_from_s3_key(object_key)
 
-    unsafe_detected = len(moderation_labels) > 0
+    text_toxicity_detected = bool(text_insights and text_insights.get("toxicity_detected"))
+    unsafe_detected = len(moderation_labels) > 0 or text_toxicity_detected
     status = "unsafe" if unsafe_detected else "safe"
 
     item = {

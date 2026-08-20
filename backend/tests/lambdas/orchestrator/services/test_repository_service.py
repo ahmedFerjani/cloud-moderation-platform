@@ -5,7 +5,8 @@ from _orchestrator_test_setup import orchestrator_services
 repository_service = orchestrator_services.repository_service
 
 
-# Verifies stored moderation status toggles between safe and unsafe based on labels.
+# Verifies stored moderation status toggles between safe and unsafe based on
+# image labels or text toxicity signal.
 def test_store_moderation_result_status_safe_or_unsafe() -> None:
     with patch.object(repository_service.table, "put_item") as mock_put:
         repository_service.store_moderation_result([], "uploads/a.jpg", "hash-1")
@@ -23,15 +24,28 @@ def test_store_moderation_result_status_safe_or_unsafe() -> None:
             "uploads/c.jpg",
             "hash-3",
             extracted_text="Detected text",
-            text_insights={"sentiment": "NEGATIVE"},
+            text_insights={"sentiment": "NEGATIVE", "toxicity_detected": False},
             original_name="Vacation Photo.jpg",
         )
         third_item = mock_put.call_args.kwargs["Item"]
+
+        repository_service.store_moderation_result(
+            [],
+            "uploads/d.jpg",
+            "hash-4",
+            extracted_text="Aggressive text",
+            text_insights={"sentiment": "NEGATIVE", "toxicity_detected": True},
+        )
+        fourth_item = mock_put.call_args.kwargs["Item"]
 
     assert first_item["status"] == "safe"
     assert not first_item["unsafe_detected"]
     assert second_item["status"] == "unsafe"
     assert second_item["unsafe_detected"]
+    assert third_item["status"] == "safe"
+    assert not third_item["unsafe_detected"]
+    assert fourth_item["status"] == "unsafe"
+    assert fourth_item["unsafe_detected"]
     assert "extracted_text" not in first_item
     assert "extracted_text" in third_item
     assert third_item["extracted_text"] == "Detected text"

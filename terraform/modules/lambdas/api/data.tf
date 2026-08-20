@@ -1,6 +1,9 @@
 data "aws_iam_policy_document" "api_lambda_policy" {
   statement {
-    actions   = ["s3:PutObject"]
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject"
+    ]
     resources = ["${var.content_bucket_arn}/uploads/*"]
   }
 

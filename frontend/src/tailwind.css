@@ -16,11 +16,44 @@
 }
 
 @layer components {
-  .page-section {
-    @apply mx-auto grid w-full;
+  .page-shell {
+    --page-shell-max-width: 96rem;
+    --page-shell-gutter: clamp(1rem, 2vw, 1.5rem);
+
+    display: grid;
+    width: 100%;
+    max-width: var(--page-shell-max-width);
+    margin-inline: auto;
+    padding-inline: var(--page-shell-gutter);
   }
 
-  .page-section--centered {
+  .page-shell--compact {
+    --page-shell-gutter: 1rem;
+  }
+
+  .page-shell--spacious {
+    --page-shell-gutter: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .page-shell--narrow {
+    --page-shell-max-width: 44rem;
+  }
+
+  .page-shell--standard {
+    --page-shell-max-width: 72rem;
+  }
+
+  .page-shell--wide {
+    --page-shell-max-width: 96rem;
+  }
+
+  .page-shell--full {
+    --page-shell-max-width: none;
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  .page-shell--centered {
     @apply flex flex-1 items-center justify-center;
   }
 }

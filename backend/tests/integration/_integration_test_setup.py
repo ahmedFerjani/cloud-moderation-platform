@@ -237,6 +237,7 @@ class FakeS3Client:
         self.image_bytes = image_bytes or PNG_BYTES
         self.deleted_objects: list[tuple[str, str]] = []
         self.presigned_posts: list[dict] = []
+        self.presigned_gets: list[dict] = []
 
     def generate_presigned_post(self, **kwargs):
         self.presigned_posts.append(kwargs)
@@ -244,6 +245,16 @@ class FakeS3Client:
             "url": "https://example-upload.test",
             "fields": {"key": kwargs["Key"], "Content-Type": kwargs["Fields"]["Content-Type"]},
         }
+
+    def generate_presigned_url(self, operation_name: str, Params: dict, ExpiresIn: int):
+        self.presigned_gets.append(
+            {
+                "operation_name": operation_name,
+                "params": Params,
+                "expires_in": ExpiresIn,
+            }
+        )
+        return f"https://example-view.test/{Params['Key']}"
 
     def get_object(
         self,

@@ -1,12 +1,14 @@
 import boto3
 import os
 import uuid
+from botocore.exceptions import ClientError
 from common.responses import api_response
 from common.logger import log
 from common.exceptions import APPError
 from constants import (
     MAX_UPLOAD_FILE_SIZE_BYTES,
     UPLOAD_URL_EXPIRES_IN_SECONDS,
+    VIEW_URL_EXPIRES_IN_SECONDS,
 )
 from validation import normalize_content_types, normalize_file_names
 
@@ -16,6 +18,26 @@ TABLE_NAME = os.environ["TABLE_NAME"]
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(TABLE_NAME)  # type: ignore
+
+
+def _add_presigned_view_url(response_payload: dict, image_id: str) -> None:
+    object_key = response_payload.get("s3_key")
+    if not object_key:
+        return
+
+    try:
+        response_payload["view_url"] = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": BUCKET_NAME, "Key": object_key},
+            ExpiresIn=VIEW_URL_EXPIRES_IN_SECONDS,
+        )
+        response_payload["view_url_expires_in"] = VIEW_URL_EXPIRES_IN_SECONDS
+    except ClientError:
+        log(
+            "WARNING",
+            "Unable to generate presigned image view URL",
+            {"image_id": image_id, "object_key": object_key},
+        )
 
 
 def generate_upload_url(body: dict, user_id: str) -> dict:
@@ -92,7 +114,10 @@ def get_moderation_result(image_id: str) -> dict:
 
         raise APPError("MODERATION_RESULT_NOT_FOUND", "Moderation result not found", 404)
 
-    return api_response(200, item)
+    response_payload = dict(item)
+    _add_presigned_view_url(response_payload, image_id)
+
+    return api_response(200, response_payload)
 
 
 def get_moderation_results(limit: int, last_evaluated_key: dict[str, str] | None = None) -> dict:

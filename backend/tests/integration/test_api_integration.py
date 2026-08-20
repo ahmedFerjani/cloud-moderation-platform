@@ -97,6 +97,8 @@ def test_api_handler_routes_generate_upload_url_multifile_end_to_end() -> None:
 def test_api_handler_routes_get_moderation_result_end_to_end() -> None:
     api_services, _api_router, api_handler = load_api_stack()
     service_module = cast(Any, api_services)
+    fake_s3 = FakeS3Client()
+    service_module.s3 = fake_s3
     service_module.table = FakeTable(
         items=[
             {
@@ -117,6 +119,8 @@ def test_api_handler_routes_get_moderation_result_end_to_end() -> None:
     assert_api_headers(response)
     assert body["image_id"] == "00000000-0000-0000-0000-000000000000"
     assert body["status"] == "safe"
+    assert body["view_url"].startswith("https://example-view.test/")
+    assert body["view_url_expires_in"] == service_module.VIEW_URL_EXPIRES_IN_SECONDS
 
 
 # Verifies the list route applies the requested limit and returns collection metadata.

@@ -96,13 +96,27 @@ def test_get_moderation_result_not_found() -> None:
 
 # Verifies detail lookup returns a successful API response for existing moderation items.
 def test_get_moderation_result_success() -> None:
-    item = {"image_id": "img-1", "status": "safe"}
-    with patch.object(api_services.table, "get_item", return_value={"Item": item}):
+    item = {"image_id": "img-1", "status": "safe", "s3_key": "uploads/user-1/img-1.jpg"}
+    with (
+        patch.object(api_services.table, "get_item", return_value={"Item": item}),
+        patch.object(
+            api_services.s3, "generate_presigned_url", return_value="https://view.test"
+        ) as mock_presign,
+    ):
         response = api_services.get_moderation_result("img-1")
 
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
-    assert body == item
+    assert body["image_id"] == "img-1"
+    assert body["status"] == "safe"
+    assert body["s3_key"] == "uploads/user-1/img-1.jpg"
+    assert body["view_url"] == "https://view.test"
+    assert body["view_url_expires_in"] == api_services.VIEW_URL_EXPIRES_IN_SECONDS
+    mock_presign.assert_called_once_with(
+        "get_object",
+        Params={"Bucket": api_services.BUCKET_NAME, "Key": "uploads/user-1/img-1.jpg"},
+        ExpiresIn=api_services.VIEW_URL_EXPIRES_IN_SECONDS,
+    )
 
 
 # Verifies list lookup returns items, count, and pagination key from DynamoDB scan results.

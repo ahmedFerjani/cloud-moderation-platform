@@ -4,6 +4,7 @@ import { environment } from '../../../../environments/environment';
 import type {
   ModerationResultItem,
   ModerationResultsResponse,
+  ModerationResultViewAccessResponse,
 } from '../models/moderation-results.model';
 import type { Observable } from 'rxjs';
 
@@ -26,5 +27,11 @@ export class ModerationResultsApiService {
 
   getModerationResult(imageId: string): Observable<ModerationResultItem> {
     return this.http.get<ModerationResultItem>(`${this.apiBaseUrl}/images/${imageId}`);
+  }
+
+  getModerationResultViewAccess(imageId: string): Observable<ModerationResultViewAccessResponse> {
+    return this.http.get<ModerationResultViewAccessResponse>(
+      `${this.apiBaseUrl}/images/${imageId}/view-url`,
+    );
   }
 }

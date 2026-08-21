@@ -216,173 +216,242 @@
         </div>
       }
 
-      <mat-card appearance="outlined">
-        <mat-card-content class="grid gap-4 py-4">
-          <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-            <h3 class="m-0 text-base font-semibold">General information</h3>
-          </header>
+      <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
+        <mat-card appearance="outlined" class="xl:col-span-2">
+          <mat-card-content class="grid gap-4 py-4">
+            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
+              <h3 class="m-0 text-base font-semibold">General information</h3>
+            </header>
 
-          <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-            <mat-icon aria-hidden="true" class="text-sm">schedule</mat-icon>
-            <span class="result-meta-label">Processed at</span>
-            <span class="result-meta-value">{{ itemValue.timestamp | date: 'medium' }}</span>
-          </p>
+            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+              <mat-icon aria-hidden="true" class="text-sm">schedule</mat-icon>
+              <span class="result-meta-label">Processed at</span>
+              <span class="result-meta-value">{{ itemValue.timestamp | date: 'medium' }}</span>
+            </p>
 
-          <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-            <mat-icon aria-hidden="true" class="text-sm">tag</mat-icon>
-            <span class="result-meta-label">Image hash</span>
-            <span class="result-meta-value font-mono" [attr.title]="itemValue.image_hash">
-              {{ itemValue.image_hash }}
-            </span>
-          </p>
+            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+              <mat-icon aria-hidden="true" class="text-sm">tag</mat-icon>
+              <span class="result-meta-label">Image hash</span>
+              <span class="result-meta-value font-mono" [attr.title]="itemValue.image_hash">
+                {{ itemValue.image_hash }}
+              </span>
+            </p>
 
-          <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-            <mat-icon aria-hidden="true" class="text-sm">photo_library</mat-icon>
-            <span class="result-meta-label">Image ID</span>
-            <span class="result-meta-value font-mono" [attr.title]="itemValue.image_id">
-              {{ itemValue.image_id }}
-            </span>
-          </p>
+            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+              <mat-icon aria-hidden="true" class="text-sm">photo_library</mat-icon>
+              <span class="result-meta-label">Image ID</span>
+              <span class="result-meta-value font-mono" [attr.title]="itemValue.image_id">
+                {{ itemValue.image_id }}
+              </span>
+            </p>
 
-          <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-            <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>
-            <span class="result-meta-label">S3 path</span>
-            <span class="result-meta-value font-mono" [attr.title]="itemValue.s3_key">
-              {{ itemValue.s3_key }}
-            </span>
-          </p>
-        </mat-card-content>
-      </mat-card>
+            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+              <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>
+              <span class="result-meta-label">S3 path</span>
+              <span class="result-meta-value font-mono" [attr.title]="itemValue.s3_key">
+                {{ itemValue.s3_key }}
+              </span>
+            </p>
+          </mat-card-content>
+        </mat-card>
 
-      <mat-card appearance="outlined">
-        <mat-card-content class="grid gap-3 py-4">
-          <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-            <h3 class="m-0 text-base font-semibold">Image label analysis</h3>
-          </header>
+        <mat-card appearance="outlined" class="xl:col-span-1">
+          <mat-card-content class="grid gap-3 py-4">
+            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
+              <h3 class="m-0 text-base font-semibold">Image access</h3>
+            </header>
 
-          @if (itemValue.moderation_labels.length) {
-            <mat-tree
-              [dataSource]="buildModerationLabelTree(itemValue)"
-              [childrenAccessor]="moderationLabelChildrenAccessor"
-              aria-label="Rekognition labels hierarchy"
-            >
-              <mat-nested-tree-node *matTreeNodeDef="let node">
-                <div class="moderation-tree-node">
-                  <mat-icon aria-hidden="true" class="text-sm section-node-icon">
-                    {{ node.children.length ? 'folder' : 'label' }}
-                  </mat-icon>
-                  <span class="text-sm font-semibold text-[color:var(--mat-sys-on-surface)]">
-                    {{ node.name }}
-                  </span>
-                  @if (node.confidence !== null) {
-                    <span
-                      class="ml-auto shrink-0 rounded-full border border-[var(--mat-sys-outline-variant)] px-2 py-0.5 text-xs font-semibold text-[color:var(--mat-sys-on-surface)]"
-                    >
-                      {{ formatConfidencePercent(node.confidence) }}
-                    </span>
-                  }
-                </div>
-                <div class="moderation-tree-children">
-                  <ng-container matTreeNodeOutlet></ng-container>
-                </div>
-              </mat-nested-tree-node>
-            </mat-tree>
-          } @else {
-            <p class="m-0 text-sm text-muted">No moderation labels detected.</p>
-          }
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card appearance="outlined">
-        <mat-card-content class="grid gap-4 py-4">
-          <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-            <h3 class="m-0 text-base font-semibold">Toxicity analysis</h3>
-          </header>
-
-          @if (getTextInsights(itemValue); as insights) {
-            <p class="m-0 text-sm leading-6 text-[color:var(--mat-sys-on-surface)]">
-              @if (insights.toxicity_detected) {
-                <span class="font-semibold">This image contains toxic text signals.</span>
-                The highest toxicity score was
-                <span class="font-semibold">{{
-                  formatScorePercent(insights.max_toxicity_score)
-                }}</span
-                >, which meets or exceeds the configured threshold of
-                <span class="font-semibold">{{
-                  formatScorePercent(toxicityDetectionThreshold)
-                }}</span
-                >.
-              } @else {
-                <span class="font-semibold"
-                  >This image does not contain toxic text signals above threshold.</span
+            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+              <mat-icon aria-hidden="true" class="text-sm">link</mat-icon>
+              <span class="result-meta-label">View URL</span>
+              @if (itemValue.view_access?.url) {
+                <a
+                  class="result-meta-value font-mono view-access-link"
+                  [href]="itemValue.view_access?.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [attr.title]="itemValue.view_access?.url"
                 >
-                Threshold:
-                <span class="font-semibold">{{
-                  formatScorePercent(toxicityDetectionThreshold)
-                }}</span
-                >. Highest toxicity score:
-                <span class="font-semibold">{{
-                  formatScorePercent(insights.max_toxicity_score)
-                }}</span
-                >.
+                  Open image in new tab
+                </a>
+              } @else {
+                <span class="result-meta-value">Unavailable</span>
               }
             </p>
 
-            @if (insights.toxicity_labels.length) {
-              @if (getOrderedToxicityLabels(insights); as orderedLabels) {
-                <div
-                  class="detail-meta-row toxicity-labels-row flex items-center gap-1.5 text-sm text-muted"
-                >
-                  <mat-icon aria-hidden="true" class="text-sm">sell</mat-icon>
-                  <span class="result-meta-label">Labels</span>
-                  <div class="toxicity-tags" aria-label="Ordered toxicity labels">
-                    @for (label of orderedLabels; track label.name) {
-                      <span class="toxicity-tag">
-                        {{ label.name }} {{ formatScorePercent(label.score) }}
+            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+              <mat-icon aria-hidden="true" class="text-sm">verified</mat-icon>
+              <span class="result-meta-label">URL status</span>
+              <span
+                class="result-meta-value view-access-status"
+                [class.view-access-status--active]="isViewAccessActive()"
+                [class.view-access-status--expired]="!isViewAccessActive()"
+              >
+                {{ getViewAccessStatusLabel(itemValue.view_access ?? null) }}
+              </span>
+            </p>
+
+            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+              <mat-icon aria-hidden="true" class="text-sm">timer</mat-icon>
+              <span class="result-meta-label">Time remaining</span>
+              <span class="result-meta-value font-semibold">
+                {{ formatRemainingTime(viewAccessRemainingSeconds()) }}
+              </span>
+            </p>
+
+            <div class="image-access-button-wrap">
+              <button
+                mat-stroked-button
+                type="button"
+                class="renew-access-button"
+                (click)="renewViewUrl()"
+                [disabled]="isRefreshingViewAccess()"
+              >
+                <mat-icon aria-hidden="true">refresh</mat-icon>
+                {{ isRefreshingViewAccess() ? 'Renewing URL...' : 'Renew URL' }}
+              </button>
+            </div>
+
+            @if (viewAccessErrorMessage(); as viewAccessErrorValue) {
+              <p class="image-access-message text-sm text-error">{{ viewAccessErrorValue }}</p>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5 xl:grid-cols-12">
+        <mat-card appearance="outlined" class="xl:col-span-4">
+          <mat-card-content class="grid gap-3 py-4">
+            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
+              <h3 class="m-0 text-base font-semibold">Image label analysis</h3>
+            </header>
+
+            @if (itemValue.moderation_labels.length) {
+              <mat-tree
+                [dataSource]="buildModerationLabelTree(itemValue)"
+                [childrenAccessor]="moderationLabelChildrenAccessor"
+                aria-label="Rekognition labels hierarchy"
+              >
+                <mat-nested-tree-node *matTreeNodeDef="let node">
+                  <div class="moderation-tree-node">
+                    <mat-icon aria-hidden="true" class="text-sm section-node-icon">
+                      {{ node.children.length ? 'folder' : 'label' }}
+                    </mat-icon>
+                    <span class="text-sm font-semibold text-[color:var(--mat-sys-on-surface)]">
+                      {{ node.name }}
+                    </span>
+                    @if (node.confidence !== null) {
+                      <span
+                        class="ml-auto shrink-0 rounded-full border border-[var(--mat-sys-outline-variant)] px-2 py-0.5 text-xs font-semibold text-[color:var(--mat-sys-on-surface)]"
+                      >
+                        {{ formatConfidencePercent(node.confidence) }}
                       </span>
                     }
                   </div>
-                </div>
-              }
+                  <div class="moderation-tree-children">
+                    <ng-container matTreeNodeOutlet></ng-container>
+                  </div>
+                </mat-nested-tree-node>
+              </mat-tree>
             } @else {
-              <p class="m-0 text-sm text-muted">No toxicity labels found.</p>
+              <p class="m-0 text-sm text-muted">No moderation labels detected.</p>
             }
+          </mat-card-content>
+        </mat-card>
 
-            <div class="grid gap-2">
-              <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                <mat-icon aria-hidden="true" class="text-sm">badge</mat-icon>
-                <span class="result-meta-label">PII entities</span>
-                <span class="result-meta-value">{{ insights.pii_entities_count }}</span>
+        <mat-card appearance="outlined" class="xl:col-span-8">
+          <mat-card-content class="grid gap-4 py-4">
+            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
+              <h3 class="m-0 text-base font-semibold">Toxicity analysis</h3>
+            </header>
+
+            @if (getTextInsights(itemValue); as insights) {
+              <p class="m-0 text-sm leading-6 text-[color:var(--mat-sys-on-surface)]">
+                @if (insights.toxicity_detected) {
+                  <span class="font-semibold">This image contains toxic text signals.</span>
+                  The highest toxicity score was
+                  <span class="font-semibold">{{
+                    formatScorePercent(insights.max_toxicity_score)
+                  }}</span
+                  >, which meets or exceeds the configured threshold of
+                  <span class="font-semibold">{{
+                    formatScorePercent(toxicityDetectionThreshold)
+                  }}</span
+                  >.
+                } @else {
+                  <span class="font-semibold"
+                    >This image does not contain toxic text signals above threshold.</span
+                  >
+                  Threshold:
+                  <span class="font-semibold">{{
+                    formatScorePercent(toxicityDetectionThreshold)
+                  }}</span
+                  >. Highest toxicity score:
+                  <span class="font-semibold">{{
+                    formatScorePercent(insights.max_toxicity_score)
+                  }}</span
+                  >.
+                }
               </p>
 
-              <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                <mat-icon aria-hidden="true" class="text-sm">list</mat-icon>
-                <span class="result-meta-label">PII types</span>
-                <span
-                  class="result-meta-value"
-                  [attr.title]="formatPiiTypes(insights.pii_entity_types)"
-                >
-                  {{ formatPiiTypes(insights.pii_entity_types) }}
-                </span>
-              </p>
+              @if (insights.toxicity_labels.length) {
+                @if (getOrderedToxicityLabels(insights); as orderedLabels) {
+                  <div
+                    class="detail-meta-row toxicity-labels-row flex items-center gap-1.5 text-sm text-muted"
+                  >
+                    <mat-icon aria-hidden="true" class="text-sm">sell</mat-icon>
+                    <span class="result-meta-label">Labels</span>
+                    <div class="toxicity-tags" aria-label="Ordered toxicity labels">
+                      @for (label of orderedLabels; track label.name) {
+                        <span class="toxicity-tag">
+                          {{ label.name }} {{ formatScorePercent(label.score) }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+                }
+              } @else {
+                <p class="m-0 text-sm text-muted">No toxicity labels found.</p>
+              }
 
-              <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                <mat-icon aria-hidden="true" class="text-sm">translate</mat-icon>
-                <span class="result-meta-label">Language code</span>
-                <span class="result-meta-value">{{ insights.language_code }}</span>
-              </p>
+              <div class="grid gap-2">
+                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+                  <mat-icon aria-hidden="true" class="text-sm">badge</mat-icon>
+                  <span class="result-meta-label">PII entities</span>
+                  <span class="result-meta-value">{{ insights.pii_entities_count }}</span>
+                </p>
 
-              <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                <mat-icon aria-hidden="true" class="text-sm">notes</mat-icon>
-                <span class="result-meta-label">Text length</span>
-                <span class="result-meta-value">{{ insights.analyzed_text_length }} chars</span>
+                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+                  <mat-icon aria-hidden="true" class="text-sm">list</mat-icon>
+                  <span class="result-meta-label">PII types</span>
+                  <span
+                    class="result-meta-value"
+                    [attr.title]="formatPiiTypes(insights.pii_entity_types)"
+                  >
+                    {{ formatPiiTypes(insights.pii_entity_types) }}
+                  </span>
+                </p>
+
+                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+                  <mat-icon aria-hidden="true" class="text-sm">translate</mat-icon>
+                  <span class="result-meta-label">Language code</span>
+                  <span class="result-meta-value">{{ insights.language_code }}</span>
+                </p>
+
+                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
+                  <mat-icon aria-hidden="true" class="text-sm">notes</mat-icon>
+                  <span class="result-meta-label">Text length</span>
+                  <span class="result-meta-value">{{ insights.analyzed_text_length }} chars</span>
+                </p>
+              </div>
+            } @else {
+              <p class="m-0 text-sm text-muted">
+                No text extracted. Toxicity analysis unavailable.
               </p>
-            </div>
-          } @else {
-            <p class="m-0 text-sm text-muted">No text extracted. Toxicity analysis unavailable.</p>
-          }
-        </mat-card-content>
-      </mat-card>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
 
       <mat-card appearance="outlined">
         <mat-card-content class="grid gap-4 py-4">

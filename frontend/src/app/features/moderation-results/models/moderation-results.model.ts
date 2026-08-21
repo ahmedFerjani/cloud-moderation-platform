@@ -28,6 +28,12 @@ export interface TextInsights {
   pii_entity_types: string[];
 }
 
+export interface ViewAccess {
+  url: string;
+  expires_in: number;
+  issued_at: string;
+}
+
 export enum ModerationStatus {
   Safe = 'safe',
   Unsafe = 'unsafe',
@@ -43,6 +49,12 @@ export interface ModerationResultItem {
   status: ModerationStatus;
   s3_key: string;
   text_insights?: TextInsights | null;
+  view_access?: ViewAccess | null;
+}
+
+export interface ModerationResultViewAccessResponse {
+  image_id: string;
+  view_access: ViewAccess;
 }
 
 export interface ModerationResultsResponse {

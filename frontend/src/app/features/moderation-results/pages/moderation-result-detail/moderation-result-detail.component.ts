@@ -9,8 +9,12 @@ import { MatTreeModule } from '@angular/material/tree';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ModerationResultsApiService } from '../../data-access/moderation-results-api.service';
-import type { ModerationResultItem, TextInsights } from '../../models/moderation-results.model';
-import type { OnInit } from '@angular/core';
+import type {
+  ModerationResultItem,
+  TextInsights,
+  ViewAccess,
+} from '../../models/moderation-results.model';
+import type { OnDestroy, OnInit } from '@angular/core';
 
 interface SentimentScoreEntry {
   name: string;
@@ -41,7 +45,7 @@ type SentimentKey = 'positive' | 'neutral' | 'mixed' | 'negative';
   templateUrl: './moderation-result-detail.component.html',
   styleUrl: './moderation-result-detail.component.scss',
 })
-export class ModerationResultDetailComponent implements OnInit {
+export class ModerationResultDetailComponent implements OnInit, OnDestroy {
   protected readonly toxicityDetectionThreshold = 0.7;
   private readonly moderationResultsApiService = inject(ModerationResultsApiService);
   private readonly route = inject(ActivatedRoute);
@@ -63,10 +67,37 @@ export class ModerationResultDetailComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly hasItem = computed(() => this.item() !== null);
+  protected readonly nowMs = signal(Date.now());
+  protected readonly isRefreshingViewAccess = signal(false);
+  protected readonly viewAccessErrorMessage = signal<string | null>(null);
+  protected readonly currentViewAccess = computed(() => this.item()?.view_access ?? null);
+  protected readonly viewAccessRemainingSeconds = computed(() => {
+    const access = this.currentViewAccess();
+    if (!access) {
+      return null;
+    }
+
+    const issuedAtMs = Date.parse(access.issued_at);
+    if (Number.isNaN(issuedAtMs)) {
+      return null;
+    }
+
+    const expiresAtMs = issuedAtMs + access.expires_in * 1000;
+    return Math.max(0, Math.floor((expiresAtMs - this.nowMs()) / 1000));
+  });
+  protected readonly isViewAccessActive = computed(() => {
+    const remaining = this.viewAccessRemainingSeconds();
+    return remaining !== null && remaining > 0;
+  });
   protected readonly moderationLabelChildrenAccessor = (node: ModerationLabelTreeNode) =>
     node.children;
+  private tickIntervalId: number | null = null;
 
   ngOnInit(): void {
+    this.tickIntervalId = window.setInterval(() => {
+      this.nowMs.set(Date.now());
+    }, 1000);
+
     const imageId = this.route.snapshot.paramMap.get('imageId');
     this.imageId.set(imageId);
 
@@ -77,6 +108,13 @@ export class ModerationResultDetailComponent implements OnInit {
     }
 
     void this.loadModerationResult(imageId);
+  }
+
+  ngOnDestroy(): void {
+    if (this.tickIntervalId !== null) {
+      window.clearInterval(this.tickIntervalId);
+      this.tickIntervalId = null;
+    }
   }
 
   protected async refresh(): Promise<void> {
@@ -190,6 +228,57 @@ export class ModerationResultDetailComponent implements OnInit {
 
   protected formatConfidencePercent(confidence: number): string {
     return `${this.clampPercent(confidence).toFixed(1)}%`;
+  }
+
+  protected formatRemainingTime(totalSeconds: number | null): string {
+    if (totalSeconds === null) {
+      return 'Unavailable';
+    }
+
+    const minutes = Math.floor(totalSeconds / 60)
+      .toString()
+      .padStart(2, '0');
+    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+
+  protected async renewViewUrl(): Promise<void> {
+    const imageId = this.imageId();
+    if (!imageId || this.isRefreshingViewAccess()) {
+      return;
+    }
+
+    this.isRefreshingViewAccess.set(true);
+    this.viewAccessErrorMessage.set(null);
+
+    try {
+      const response = await firstValueFrom(
+        this.moderationResultsApiService.getModerationResultViewAccess(imageId),
+      );
+
+      const currentItem = this.item();
+      if (!currentItem) {
+        return;
+      }
+
+      this.item.set({
+        ...currentItem,
+        view_access: response.view_access,
+      });
+      this.nowMs.set(Date.now());
+    } catch {
+      this.viewAccessErrorMessage.set('Unable to renew image URL right now. Please try again.');
+    } finally {
+      this.isRefreshingViewAccess.set(false);
+    }
+  }
+
+  protected getViewAccessStatusLabel(viewAccess: ViewAccess | null): string {
+    if (!viewAccess) {
+      return 'Unavailable';
+    }
+
+    return this.isViewAccessActive() ? 'Active' : 'Expired';
   }
 
   private async loadModerationResult(imageId: string): Promise<void> {

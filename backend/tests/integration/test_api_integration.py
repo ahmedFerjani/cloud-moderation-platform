@@ -119,8 +119,40 @@ def test_api_handler_routes_get_moderation_result_end_to_end() -> None:
     assert_api_headers(response)
     assert body["image_id"] == "00000000-0000-0000-0000-000000000000"
     assert body["status"] == "safe"
-    assert body["view_url"].startswith("https://example-view.test/")
-    assert body["view_url_expires_in"] == service_module.VIEW_URL_EXPIRES_IN_SECONDS
+    assert body["view_access"]["url"].startswith("https://example-view.test/")
+    assert body["view_access"]["expires_in"] == service_module.VIEW_URL_EXPIRES_IN_SECONDS
+    assert body["view_access"]["issued_at"].endswith("Z")
+
+
+# Verifies the dedicated view URL route returns refreshed temporary access data.
+def test_api_handler_routes_get_moderation_result_view_url_end_to_end() -> None:
+    api_services, _api_router, api_handler = load_api_stack()
+    service_module = cast(Any, api_services)
+    fake_s3 = FakeS3Client()
+    service_module.s3 = fake_s3
+    service_module.table = FakeTable(
+        items=[
+            {
+                "image_id": "00000000-0000-0000-0000-000000000000",
+                "status": "safe",
+                "s3_key": "uploads/00000000-0000-0000-0000-000000000000.jpg",
+            }
+        ]
+    )
+
+    event = api_runtime_event("api-image-by-id.json")
+    event["rawPath"] = "/images/00000000-0000-0000-0000-000000000000/view-url"
+
+    with patch.object(api_handler, "capture_sample_event"):
+        response = api_handler.lambda_handler(event, runtime_context("req-get-view-url"))
+
+    body = json.loads(response["body"])
+    assert response["statusCode"] == 200
+    assert_api_headers(response)
+    assert body["image_id"] == "00000000-0000-0000-0000-000000000000"
+    assert body["view_access"]["url"].startswith("https://example-view.test/")
+    assert body["view_access"]["expires_in"] == service_module.VIEW_URL_EXPIRES_IN_SECONDS
+    assert body["view_access"]["issued_at"].endswith("Z")
 
 
 # Verifies the list route applies the requested limit and returns collection metadata.

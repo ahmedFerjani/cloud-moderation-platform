@@ -5,9 +5,25 @@ from context import get_cognito_jwt_sub, get_http_method, get_path
 from services import (
     generate_upload_url,
     get_moderation_result,
+    get_moderation_result_view_url,
     get_moderation_results,
 )
 from validation import parse_last_evaluated_key, parse_limit
+
+
+def _extract_image_id(path: str, suffix: str = "") -> str | None:
+    if not path.startswith("/images/"):
+        return None
+
+    image_id = path.removeprefix("/images/")
+
+    if suffix and not image_id.endswith(suffix):
+        return None
+
+    if suffix:
+        image_id = image_id.removesuffix(suffix)
+
+    return image_id or None
 
 
 def route_request(event):
@@ -31,12 +47,16 @@ def route_request(event):
 
         return generate_upload_url(body, user_id)
 
-    # GET /images/{id}
-    if method == "GET" and path.startswith("/images/"):
+    # GET /images/{id}/view-url
+    if method == "GET":
+        image_id = _extract_image_id(path, "/view-url")
+        if image_id:
+            return get_moderation_result_view_url(image_id)
 
-        image_id = path.split("/images/")[1]
-
-        return get_moderation_result(image_id)
+        # GET /images/{id}
+        image_id = _extract_image_id(path)
+        if image_id:
+            return get_moderation_result(image_id)
 
     # GET /images
     if method == "GET" and path == "/images":

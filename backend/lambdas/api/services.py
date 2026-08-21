@@ -1,6 +1,7 @@
 import boto3
 import os
 import uuid
+from datetime import datetime, timezone
 from botocore.exceptions import ClientError
 from common.responses import api_response
 from common.logger import log
@@ -20,24 +21,62 @@ dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(TABLE_NAME)  # type: ignore
 
 
-def _add_presigned_view_url(response_payload: dict, image_id: str) -> None:
-    object_key = response_payload.get("s3_key")
-    if not object_key:
-        return
+def _build_view_access(object_key: str, image_id: str) -> dict | None:
+    issued_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     try:
-        response_payload["view_url"] = s3.generate_presigned_url(
+        url = s3.generate_presigned_url(
             "get_object",
             Params={"Bucket": BUCKET_NAME, "Key": object_key},
             ExpiresIn=VIEW_URL_EXPIRES_IN_SECONDS,
         )
-        response_payload["view_url_expires_in"] = VIEW_URL_EXPIRES_IN_SECONDS
     except ClientError:
         log(
             "WARNING",
             "Unable to generate presigned image view URL",
             {"image_id": image_id, "object_key": object_key},
         )
+        return None
+
+    return {
+        "url": url,
+        "expires_in": VIEW_URL_EXPIRES_IN_SECONDS,
+        "issued_at": issued_at,
+    }
+
+
+def _add_view_access(response_payload: dict, image_id: str) -> None:
+    object_key = response_payload.get("s3_key")
+    if not object_key:
+        return
+
+    view_access = _build_view_access(object_key, image_id)
+    if view_access:
+        response_payload["view_access"] = view_access
+
+
+def _get_result_item_or_raise(image_id: str) -> dict:
+    dynamodb_response = table.get_item(Key={"image_id": image_id})
+    item = dynamodb_response.get("Item")
+
+    if not item:
+        raise APPError("MODERATION_RESULT_NOT_FOUND", "Moderation result not found", 404)
+
+    return item
+
+
+def get_moderation_result_view_url(image_id: str) -> dict:
+    item = _get_result_item_or_raise(image_id)
+    object_key = item.get("s3_key")
+
+    if not object_key:
+        raise APPError("VIEW_URL_NOT_AVAILABLE", "View URL not available for this image", 404)
+
+    view_access = _build_view_access(object_key, image_id)
+    if not view_access:
+        raise APPError("VIEW_URL_NOT_AVAILABLE", "View URL not available for this image", 503)
+
+    return api_response(200, {"image_id": image_id, "view_access": view_access})
 
 
 def generate_upload_url(body: dict, user_id: str) -> dict:
@@ -105,17 +144,10 @@ def create_presigned_upload(content_type: str, user_id: str, file_name: str | No
 
 
 def get_moderation_result(image_id: str) -> dict:
-
-    dynamodb_response = table.get_item(Key={"image_id": image_id})
-
-    item = dynamodb_response.get("Item")
-
-    if not item:
-
-        raise APPError("MODERATION_RESULT_NOT_FOUND", "Moderation result not found", 404)
+    item = _get_result_item_or_raise(image_id)
 
     response_payload = dict(item)
-    _add_presigned_view_url(response_payload, image_id)
+    _add_view_access(response_payload, image_id)
 
     return api_response(200, response_payload)
 

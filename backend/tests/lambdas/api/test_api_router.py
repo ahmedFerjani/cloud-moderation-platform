@@ -87,6 +87,20 @@ def test_get_by_id_route_calls_service(api_event_factory) -> None:
     mock_result.assert_called_once_with("00000000-0000-0000-0000-000000000000")
 
 
+# Verifies view URL refresh route delegates to dedicated service.
+def test_get_view_url_route_calls_service(api_event_factory) -> None:
+    event = api_event_factory("api-image-by-id.json")
+    event["rawPath"] = "/images/00000000-0000-0000-0000-000000000000/view-url"
+
+    with patch.object(
+        api_router, "get_moderation_result_view_url", return_value={"ok": True}
+    ) as mock_result:
+        result = api_router.route_request(event)
+
+    assert result == {"ok": True}
+    mock_result.assert_called_once_with("00000000-0000-0000-0000-000000000000")
+
+
 # Verifies upload route rejects requests with missing bodies.
 def test_missing_body_raises(api_event_factory) -> None:
     event = api_event_factory("api-uploads.json")

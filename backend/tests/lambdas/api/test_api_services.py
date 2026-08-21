@@ -2,6 +2,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+from botocore.exceptions import ClientError
 
 from _api_test_setup import api_services, api_validation
 
@@ -110,13 +111,79 @@ def test_get_moderation_result_success() -> None:
     assert body["image_id"] == "img-1"
     assert body["status"] == "safe"
     assert body["s3_key"] == "uploads/user-1/img-1.jpg"
-    assert body["view_url"] == "https://view.test"
-    assert body["view_url_expires_in"] == api_services.VIEW_URL_EXPIRES_IN_SECONDS
+    assert body["view_access"]["url"] == "https://view.test"
+    assert body["view_access"]["expires_in"] == api_services.VIEW_URL_EXPIRES_IN_SECONDS
+    assert body["view_access"]["issued_at"].endswith("Z")
     mock_presign.assert_called_once_with(
         "get_object",
         Params={"Bucket": api_services.BUCKET_NAME, "Key": "uploads/user-1/img-1.jpg"},
         ExpiresIn=api_services.VIEW_URL_EXPIRES_IN_SECONDS,
     )
+
+
+def test_get_moderation_result_view_url_success() -> None:
+    item = {"image_id": "img-1", "status": "safe", "s3_key": "uploads/user-1/img-1.jpg"}
+    with (
+        patch.object(api_services.table, "get_item", return_value={"Item": item}),
+        patch.object(
+            api_services.s3, "generate_presigned_url", return_value="https://view.test"
+        ) as mock_presign,
+    ):
+        response = api_services.get_moderation_result_view_url("img-1")
+
+    body = json.loads(response["body"])
+    assert response["statusCode"] == 200
+    assert body["image_id"] == "img-1"
+    assert body["view_access"]["url"] == "https://view.test"
+    assert body["view_access"]["expires_in"] == api_services.VIEW_URL_EXPIRES_IN_SECONDS
+    assert body["view_access"]["issued_at"].endswith("Z")
+    mock_presign.assert_called_once_with(
+        "get_object",
+        Params={"Bucket": api_services.BUCKET_NAME, "Key": "uploads/user-1/img-1.jpg"},
+        ExpiresIn=api_services.VIEW_URL_EXPIRES_IN_SECONDS,
+    )
+
+
+def test_get_moderation_result_view_url_missing_s3_key() -> None:
+    item = {"image_id": "img-1", "status": "safe"}
+    with (
+        patch.object(api_services.table, "get_item", return_value={"Item": item}),
+        pytest.raises(api_services.APPError) as ctx,
+    ):
+        api_services.get_moderation_result_view_url("img-1")
+
+    assert ctx.value.code == "VIEW_URL_NOT_AVAILABLE"
+
+
+def test_get_moderation_result_view_url_not_found() -> None:
+    with (
+        patch.object(api_services.table, "get_item", return_value={}),
+        pytest.raises(api_services.APPError) as ctx,
+    ):
+        api_services.get_moderation_result_view_url("img-1")
+
+    assert ctx.value.code == "MODERATION_RESULT_NOT_FOUND"
+
+
+def test_get_moderation_result_view_url_presign_failure() -> None:
+    item = {"image_id": "img-1", "status": "safe", "s3_key": "uploads/user-1/img-1.jpg"}
+    client_error = ClientError(
+        {"Error": {"Code": "AccessDenied", "Message": "presign failed"}},
+        "GeneratePresignedUrl",
+    )
+
+    with (
+        patch.object(api_services.table, "get_item", return_value={"Item": item}),
+        patch.object(
+            api_services.s3,
+            "generate_presigned_url",
+            side_effect=client_error,
+        ),
+        pytest.raises(api_services.APPError) as ctx,
+    ):
+        api_services.get_moderation_result_view_url("img-1")
+
+    assert ctx.value.code == "VIEW_URL_NOT_AVAILABLE"
 
 
 # Verifies list lookup returns items, count, and pagination key from DynamoDB scan results.

@@ -3,11 +3,12 @@ import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import { PropertyRowComponent } from '../../../../../shared/components/property-row/property-row.component';
 import type { ModerationResultItem, TextInsights } from '../../../models/moderation-results.model';
 
 @Component({
   selector: 'app-moderation-result-list-item',
-  imports: [DatePipe, MatButtonModule, MatIconModule, RouterLink],
+  imports: [DatePipe, MatButtonModule, MatIconModule, PropertyRowComponent, RouterLink],
   templateUrl: './moderation-result-list-item.component.html',
   styleUrl: './moderation-result-list-item.component.scss',
 })

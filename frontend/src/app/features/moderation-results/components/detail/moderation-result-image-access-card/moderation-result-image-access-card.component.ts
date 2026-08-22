@@ -1,8 +1,8 @@
 import { Component, computed, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { PropertyRowComponent } from '../../../../../shared/components/property-row/property-row.component';
 import { ModerationResultDetailCardShellComponent } from '../moderation-result-detail-card-shell/moderation-result-detail-card-shell.component';
-import { ModerationResultInfoRowComponent } from '../moderation-result-info-row/moderation-result-info-row.component';
 import type { ModerationResultItem, ViewAccess } from '../../../models/moderation-results.model';
 
 @Component({
@@ -11,7 +11,7 @@ import type { ModerationResultItem, ViewAccess } from '../../../models/moderatio
     MatButtonModule,
     MatIconModule,
     ModerationResultDetailCardShellComponent,
-    ModerationResultInfoRowComponent,
+    PropertyRowComponent,
   ],
   templateUrl: './moderation-result-image-access-card.component.html',
   styleUrl: './moderation-result-image-access-card.component.scss',

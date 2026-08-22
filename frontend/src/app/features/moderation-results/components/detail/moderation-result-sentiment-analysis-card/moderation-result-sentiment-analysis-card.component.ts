@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
+import { PropertyRowComponent } from '../../../../../shared/components/property-row/property-row.component';
 import { ModerationResultDetailCardShellComponent } from '../moderation-result-detail-card-shell/moderation-result-detail-card-shell.component';
-import { ModerationResultInfoRowComponent } from '../moderation-result-info-row/moderation-result-info-row.component';
 import type { TextInsights } from '../../../models/moderation-results.model';
 
 interface SentimentScoreEntry {
@@ -10,7 +10,7 @@ interface SentimentScoreEntry {
 
 @Component({
   selector: 'app-moderation-result-sentiment-analysis-card',
-  imports: [ModerationResultDetailCardShellComponent, ModerationResultInfoRowComponent],
+  imports: [ModerationResultDetailCardShellComponent, PropertyRowComponent],
   templateUrl: './moderation-result-sentiment-analysis-card.component.html',
   styleUrl: './moderation-result-sentiment-analysis-card.component.scss',
 })

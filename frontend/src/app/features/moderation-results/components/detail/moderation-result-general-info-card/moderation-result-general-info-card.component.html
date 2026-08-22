@@ -1,17 +1,17 @@
 <app-moderation-result-detail-card-shell title="General information">
-  <app-moderation-result-info-row icon="schedule" label="Processed at">
+  <app-property-row icon="schedule" label="Processed at">
     {{ item().timestamp | date: 'medium' }}
-  </app-moderation-result-info-row>
+  </app-property-row>
 
-  <app-moderation-result-info-row icon="tag" label="Image hash">
+  <app-property-row icon="tag" label="Image hash">
     <span class="font-mono" [attr.title]="item().image_hash">{{ item().image_hash }}</span>
-  </app-moderation-result-info-row>
+  </app-property-row>
 
-  <app-moderation-result-info-row icon="photo_library" label="Image ID">
+  <app-property-row icon="photo_library" label="Image ID">
     <span class="font-mono" [attr.title]="item().image_id">{{ item().image_id }}</span>
-  </app-moderation-result-info-row>
+  </app-property-row>
 
-  <app-moderation-result-info-row icon="folder" label="S3 path">
+  <app-property-row icon="folder" label="S3 path">
     <span class="font-mono" [attr.title]="item().s3_key">{{ item().s3_key }}</span>
-  </app-moderation-result-info-row>
+  </app-property-row>
 </app-moderation-result-detail-card-shell>

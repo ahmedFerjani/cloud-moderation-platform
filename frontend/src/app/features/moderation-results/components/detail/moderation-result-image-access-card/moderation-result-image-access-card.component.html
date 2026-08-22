@@ -1,5 +1,5 @@
 <app-moderation-result-detail-card-shell title="Image access">
-  <app-moderation-result-info-row icon="link" label="View URL">
+  <app-property-row icon="link" label="View URL">
     @if (item().view_access?.url) {
       <a
         class="font-mono view-access-link"
@@ -13,9 +13,9 @@
     } @else {
       <span>Unavailable</span>
     }
-  </app-moderation-result-info-row>
+  </app-property-row>
 
-  <app-moderation-result-info-row icon="verified" label="URL status">
+  <app-property-row icon="verified" label="URL status">
     <span
       class="view-access-status"
       [class.view-access-status--active]="isViewAccessActive()"
@@ -23,11 +23,11 @@
     >
       {{ getUrlStatusLabel(item().view_access ?? null) }}
     </span>
-  </app-moderation-result-info-row>
+  </app-property-row>
 
-  <app-moderation-result-info-row icon="timer" label="Time remaining">
+  <app-property-row icon="timer" label="Time remaining">
     <span class="font-semibold">{{ formatRemainingTime(viewAccessRemainingSeconds()) }}</span>
-  </app-moderation-result-info-row>
+  </app-property-row>
 
   <div class="image-access-button-wrap">
     <button

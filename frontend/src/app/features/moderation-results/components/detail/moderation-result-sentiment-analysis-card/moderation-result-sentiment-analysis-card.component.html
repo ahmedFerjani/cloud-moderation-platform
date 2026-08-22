@@ -1,8 +1,8 @@
 <app-moderation-result-detail-card-shell title="Sentiment analysis">
   @if (insights(); as currentInsights) {
-    <app-moderation-result-info-row icon="sentiment_satisfied" label="Captured sentiment">
+    <app-property-row icon="sentiment_satisfied" label="Captured sentiment">
       {{ currentInsights.sentiment }}
-    </app-moderation-result-info-row>
+    </app-property-row>
 
     <div class="sentiment-stack mt-3" aria-label="Sentiment score distribution">
       @for (score of fixedScores(); track score.name) {

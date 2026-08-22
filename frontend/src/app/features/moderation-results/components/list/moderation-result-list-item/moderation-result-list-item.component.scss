@@ -28,25 +28,3 @@
   box-shadow: 0 8px 18px color-mix(in srgb, var(--mat-sys-shadow) 14%, transparent);
   transform: translateY(-1px);
 }
-
-.result-meta-row {
-  display: grid;
-  grid-template-columns: 1rem 5.75rem minmax(0, 1fr);
-  align-items: center;
-  column-gap: 0.375rem;
-}
-
-.result-meta-row mat-icon {
-  font-size: 1rem;
-  width: 1rem;
-  height: 1rem;
-}
-
-.result-meta-label {
-  color: var(--mat-sys-on-surface-variant);
-  font-weight: 500;
-}
-
-.result-meta-value {
-  color: var(--mat-sys-on-surface);
-}

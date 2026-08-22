@@ -1,16 +1,12 @@
 import { Component, computed, input } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
+import { PropertyRowComponent } from '../../../../../shared/components/property-row/property-row.component';
 import { ModerationResultDetailCardShellComponent } from '../moderation-result-detail-card-shell/moderation-result-detail-card-shell.component';
-import { ModerationResultInfoRowComponent } from '../moderation-result-info-row/moderation-result-info-row.component';
 import type { TextInsights } from '../../../models/moderation-results.model';
 
 @Component({
   selector: 'app-moderation-result-toxicity-analysis-card',
-  imports: [
-    MatChipsModule,
-    ModerationResultDetailCardShellComponent,
-    ModerationResultInfoRowComponent,
-  ],
+  imports: [MatChipsModule, ModerationResultDetailCardShellComponent, PropertyRowComponent],
   templateUrl: './moderation-result-toxicity-analysis-card.component.html',
   styleUrl: './moderation-result-toxicity-analysis-card.component.scss',
 })

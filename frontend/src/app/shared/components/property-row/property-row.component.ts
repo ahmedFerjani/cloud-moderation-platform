@@ -2,12 +2,12 @@ import { Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-moderation-result-info-row',
+  selector: 'app-property-row',
   imports: [MatIconModule],
-  templateUrl: './moderation-result-info-row.component.html',
-  styleUrl: './moderation-result-info-row.component.scss',
+  templateUrl: './property-row.component.html',
+  styleUrl: './property-row.component.scss',
 })
-export class ModerationResultInfoRowComponent {
+export class PropertyRowComponent {
   readonly icon = input.required<string>();
   readonly label = input.required<string>();
 }

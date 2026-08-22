@@ -1,0 +1,48 @@
+<app-moderation-result-detail-card-shell title="Image access">
+  <app-moderation-result-info-row icon="link" label="View URL">
+    @if (item().view_access?.url) {
+      <a
+        class="font-mono view-access-link"
+        [href]="item().view_access?.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.title]="item().view_access?.url"
+      >
+        Open image in new tab
+      </a>
+    } @else {
+      <span>Unavailable</span>
+    }
+  </app-moderation-result-info-row>
+
+  <app-moderation-result-info-row icon="verified" label="URL status">
+    <span
+      class="view-access-status"
+      [class.view-access-status--active]="isViewAccessActive()"
+      [class.view-access-status--expired]="!isViewAccessActive()"
+    >
+      {{ getUrlStatusLabel(item().view_access ?? null) }}
+    </span>
+  </app-moderation-result-info-row>
+
+  <app-moderation-result-info-row icon="timer" label="Time remaining">
+    <span class="font-semibold">{{ formatRemainingTime(viewAccessRemainingSeconds()) }}</span>
+  </app-moderation-result-info-row>
+
+  <div class="image-access-button-wrap">
+    <button
+      mat-stroked-button
+      type="button"
+      class="renew-access-button"
+      (click)="onRenew()"
+      [disabled]="isRefreshingViewAccess()"
+    >
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      {{ isRefreshingViewAccess() ? 'Renewing URL...' : 'Renew URL' }}
+    </button>
+  </div>
+
+  @if (viewAccessErrorMessage()) {
+    <p class="image-access-message text-sm text-error">{{ viewAccessErrorMessage() }}</p>
+  }
+</app-moderation-result-detail-card-shell>

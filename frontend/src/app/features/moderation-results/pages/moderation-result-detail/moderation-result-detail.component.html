@@ -101,414 +101,81 @@
     <div class="grid gap-5">
       @if (getTextInsights(itemValue); as insights) {
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Moderation quick summary">
-          <div
-            class="summary-status-card grid justify-items-center gap-1 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-4 text-center"
-            [attr.title]="'Moderation status: ' + itemValue.status"
-          >
-            <mat-icon
-              aria-hidden="true"
-              class="summary-status-icon"
-              [class.overview-icon--toxic]="itemValue.unsafe_detected"
-              [class.overview-icon--safe]="!itemValue.unsafe_detected"
-            >
-              {{ itemValue.unsafe_detected ? 'report' : 'task_alt' }}
-            </mat-icon>
-            <span class="text-sm font-medium text-[color:var(--mat-sys-on-surface-variant)]"
-              >Moderation</span
-            >
-            <span class="text-base font-semibold text-[color:var(--mat-sys-on-surface)]">
-              {{ itemValue.unsafe_detected ? 'Unsafe' : 'Safe' }}
-            </span>
-          </div>
+          <app-moderation-result-summary-card
+            label="Moderation"
+            [value]="itemValue.unsafe_detected ? 'Unsafe' : 'Safe'"
+            [icon]="itemValue.unsafe_detected ? 'cancel' : 'check_circle'"
+            [tone]="itemValue.unsafe_detected ? 'warning' : 'success'"
+          />
 
-          <div
-            class="summary-status-card grid justify-items-center gap-1 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-4 text-center"
-            [attr.title]="
-              'Toxicity scan: ' + (insights.toxicity_detected ? 'Detected' : 'Not detected')
+          <app-moderation-result-summary-card
+            label="Toxicity scan"
+            [value]="insights.toxicity_detected ? 'Found' : 'Not found'"
+            [icon]="insights.toxicity_detected ? 'cancel' : 'check_circle'"
+            [tone]="insights.toxicity_detected ? 'warning' : 'success'"
+          />
+
+          <app-moderation-result-summary-card
+            label="Sentiment"
+            [value]="insights.sentiment.toUpperCase()"
+            [icon]="getSentimentIcon(insights.sentiment)"
+            [tone]="
+              getSentimentToneClass(insights.sentiment) === 'overview-icon--positive' ||
+              getSentimentToneClass(insights.sentiment) === 'overview-icon--neutral'
+                ? 'neutral'
+                : 'warning'
             "
-          >
-            <mat-icon
-              aria-hidden="true"
-              class="summary-status-icon"
-              [class.overview-icon--toxic]="insights.toxicity_detected"
-              [class.overview-icon--safe]="!insights.toxicity_detected"
-            >
-              {{ insights.toxicity_detected ? 'gpp_bad' : 'verified_user' }}
-            </mat-icon>
-            <span class="text-sm font-medium text-[color:var(--mat-sys-on-surface-variant)]"
-              >Toxicity scan</span
-            >
-            <span class="text-base font-semibold text-[color:var(--mat-sys-on-surface)]">
-              {{ insights.toxicity_detected ? 'Found' : 'Not found' }}
-            </span>
-          </div>
-
-          <div
-            class="summary-status-card grid justify-items-center gap-1 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-4 text-center"
-            [attr.title]="'Sentiment: ' + insights.sentiment"
-          >
-            <mat-icon
-              aria-hidden="true"
-              class="summary-status-icon"
-              [class]="'summary-status-icon ' + getSentimentToneClass(insights.sentiment)"
-            >
-              {{ getSentimentIcon(insights.sentiment) }}
-            </mat-icon>
-            <span class="text-sm font-medium text-[color:var(--mat-sys-on-surface-variant)]"
-              >Sentiment</span
-            >
-            <span class="text-base font-semibold text-[color:var(--mat-sys-on-surface)]">{{
-              insights.sentiment
-            }}</span>
-          </div>
+          />
         </div>
       } @else {
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Moderation quick summary">
-          <div
-            class="summary-status-card grid justify-items-center gap-1 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-4 text-center"
-            [attr.title]="'Moderation status: ' + itemValue.status"
-          >
-            <mat-icon
-              aria-hidden="true"
-              class="summary-status-icon"
-              [class.overview-icon--toxic]="itemValue.unsafe_detected"
-              [class.overview-icon--safe]="!itemValue.unsafe_detected"
-            >
-              {{ itemValue.unsafe_detected ? 'report' : 'task_alt' }}
-            </mat-icon>
-            <span class="text-sm font-medium text-[color:var(--mat-sys-on-surface-variant)]"
-              >Moderation</span
-            >
-            <span class="text-base font-semibold text-[color:var(--mat-sys-on-surface)]">
-              {{ itemValue.unsafe_detected ? 'Unsafe' : 'Safe' }}
-            </span>
-          </div>
+          <app-moderation-result-summary-card
+            label="Moderation"
+            [value]="itemValue.unsafe_detected ? 'Unsafe' : 'Safe'"
+            [icon]="itemValue.unsafe_detected ? 'cancel' : 'check_circle'"
+            [tone]="itemValue.unsafe_detected ? 'warning' : 'success'"
+          />
 
-          <div
-            class="summary-status-card grid justify-items-center gap-1 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-4 text-center"
-            title="Toxicity scan unavailable without extracted text"
-          >
-            <mat-icon aria-hidden="true" class="overview-icon--safe summary-status-icon"
-              >block</mat-icon
-            >
-            <span class="text-sm font-medium text-[color:var(--mat-sys-on-surface-variant)]"
-              >Toxicity scan</span
-            >
-            <span class="text-base font-semibold text-[color:var(--mat-sys-on-surface)]">
-              Unavailable
-            </span>
-          </div>
+          <app-moderation-result-summary-card
+            label="Toxicity scan"
+            value="Unavailable"
+            icon="block"
+            tone="neutral"
+          />
 
-          <div
-            class="summary-status-card grid justify-items-center gap-1 rounded-xl border border-[var(--mat-sys-outline-variant)] px-3 py-4 text-center"
-            title="Sentiment unavailable without extracted text"
-          >
-            <mat-icon aria-hidden="true" class="summary-status-icon text-muted"
-              >sentiment_neutral</mat-icon
-            >
-            <span class="text-sm font-medium text-[color:var(--mat-sys-on-surface-variant)]"
-              >Sentiment</span
-            >
-            <span class="text-base font-semibold text-[color:var(--mat-sys-on-surface)]">
-              Unavailable
-            </span>
-          </div>
+          <app-moderation-result-summary-card
+            label="Sentiment"
+            value="Unavailable"
+            icon="sentiment_neutral"
+            tone="neutral"
+          />
         </div>
       }
 
       <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <mat-card appearance="outlined" class="xl:col-span-2">
-          <mat-card-content class="grid gap-4 py-4">
-            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-              <h3 class="m-0 text-base font-semibold">General information</h3>
-            </header>
+        <app-moderation-result-general-info-card class="xl:col-span-2" [item]="itemValue" />
 
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">schedule</mat-icon>
-              <span class="result-meta-label">Processed at</span>
-              <span class="result-meta-value">{{ itemValue.timestamp | date: 'medium' }}</span>
-            </p>
-
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">tag</mat-icon>
-              <span class="result-meta-label">Image hash</span>
-              <span class="result-meta-value font-mono" [attr.title]="itemValue.image_hash">
-                {{ itemValue.image_hash }}
-              </span>
-            </p>
-
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">photo_library</mat-icon>
-              <span class="result-meta-label">Image ID</span>
-              <span class="result-meta-value font-mono" [attr.title]="itemValue.image_id">
-                {{ itemValue.image_id }}
-              </span>
-            </p>
-
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">folder</mat-icon>
-              <span class="result-meta-label">S3 path</span>
-              <span class="result-meta-value font-mono" [attr.title]="itemValue.s3_key">
-                {{ itemValue.s3_key }}
-              </span>
-            </p>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card appearance="outlined" class="xl:col-span-1">
-          <mat-card-content class="grid gap-3 py-4">
-            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-              <h3 class="m-0 text-base font-semibold">Image access</h3>
-            </header>
-
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">link</mat-icon>
-              <span class="result-meta-label">View URL</span>
-              @if (itemValue.view_access?.url) {
-                <a
-                  class="result-meta-value font-mono view-access-link"
-                  [href]="itemValue.view_access?.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  [attr.title]="itemValue.view_access?.url"
-                >
-                  Open image in new tab
-                </a>
-              } @else {
-                <span class="result-meta-value">Unavailable</span>
-              }
-            </p>
-
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">verified</mat-icon>
-              <span class="result-meta-label">URL status</span>
-              <span
-                class="result-meta-value view-access-status"
-                [class.view-access-status--active]="isViewAccessActive()"
-                [class.view-access-status--expired]="!isViewAccessActive()"
-              >
-                {{ getViewAccessStatusLabel(itemValue.view_access ?? null) }}
-              </span>
-            </p>
-
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">timer</mat-icon>
-              <span class="result-meta-label">Time remaining</span>
-              <span class="result-meta-value font-semibold">
-                {{ formatRemainingTime(viewAccessRemainingSeconds()) }}
-              </span>
-            </p>
-
-            <div class="image-access-button-wrap">
-              <button
-                mat-stroked-button
-                type="button"
-                class="renew-access-button"
-                (click)="renewViewUrl()"
-                [disabled]="isRefreshingViewAccess()"
-              >
-                <mat-icon aria-hidden="true">refresh</mat-icon>
-                {{ isRefreshingViewAccess() ? 'Renewing URL...' : 'Renew URL' }}
-              </button>
-            </div>
-
-            @if (viewAccessErrorMessage(); as viewAccessErrorValue) {
-              <p class="image-access-message text-sm text-error">{{ viewAccessErrorValue }}</p>
-            }
-          </mat-card-content>
-        </mat-card>
+        <app-moderation-result-image-access-card
+          class="xl:col-span-1"
+          [item]="itemValue"
+          [nowMs]="nowMs()"
+          [isRefreshingViewAccess]="isRefreshingViewAccess()"
+          [viewAccessErrorMessage]="viewAccessErrorMessage()"
+          [onRenew]="renewViewUrl"
+        />
       </div>
 
       <div class="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <mat-card appearance="outlined" class="xl:col-span-4">
-          <mat-card-content class="grid gap-3 py-4">
-            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-              <h3 class="m-0 text-base font-semibold">Image label analysis</h3>
-            </header>
+        <app-moderation-result-label-analysis-card class="xl:col-span-4" [item]="itemValue" />
 
-            @if (itemValue.moderation_labels.length) {
-              <mat-tree
-                [dataSource]="buildModerationLabelTree(itemValue)"
-                [childrenAccessor]="moderationLabelChildrenAccessor"
-                aria-label="Rekognition labels hierarchy"
-              >
-                <mat-nested-tree-node *matTreeNodeDef="let node">
-                  <div class="moderation-tree-node">
-                    <mat-icon aria-hidden="true" class="text-sm section-node-icon">
-                      {{ node.children.length ? 'folder' : 'label' }}
-                    </mat-icon>
-                    <span class="text-sm font-semibold text-[color:var(--mat-sys-on-surface)]">
-                      {{ node.name }}
-                    </span>
-                    @if (node.confidence !== null) {
-                      <span
-                        class="ml-auto shrink-0 rounded-full border border-[var(--mat-sys-outline-variant)] px-2 py-0.5 text-xs font-semibold text-[color:var(--mat-sys-on-surface)]"
-                      >
-                        {{ formatConfidencePercent(node.confidence) }}
-                      </span>
-                    }
-                  </div>
-                  <div class="moderation-tree-children">
-                    <ng-container matTreeNodeOutlet></ng-container>
-                  </div>
-                </mat-nested-tree-node>
-              </mat-tree>
-            } @else {
-              <p class="m-0 text-sm text-muted">No moderation labels detected.</p>
-            }
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card appearance="outlined" class="xl:col-span-8">
-          <mat-card-content class="grid gap-4 py-4">
-            <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-              <h3 class="m-0 text-base font-semibold">Toxicity analysis</h3>
-            </header>
-
-            @if (getTextInsights(itemValue); as insights) {
-              <p class="m-0 text-sm leading-6 text-[color:var(--mat-sys-on-surface)]">
-                @if (insights.toxicity_detected) {
-                  <span class="font-semibold">This image contains toxic text signals.</span>
-                  The highest toxicity score was
-                  <span class="font-semibold">{{
-                    formatScorePercent(insights.max_toxicity_score)
-                  }}</span
-                  >, which meets or exceeds the configured threshold of
-                  <span class="font-semibold">{{
-                    formatScorePercent(toxicityDetectionThreshold)
-                  }}</span
-                  >.
-                } @else {
-                  <span class="font-semibold"
-                    >This image does not contain toxic text signals above threshold.</span
-                  >
-                  Threshold:
-                  <span class="font-semibold">{{
-                    formatScorePercent(toxicityDetectionThreshold)
-                  }}</span
-                  >. Highest toxicity score:
-                  <span class="font-semibold">{{
-                    formatScorePercent(insights.max_toxicity_score)
-                  }}</span
-                  >.
-                }
-              </p>
-
-              @if (insights.toxicity_labels.length) {
-                @if (getOrderedToxicityLabels(insights); as orderedLabels) {
-                  <div
-                    class="detail-meta-row toxicity-labels-row flex items-center gap-1.5 text-sm text-muted"
-                  >
-                    <mat-icon aria-hidden="true" class="text-sm">sell</mat-icon>
-                    <span class="result-meta-label">Labels</span>
-                    <div class="toxicity-tags" aria-label="Ordered toxicity labels">
-                      @for (label of orderedLabels; track label.name) {
-                        <span class="toxicity-tag">
-                          {{ label.name }} {{ formatScorePercent(label.score) }}
-                        </span>
-                      }
-                    </div>
-                  </div>
-                }
-              } @else {
-                <p class="m-0 text-sm text-muted">No toxicity labels found.</p>
-              }
-
-              <div class="grid gap-2">
-                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                  <mat-icon aria-hidden="true" class="text-sm">badge</mat-icon>
-                  <span class="result-meta-label">PII entities</span>
-                  <span class="result-meta-value">{{ insights.pii_entities_count }}</span>
-                </p>
-
-                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                  <mat-icon aria-hidden="true" class="text-sm">list</mat-icon>
-                  <span class="result-meta-label">PII types</span>
-                  <span
-                    class="result-meta-value"
-                    [attr.title]="formatPiiTypes(insights.pii_entity_types)"
-                  >
-                    {{ formatPiiTypes(insights.pii_entity_types) }}
-                  </span>
-                </p>
-
-                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                  <mat-icon aria-hidden="true" class="text-sm">translate</mat-icon>
-                  <span class="result-meta-label">Language code</span>
-                  <span class="result-meta-value">{{ insights.language_code }}</span>
-                </p>
-
-                <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-                  <mat-icon aria-hidden="true" class="text-sm">notes</mat-icon>
-                  <span class="result-meta-label">Text length</span>
-                  <span class="result-meta-value">{{ insights.analyzed_text_length }} chars</span>
-                </p>
-              </div>
-            } @else {
-              <p class="m-0 text-sm text-muted">
-                No text extracted. Toxicity analysis unavailable.
-              </p>
-            }
-          </mat-card-content>
-        </mat-card>
+        <app-moderation-result-toxicity-analysis-card
+          class="xl:col-span-8"
+          [insights]="getTextInsights(itemValue)"
+          [detectionThreshold]="toxicityDetectionThreshold"
+        />
       </div>
 
-      <mat-card appearance="outlined">
-        <mat-card-content class="grid gap-4 py-4">
-          <header class="detail-section-header text-[color:var(--mat-sys-on-surface)]">
-            <h3 class="m-0 text-base font-semibold">Sentiment analysis</h3>
-          </header>
-
-          @if (getTextInsights(itemValue); as insights) {
-            <p class="detail-meta-row m-0 flex items-center gap-1.5 text-sm text-muted">
-              <mat-icon aria-hidden="true" class="text-sm">sentiment_satisfied</mat-icon>
-              <span class="result-meta-label">Captured sentiment</span>
-              <span class="result-meta-value">{{ insights.sentiment }}</span>
-            </p>
-
-            <div class="mt-3">
-              <p
-                class="m-0 text-xs font-semibold uppercase tracking-[0.02em] text-[color:var(--mat-sys-on-surface-variant)]"
-              >
-                Score breakdown
-              </p>
-            </div>
-
-            <div class="sentiment-stack" aria-label="Sentiment score distribution">
-              @for (score of getFixedSentimentScores(insights); track score.name) {
-                <span
-                  class="sentiment-stack-segment"
-                  [class.sentiment-segment--positive]="score.name === 'Positive'"
-                  [class.sentiment-segment--neutral]="score.name === 'Neutral'"
-                  [class.sentiment-segment--negative]="score.name === 'Negative'"
-                  [class.sentiment-segment--mixed]="score.name === 'Mixed'"
-                  [style.width.%]="score.score * 100"
-                  [attr.title]="score.name + ': ' + formatScorePercent(score.score)"
-                ></span>
-              }
-            </div>
-
-            <div class="grid grid-cols-1 gap-1.5 text-sm text-muted sm:grid-cols-2 lg:grid-cols-4">
-              @for (score of getFixedSentimentScores(insights); track score.name) {
-                <p class="sentiment-legend-row m-0">
-                  <span
-                    class="sentiment-legend-dot"
-                    [class.sentiment-segment--positive]="score.name === 'Positive'"
-                    [class.sentiment-segment--neutral]="score.name === 'Neutral'"
-                    [class.sentiment-segment--negative]="score.name === 'Negative'"
-                    [class.sentiment-segment--mixed]="score.name === 'Mixed'"
-                    aria-hidden="true"
-                  ></span>
-                  <span class="sentiment-legend-label">{{ score.name }}</span>
-                  <span class="sentiment-legend-score">{{ formatScorePercent(score.score) }}</span>
-                </p>
-              }
-            </div>
-          } @else {
-            <p class="m-0 text-sm text-muted">No text extracted. Sentiment analysis unavailable.</p>
-          }
-        </mat-card-content>
-      </mat-card>
+      <app-moderation-result-sentiment-analysis-card [insights]="getTextInsights(itemValue)" />
     </div>
   }
 </section>

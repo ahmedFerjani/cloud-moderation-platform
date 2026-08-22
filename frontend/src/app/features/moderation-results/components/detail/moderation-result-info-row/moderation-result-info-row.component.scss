@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.detail-meta-row {
+  display: grid;
+  grid-template-columns: 1.25rem 9rem minmax(0, 1fr);
+  column-gap: 0.625rem;
+  align-items: start;
+  line-height: 1.45;
+}
+
+.detail-meta-row mat-icon {
+  color: var(--mat-sys-on-surface);
+  margin-top: 0.125rem;
+}
+
+.result-meta-label,
+.result-meta-value {
+  min-width: 0;
+}
+
+.result-meta-label {
+  color: var(--mat-sys-on-surface);
+  font-weight: 600;
+  min-width: 5.75rem;
+  white-space: nowrap;
+}
+
+.result-meta-value {
+  color: var(--mat-sys-on-surface);
+}

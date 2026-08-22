@@ -45,64 +45,9 @@
   color: var(--mat-sys-on-surface);
 }
 
-.detail-meta-row {
-  display: grid;
-  grid-template-columns: 1.25rem 9rem minmax(0, 1fr);
-  column-gap: 0.625rem;
-  align-items: start;
-  line-height: 1.45;
-}
-
-.detail-meta-row mat-icon {
-  color: var(--mat-sys-on-surface);
-  margin-top: 0.125rem;
-}
-
-.result-meta-label,
-.result-meta-value {
-  min-width: 0;
-}
-
-.view-access-link {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.view-access-status {
-  font-weight: 700;
-}
-
-.view-access-status--active {
-  color: var(--app-success);
-}
-
-.view-access-status--expired {
-  color: var(--app-error);
-}
-
 .detail-section-header {
   display: block;
   margin-bottom: 0.875rem;
-}
-
-.image-access-button-wrap {
-  display: flex;
-  justify-content: center;
-  margin-top: 0.5rem;
-}
-
-.image-access-message {
-  margin: 0;
-  text-align: center;
-}
-
-.renew-access-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
 }
 
 .intro-summary-block {

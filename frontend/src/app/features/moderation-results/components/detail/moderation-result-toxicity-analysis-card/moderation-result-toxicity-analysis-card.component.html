@@ -1,0 +1,61 @@
+<app-moderation-result-detail-card-shell title="Toxicity analysis">
+  @if (insights(); as currentInsights) {
+    <div>
+      <p class="m-0 text-sm leading-6 text-[color:var(--mat-sys-on-surface)]">
+        @if (currentInsights.toxicity_detected) {
+          <span class="font-semibold">This image contains toxic text signals.</span>
+          The highest toxicity score was
+          <span class="font-semibold">{{
+            formatScorePercent(currentInsights.max_toxicity_score)
+          }}</span
+          >, which meets or exceeds the configured threshold of
+          <span class="font-semibold">{{ formatScorePercent(detectionThreshold()) }}</span
+          >.
+        } @else {
+          <span class="font-semibold"
+            >This image does not contain toxic text signals above threshold.</span
+          >
+          Threshold:
+          <span class="font-semibold">{{ formatScorePercent(detectionThreshold()) }}</span
+          >. Highest toxicity score:
+          <span class="font-semibold">{{
+            formatScorePercent(currentInsights.max_toxicity_score)
+          }}</span
+          >.
+        }
+      </p>
+
+      @if (currentInsights.toxicity_labels.length) {
+        <app-moderation-result-info-row icon="sell" label="Labels">
+          <mat-chip-set class="toxicity-tags" aria-label="Ordered toxicity labels">
+            @for (label of orderedLabels(); track label.name) {
+              <mat-chip>{{ label.name }} {{ formatScorePercent(label.score) }}</mat-chip>
+            }
+          </mat-chip-set>
+        </app-moderation-result-info-row>
+      } @else {
+        <p class="m-0 text-sm text-muted">No toxicity labels found.</p>
+      }
+
+      <app-moderation-result-info-row icon="badge" label="PII entities">
+        {{ currentInsights.pii_entities_count }}
+      </app-moderation-result-info-row>
+
+      <app-moderation-result-info-row icon="list" label="PII types">
+        <span [attr.title]="formatPiiTypes(currentInsights.pii_entity_types)">
+          {{ formatPiiTypes(currentInsights.pii_entity_types) }}
+        </span>
+      </app-moderation-result-info-row>
+
+      <app-moderation-result-info-row icon="translate" label="Language code">
+        {{ currentInsights.language_code }}
+      </app-moderation-result-info-row>
+
+      <app-moderation-result-info-row icon="notes" label="Text length">
+        {{ currentInsights.analyzed_text_length }} chars
+      </app-moderation-result-info-row>
+    </div>
+  } @else {
+    <p class="m-0 text-sm text-muted">No text extracted. Toxicity analysis unavailable.</p>
+  }
+</app-moderation-result-detail-card-shell>

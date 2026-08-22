@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.moderation-tree-node {
+  min-height: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.moderation-tree-children {
+  margin-left: 0.625rem;
+  padding-left: 0.75rem;
+  border-left: 1px dashed var(--mat-sys-outline-variant);
+}
+
+.section-node-icon {
+  color: var(--mat-sys-on-surface);
+}

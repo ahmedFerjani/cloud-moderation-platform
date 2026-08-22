@@ -1,13 +1,17 @@
-import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTreeModule } from '@angular/material/tree';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { ModerationResultGeneralInfoCardComponent } from '../../components/detail/moderation-result-general-info-card/moderation-result-general-info-card.component';
+import { ModerationResultImageAccessCardComponent } from '../../components/detail/moderation-result-image-access-card/moderation-result-image-access-card.component';
+import { ModerationResultLabelAnalysisCardComponent } from '../../components/detail/moderation-result-label-analysis-card/moderation-result-label-analysis-card.component';
+import { ModerationResultSentimentAnalysisCardComponent } from '../../components/detail/moderation-result-sentiment-analysis-card/moderation-result-sentiment-analysis-card.component';
+import { ModerationResultSummaryCardComponent } from '../../components/detail/moderation-result-summary-card/moderation-result-summary-card.component';
+import { ModerationResultToxicityAnalysisCardComponent } from '../../components/detail/moderation-result-toxicity-analysis-card/moderation-result-toxicity-analysis-card.component';
 import { ModerationResultsApiService } from '../../data-access/moderation-results-api.service';
 import type {
   ModerationResultItem,
@@ -21,25 +25,22 @@ interface SentimentScoreEntry {
   score: number;
 }
 
-interface ModerationLabelTreeNode {
-  name: string;
-  confidence: number | null;
-  parentName: string | null;
-  children: ModerationLabelTreeNode[];
-}
-
 type SentimentKey = 'positive' | 'neutral' | 'mixed' | 'negative';
 
 @Component({
   selector: 'app-moderation-result-detail',
   imports: [
-    DatePipe,
     MatButtonModule,
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatTreeModule,
+    ModerationResultGeneralInfoCardComponent,
+    ModerationResultImageAccessCardComponent,
+    ModerationResultLabelAnalysisCardComponent,
+    ModerationResultSentimentAnalysisCardComponent,
+    ModerationResultSummaryCardComponent,
+    ModerationResultToxicityAnalysisCardComponent,
     RouterLink,
   ],
   templateUrl: './moderation-result-detail.component.html',
@@ -89,8 +90,6 @@ export class ModerationResultDetailComponent implements OnInit, OnDestroy {
     const remaining = this.viewAccessRemainingSeconds();
     return remaining !== null && remaining > 0;
   });
-  protected readonly moderationLabelChildrenAccessor = (node: ModerationLabelTreeNode) =>
-    node.children;
   private tickIntervalId: number | null = null;
 
   ngOnInit(): void {
@@ -167,67 +166,6 @@ export class ModerationResultDetailComponent implements OnInit, OnDestroy {
 
   protected getOrderedToxicityLabels(insights: TextInsights): TextInsights['toxicity_labels'] {
     return [...insights.toxicity_labels].sort((left, right) => right.score - left.score);
-  }
-
-  protected buildModerationLabelTree(item: ModerationResultItem): ModerationLabelTreeNode[] {
-    const nodesByName = new Map<string, ModerationLabelTreeNode>();
-
-    for (const label of item.moderation_labels) {
-      nodesByName.set(label.Name, {
-        name: label.Name,
-        confidence: label.Confidence,
-        parentName: label.ParentName || null,
-        children: [],
-      });
-    }
-
-    for (const node of nodesByName.values()) {
-      if (!node.parentName) {
-        continue;
-      }
-
-      let parentNode = nodesByName.get(node.parentName);
-      if (!parentNode) {
-        parentNode = {
-          name: node.parentName,
-          confidence: null,
-          parentName: null,
-          children: [],
-        };
-        nodesByName.set(node.parentName, parentNode);
-      }
-
-      parentNode.children.push(node);
-    }
-
-    const roots = [...nodesByName.values()].filter(
-      (node) => !node.parentName || !nodesByName.has(node.parentName),
-    );
-
-    const sortNodes = (nodes: ModerationLabelTreeNode[]): void => {
-      nodes.sort((left, right) => {
-        const leftConfidence = left.confidence ?? -1;
-        const rightConfidence = right.confidence ?? -1;
-        if (leftConfidence !== rightConfidence) {
-          return rightConfidence - leftConfidence;
-        }
-
-        return left.name.localeCompare(right.name);
-      });
-
-      for (const node of nodes) {
-        if (node.children.length) {
-          sortNodes(node.children);
-        }
-      }
-    };
-
-    sortNodes(roots);
-    return roots;
-  }
-
-  protected formatConfidencePercent(confidence: number): string {
-    return `${this.clampPercent(confidence).toFixed(1)}%`;
   }
 
   protected formatRemainingTime(totalSeconds: number | null): string {

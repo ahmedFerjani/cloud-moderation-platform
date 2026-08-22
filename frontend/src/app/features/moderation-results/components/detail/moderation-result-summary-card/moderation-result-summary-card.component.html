@@ -1,0 +1,15 @@
+<div
+  class="grid min-h-[8.1rem] justify-items-center gap-1 rounded-xl border border-muted px-3 py-3 text-center"
+  [attr.title]="label() + ': ' + value()"
+>
+  <mat-icon aria-hidden="true" class="mb-1 summary-status-icon" [class]="toneClass()">
+    {{ icon() }}
+  </mat-icon>
+
+  <span class="text-sm font-medium text-muted">
+    {{ label() }}
+  </span>
+  <span class="text-sm font-bold">
+    {{ value() }}
+  </span>
+</div>

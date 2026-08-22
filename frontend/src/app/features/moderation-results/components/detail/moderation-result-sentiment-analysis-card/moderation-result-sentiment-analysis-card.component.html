@@ -1,0 +1,40 @@
+<app-moderation-result-detail-card-shell title="Sentiment analysis">
+  @if (insights(); as currentInsights) {
+    <app-moderation-result-info-row icon="sentiment_satisfied" label="Captured sentiment">
+      {{ currentInsights.sentiment }}
+    </app-moderation-result-info-row>
+
+    <div class="sentiment-stack mt-3" aria-label="Sentiment score distribution">
+      @for (score of fixedScores(); track score.name) {
+        <span
+          class="sentiment-stack-segment"
+          [class.sentiment-segment--positive]="score.name === 'Positive'"
+          [class.sentiment-segment--neutral]="score.name === 'Neutral'"
+          [class.sentiment-segment--negative]="score.name === 'Negative'"
+          [class.sentiment-segment--mixed]="score.name === 'Mixed'"
+          [style.width.%]="score.score * 100"
+          [attr.title]="score.name + ': ' + formatScorePercent(score.score)"
+        ></span>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 gap-1.5 text-sm text-muted sm:grid-cols-2 lg:grid-cols-4">
+      @for (score of fixedScores(); track score.name) {
+        <p class="sentiment-legend-row m-0">
+          <span
+            class="sentiment-legend-dot"
+            [class.sentiment-segment--positive]="score.name === 'Positive'"
+            [class.sentiment-segment--neutral]="score.name === 'Neutral'"
+            [class.sentiment-segment--negative]="score.name === 'Negative'"
+            [class.sentiment-segment--mixed]="score.name === 'Mixed'"
+            aria-hidden="true"
+          ></span>
+          <span class="sentiment-legend-label">{{ score.name }}</span>
+          <span class="sentiment-legend-score">{{ formatScorePercent(score.score) }}</span>
+        </p>
+      }
+    </div>
+  } @else {
+    <p class="m-0 text-sm text-muted">No text extracted. Sentiment analysis unavailable.</p>
+  }
+</app-moderation-result-detail-card-shell>
